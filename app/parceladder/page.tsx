@@ -20,6 +20,7 @@ import {
 import { Input } from "@/components/ui/input";
 import React, { useState, useRef, useEffect } from "react";
 import Webcam from "react-webcam";
+import Link from "next/link";
 
 // const FACING_MODE_USER = "user";
 const FACING_MODE_ENVIRONMENT = "environment";
@@ -69,6 +70,9 @@ const Page = () => {
   return (
     <div className="flex flex-row justify-around gap-x-20">
       <div className="w-[100%]">
+        <Button>
+          <Link href="/">Go back</Link>
+        </Button>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
