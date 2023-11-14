@@ -11,8 +11,7 @@ export default async function usePrediction(img: string) {
   };
 
   await axios
-    // .post("https://pythonserver-ftnw.onrender.com", formData, { headers })
-    .post("http://127.0.0.1:8000", formData, { headers })
+    .post("https://pythonserver-ftnw.onrender.com", formData, { headers })
     .then((res) => {
       console.log(res.data.data);
     })
