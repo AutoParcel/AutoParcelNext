@@ -11,7 +11,7 @@ const TopNav = () => {
             alt="epic"
             width={60}
             height={10}
-            className="-my-10 "
+            className="-my-10"
           />
           AutoParcel
         </Link>
