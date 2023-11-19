@@ -63,11 +63,63 @@ const Page = () => {
     form.setValue("RoomNumber", data.RoomNumber);
     form.setValue("OwnerID", data.OwnerID);
   };
+  interface Iprediction {
+    label: string;
+    page: number;
+    value: string;
+    confidence: number;
+  }
 
   const Callapi = async (img: any) => {
-    const epic = await usePrediction(img);
-    const emptydata = { ParcelOwner: ["", 0.0] };
-    console.log(epic);
+    try {
+      const predictionstr = await usePrediction(img);
+      const emptydata: { [key: string]: [string | number, number] } = {
+        ParcelOwner: ["", 0.0],
+        ParcelCompany: ["", 0.0],
+        ParcelNumber: ["", 0.0],
+        RoomNumber: [0, 0.0],
+        OwnerID: ["", 0.0],
+      };
+      const data: any = {
+        ParcelOwner: "",
+        ParcelCompany: "",
+        ParcelNumber: "",
+        RoomNumber: 0,
+        OwnerID: "",
+      };
+      console.log(predictionstr);
+      if (predictionstr != undefined) {
+        const predictions = JSON.parse(predictionstr);
+        predictions.forEach((prediction: Iprediction) => {
+          if (
+            prediction.confidence > 0.0 &&
+            emptydata[prediction.label][1] < prediction.confidence
+          ) {
+            emptydata[prediction.label] = [
+              prediction.value,
+              prediction.confidence,
+            ];
+            data[prediction.label] = prediction.value;
+          }
+        });
+        fillform({
+          // @ts-ignore
+          ParcelOwner: "", // @ts-ignore
+          ParcelCompany: "", // @ts-ignore
+          ParcelNumber: "",
+          PhoneNumber: "", // @ts-ignore
+          RoomNumber: 0, // @ts-ignore
+          OwnerID: "",
+          Comment: "",
+          ...data,
+        });
+      } else {
+        console.log("no predictions");
+      }
+    } catch (err) {
+      console.log(err);
+      console.log("BAD IMAGE");
+    }
     setLoading(false);
   };
 
@@ -81,6 +133,7 @@ const Page = () => {
       PhoneNumber: "",
       RoomNumber: 0,
       OwnerID: "",
+      Shelf: "A",
       Comment: "",
       Date: new Date(),
     },
@@ -123,12 +176,9 @@ const Page = () => {
 
   return (
     <>
-      <Link href="/" className="flex items-center -m-5">
-        <FaChevronLeft />
-        Go back
-      </Link>
-      <div className="flex flex-row justify-between gap-x-10 mt-14 ">
-        <div className="w-full p-5 border-primary_black border-8 rounded-md">
+      <h1 className="text-6xl font-bold mt-10">Add a Parcel</h1>
+      <div className="flex flex-row justify-between gap-x-10 mt-5">
+        <div className="w-full p-6">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <FormField
@@ -260,14 +310,14 @@ const Page = () => {
                   <FormItem>
                     <FormLabel>Shelf</FormLabel>
                     <FormControl>
-                      <Select>
+                      <Select defaultValue={field.value}>
                         <SelectTrigger className="w-[180px]">
-                          <SelectValue placeholder="Theme" />
+                          <SelectValue placeholder="" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="light">Shelf A</SelectItem>
-                          <SelectItem value="dark">Shelf B</SelectItem>
-                          <SelectItem value="system">Shelf C</SelectItem>
+                          <SelectItem value="A">Shelf A</SelectItem>
+                          <SelectItem value="B">Shelf B</SelectItem>
+                          <SelectItem value="C">Shelf C</SelectItem>
                         </SelectContent>
                       </Select>
                     </FormControl>
@@ -295,6 +345,7 @@ const Page = () => {
             </form>
           </Form>
         </div>
+        <div className="bg-primary_black w-2 m-6 rounded-lg"></div>
         <div className="w-full">
           <div className=" flex items-center justify-center flex-col mt-24">
             {camOpen ? (
@@ -336,21 +387,6 @@ const Page = () => {
                 </Button>
               </>
             )}
-            <Button
-              onClick={() =>
-                fillform({
-                  ParcelOwner: "Abhinav",
-                  ParcelCompany: "asd",
-                  ParcelNumber: "asd",
-                  PhoneNumber: "asd",
-                  RoomNumber: 10,
-                  OwnerID: "asd",
-                  Comment: "asd",
-                })
-              }
-            >
-              Fill
-            </Button>
           </div>
         </div>
       </div>
