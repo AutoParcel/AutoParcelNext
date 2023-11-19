@@ -1,5 +1,11 @@
+////
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
+// https://www.prisma.io/docs/concepts/components/prisma-schema#example
+// https://www.prisma.io/docs/concepts/components/prisma-schema/data-model
+// https://www.prisma.io/dataguide/mysql/introduction-to-data-types
+
+// superbase
 
 generator client {
   provider = "prisma-client-js"
@@ -10,3 +16,74 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Guard Tale
+// model Guard {
+//   id        Int      @id @default(autoincrement()) // can make this random or a string employee id type
+//   email     String?  @unique
+//   name      String   @db.VarChar(50)
+// //   phone number
+//   role      Role     @default(USER)
+//   parcels   Parcel[]
+// }
+
+model Student {
+  student_id  String  @id @db.VarChar(15)
+  name        String  @db.VarChar(50)
+  batch       Batch
+  ph_number   String  @unique @db.VarChar(14) // +234 966 324 8811
+  email       String  @unique
+  room_number String? @db.VarChar(4)
+  parcels     Parcel[]
+
+}
+
+model Vendor {
+  vendor_id   Int     @id @default(autoincrement())
+  vendor_name String  @db.VarChar(30)
+  parcels     Parcel[]
+}
+
+model Parcel {
+  pID              String   @id @default(uuid()) // add default which is our own generator
+  vendor           Vendor?  @relation(fields: [vendor_id], references: [vendor_id])
+  vendor_id        Int?
+  student          Student  @relation(fields: [student_id], references: [student_id])
+  student_id       String
+  // last_updated_by  Guard?   @relation(fields: [guard_id], references: [id])
+  // guard_id         Int?
+  createdAt        DateTime @default(now())    
+  status           Status @default(NC)
+  comment          String @db.Text()
+}
+
+// notification model to be added
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Batch {
+  UG21
+  UG22
+  UG23
+  TLP23
+}
+
+enum Status {
+  C // collected
+  NC // not_collected
+}
+  
+
+
+
+// model Post {
+//   id        Int      @id @default(autoincrement())
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+//   published Boolean  @default(false)
+//   title     String   @db.VarChar(255)
+//   author    User?    @relation(fields: [authorId], references: [id])
+//   authorId  Int?
+// }
