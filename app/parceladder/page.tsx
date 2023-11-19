@@ -15,6 +15,13 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Form,
   FormControl,
   FormDescription,
@@ -37,28 +44,40 @@ const formSchema = z.object({
     required_error: "Date of arrival of package is required.",
   }),
   ParcelCompany: z.string(),
-  ParcelID: z.string(),
+  ParcelNumber: z.string(),
   PhoneNumber: z.string(),
   RoomNumber: z.number(),
   OwnerID: z.string(),
+  Shelf: z.string(),
   Comment: z.string(),
 });
 const FACING_MODE_ENVIRONMENT = "environment";
 
 // const FACING_MODE_USER = "user";
 const Page = () => {
+  const fillform = async (data: any) => {
+    form.setValue("ParcelOwner", data.ParcelOwner);
+    form.setValue("ParcelCompany", data.ParcelCompany);
+    form.setValue("ParcelNumber", data.ParcelNumber);
+    form.setValue("PhoneNumber", data.PhoneNumber);
+    form.setValue("RoomNumber", data.RoomNumber);
+    form.setValue("OwnerID", data.OwnerID);
+  };
+
   const Callapi = async (img: any) => {
     const epic = await usePrediction(img);
+    const emptydata = { ParcelOwner: ["", 0.0] };
     console.log(epic);
     setLoading(false);
   };
+
   const [loading, setLoading] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       ParcelOwner: "",
       ParcelCompany: "",
-      ParcelID: "",
+      ParcelNumber: "",
       PhoneNumber: "",
       RoomNumber: 0,
       OwnerID: "",
@@ -109,7 +128,7 @@ const Page = () => {
         Go back
       </Link>
       <div className="flex flex-row justify-between gap-x-10 mt-14 ">
-        <div className="w-full p-5 border-primary_red border-8 rounded-md">
+        <div className="w-full p-5 border-primary_black border-8 rounded-md">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <FormField
@@ -181,12 +200,15 @@ const Page = () => {
               />
               <FormField
                 control={form.control}
-                name="ParcelID"
+                name="ParcelNumber"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Parcel ID</FormLabel>
+                    <FormLabel>Parcel Number</FormLabel>
                     <FormControl>
-                      <Input placeholder="" {...field} />
+                      <Input
+                        placeholder="AWB number, order number, etc."
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -231,7 +253,28 @@ const Page = () => {
                   </FormItem>
                 )}
               />
-
+              <FormField
+                control={form.control}
+                name="Shelf"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Shelf</FormLabel>
+                    <FormControl>
+                      <Select>
+                        <SelectTrigger className="w-[180px]">
+                          <SelectValue placeholder="Theme" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="light">Shelf A</SelectItem>
+                          <SelectItem value="dark">Shelf B</SelectItem>
+                          <SelectItem value="system">Shelf C</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="Comment"
@@ -245,6 +288,7 @@ const Page = () => {
                   </FormItem>
                 )}
               />
+
               <Button className="bg-primary_red" type="submit">
                 Submit
               </Button>
@@ -292,6 +336,21 @@ const Page = () => {
                 </Button>
               </>
             )}
+            <Button
+              onClick={() =>
+                fillform({
+                  ParcelOwner: "Abhinav",
+                  ParcelCompany: "asd",
+                  ParcelNumber: "asd",
+                  PhoneNumber: "asd",
+                  RoomNumber: 10,
+                  OwnerID: "asd",
+                  Comment: "asd",
+                })
+              }
+            >
+              Fill
+            </Button>
           </div>
         </div>
       </div>
