@@ -37,7 +37,7 @@ import Link from "next/link";
 import usePrediction from "@/hooks/usePrediction";
 
 const formSchema = z.object({
-  ParcelOwner: z.string().min(2, {
+  OwnerName: z.string().min(2, {
     message: "Name must be at least 3 characters.",
   }),
   Date: z.date({
@@ -56,7 +56,7 @@ const FACING_MODE_ENVIRONMENT = "environment";
 // const FACING_MODE_USER = "user";
 const Page = () => {
   const fillform = async (data: any) => {
-    form.setValue("ParcelOwner", data.ParcelOwner);
+    form.setValue("OwnerName", data.OwnerName);
     form.setValue("ParcelCompany", data.ParcelCompany);
     form.setValue("ParcelNumber", data.ParcelNumber);
     form.setValue("PhoneNumber", data.PhoneNumber);
@@ -74,14 +74,14 @@ const Page = () => {
     try {
       const predictionstr = await usePrediction(img);
       const emptydata: { [key: string]: [string | number, number] } = {
-        ParcelOwner: ["", 0.0],
+        OwnerName: ["", 0.0],
         ParcelCompany: ["", 0.0],
         ParcelNumber: ["", 0.0],
         RoomNumber: [0, 0.0],
         OwnerID: ["", 0.0],
       };
       const data: any = {
-        ParcelOwner: "",
+        OwnerName: "",
         ParcelCompany: "",
         ParcelNumber: "",
         RoomNumber: 0,
@@ -104,7 +104,7 @@ const Page = () => {
         });
         fillform({
           // @ts-ignore
-          ParcelOwner: "", // @ts-ignore
+          OwnerName: "", // @ts-ignore
           ParcelCompany: "", // @ts-ignore
           ParcelNumber: "",
           PhoneNumber: "", // @ts-ignore
@@ -127,7 +127,7 @@ const Page = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      ParcelOwner: "",
+      OwnerName: "",
       ParcelCompany: "",
       ParcelNumber: "",
       PhoneNumber: "",
@@ -181,50 +181,56 @@ const Page = () => {
         <div className="w-full p-6">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <div className="flex items-center justify-between">
+                <FormField
+                  control={form.control}
+                  name="Date"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Date</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant={"outline"}
+                              className={cn(
+                                "w-[240px] pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value ? (
+                                format(field.value, "PPP")
+                              ) : (
+                                <span>Pick a date</span>
+                              )}
+                              <FaCalendarAlt className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            disabled={(date) =>
+                              date > new Date() || date < new Date("1900-01-01")
+                            }
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                {/*"TO DO    AUTO GENERATE THIS ID"*/}
+                <div className="p-3 bg-primary_white text-sm font-bold rounded-xl opacity-75">
+                  Parcel Unique ID- UX32454
+                </div>
+              </div>
               <FormField
                 control={form.control}
-                name="Date"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Date</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-[240px] pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, "PPP")
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                            <FaCalendarAlt className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) =>
-                            date > new Date() || date < new Date("1900-01-01")
-                          }
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="ParcelOwner"
+                name="OwnerName"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Parcel Owner</FormLabel>

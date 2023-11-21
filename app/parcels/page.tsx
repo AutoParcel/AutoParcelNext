@@ -1,22 +1,35 @@
 "use client";
 import ParcelCard from "@/components/ui/ParcelCard";
 import axios from "axios";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const getParcels = async () => {
   const parcels = await axios.get("/api/parcels");
-  return parcels;
+  return parcels.data.parcels;
 };
-
+interface ParcelInterface {
+  OwnerName: string;
+  ParcelID: string;
+  Shelf: string;
+  ReceivedAt: string;
+  Comment: string;
+  Status: string;
+  OwnerID: string;
+  vendor_id: string;
+}
 const Parcel = () => {
+  const [parcelsData, setParcelsData] = useState([]);
   useEffect(() => {
-    const parcels = getParcels();
-    console.log("Hello");
+    (async () => {
+      const parcels = await getParcels();
+      console.log(parcels);
+      setParcelsData(parcels);
+    })();
+    return console.log("component unmounted");
   }, []);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-5">
-      {/* Search Bar at the top */}
       <div className="flex items-center mb-8">
         <div className="bg-gray-300 rounded-full p-2 focus:outline-none focus:border-gray-500 focus:ring focus:ring-gray-200">
           <input
@@ -93,19 +106,22 @@ const Parcel = () => {
       </div>
 
       <div className="mb-8 text-3xl font-bold">Parcel Details</div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-20">
-        {/* {parcelsData.map((parcel, index) => (
-          <ParcelCard
-            name={""}
-            shelf={""}
-            id={""}
-            date={""}
-            index={0}
-            key={0}
-          />
-        ))} */}
-      </div>
+      {parcelsData.length === 0 ? (
+        "No Parcels"
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-20">
+          {parcelsData.map((parcel: ParcelInterface) => (
+            <ParcelCard
+              name={parcel.OwnerName}
+              shelf={parcel.Shelf}
+              id={parcel.ParcelID}
+              date={parcel.ReceivedAt}
+              key={parcel.ParcelID}
+              status={parcel.Status}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Rest of the content goes here */}
     </main>
