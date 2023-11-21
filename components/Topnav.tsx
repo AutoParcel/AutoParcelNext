@@ -15,13 +15,13 @@ const TopNav = () => {
           />
           AutoParcel
         </Link>
+      </div>
+      <div className="flex gap-5">
         <div className="flex gap-5 text-xs items-center">
-          <Link href="/parceladder">Add parcel</Link>
-          <Link href="/parcels">Parcel List</Link>
+          <Link href="/parceladder">Add Parcel</Link>
+          <Link href="/parcels">Search Parcel</Link>
           <Link href="/about">About Us</Link>
         </div>
-      </div>
-      <div className="">
         <UserButton afterSignOutUrl="/" />
       </div>
     </div>

@@ -1,33 +1,19 @@
-import { PrismaClient } from "@prisma/client";
+"use client";
+import ParcelCard from "@/components/ui/ParcelCard";
+import axios from "axios";
+import { useEffect } from "react";
 
-const prisma = new PrismaClient();
-
-prisma;
-const parcelsData = [
-  { id: "U20220111", name: "Manan Chawla", shelf: "A", date: "23/11/23" },
-  { id: "U20220112", name: "John Doe", shelf: "B", date: "24/11/23" },
-  { id: "U20220113", name: "Jane Smith", shelf: "C", date: "25/11/23" },
-  { id: "U20220114", name: "Alice Johnson", shelf: "D", date: "26/11/23" },
-  { id: "U20220115", name: "Bob Williams", shelf: "E", date: "27/11/23" },
-  { id: "U20220116", name: "Charlie Brown", shelf: "F", date: "28/11/23" },
-  { id: "U20220117", name: "David Smith", shelf: "G", date: "29/11/23" },
-  { id: "U20220118", name: "Emma Watson", shelf: "H", date: "30/11/23" },
-  { id: "U20220119", name: "Frank Johnson", shelf: "I", date: "01/12/23" },
-  { id: "U20220120", name: "Grace Williams", shelf: "J", date: "02/12/23" },
-  { id: "U20220111", name: "Manan Chawla", shelf: "A", date: "23/11/23" },
-  { id: "U20220112", name: "John Doe", shelf: "B", date: "24/11/23" },
-  { id: "U20220113", name: "Jane Smith", shelf: "C", date: "25/11/23" },
-  { id: "U20220114", name: "Alice Johnson", shelf: "D", date: "26/11/23" },
-  { id: "U20220115", name: "Bob Williams", shelf: "E", date: "27/11/23" },
-  { id: "U20220116", name: "Charlie Brown", shelf: "F", date: "28/11/23" },
-  { id: "U20220117", name: "David Smith", shelf: "G", date: "29/11/23" },
-  { id: "U20220118", name: "Emma Watson", shelf: "H", date: "30/11/23" },
-  { id: "U20220119", name: "Frank Johnson", shelf: "I", date: "01/12/23" },
-  { id: "U20220120", name: "Grace Williams", shelf: "J", date: "02/12/23" },
-  // Add more parcel details as needed
-];
+const getParcels = async () => {
+  const parcels = await axios.get("/api/parcels");
+  return parcels;
+};
 
 const Parcel = () => {
+  useEffect(() => {
+    const parcels = getParcels();
+    console.log("Hello");
+  }, []);
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-5">
       {/* Search Bar at the top */}
@@ -106,27 +92,20 @@ const Parcel = () => {
         </div>
       </div>
 
-      {/* Render 5 Cards in one row */}
+      <div className="mb-8 text-3xl font-bold">Parcel Details</div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-20">
-        {parcelsData.map((parcel, index) => (
-          <div
-            key={index}
-            className="bg-gray-300 p-4 rounded-md shadow-md text-center mb-4"
-          >
-            <div className="text-xl font-semibold mb-2">{parcel.id}</div>
-            <div className="text-left mb-2">{parcel.name}</div>
-            <div className="text-left mb-2">{parcel.shelf}</div>
-            <div className="text-right mb-2">{parcel.date}</div>
-            {/* Additional parcel details can be added here */}
-            <button className="bg-black text-white p-4 rounded-full w-full mt-2">
-              Handover Parcel
-            </button>
-          </div>
-        ))}
+        {/* {parcelsData.map((parcel, index) => (
+          <ParcelCard
+            name={""}
+            shelf={""}
+            id={""}
+            date={""}
+            index={0}
+            key={0}
+          />
+        ))} */}
       </div>
-
-      <div className="mb-8 text-3xl font-bold">Parcel Details</div>
 
       {/* Rest of the content goes here */}
     </main>
