@@ -15,6 +15,13 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Form,
   FormControl,
   FormDescription,
@@ -37,31 +44,96 @@ const formSchema = z.object({
     required_error: "Date of arrival of package is required.",
   }),
   ParcelCompany: z.string(),
-  ParcelID: z.string(),
+  ParcelNumber: z.string(),
   PhoneNumber: z.string(),
   RoomNumber: z.number(),
   OwnerID: z.string(),
+  Shelf: z.string(),
   Comment: z.string(),
 });
 const FACING_MODE_ENVIRONMENT = "environment";
 
 // const FACING_MODE_USER = "user";
 const Page = () => {
+  const fillform = async (data: any) => {
+    form.setValue("ParcelOwner", data.ParcelOwner);
+    form.setValue("ParcelCompany", data.ParcelCompany);
+    form.setValue("ParcelNumber", data.ParcelNumber);
+    form.setValue("PhoneNumber", data.PhoneNumber);
+    form.setValue("RoomNumber", data.RoomNumber);
+    form.setValue("OwnerID", data.OwnerID);
+  };
+  interface Iprediction {
+    label: string;
+    page: number;
+    value: string;
+    confidence: number;
+  }
+
   const Callapi = async (img: any) => {
-    const epic = await usePrediction(img);
-    console.log(epic);
+    try {
+      const predictionstr = await usePrediction(img);
+      const emptydata: { [key: string]: [string | number, number] } = {
+        ParcelOwner: ["", 0.0],
+        ParcelCompany: ["", 0.0],
+        ParcelNumber: ["", 0.0],
+        RoomNumber: [0, 0.0],
+        OwnerID: ["", 0.0],
+      };
+      const data: any = {
+        ParcelOwner: "",
+        ParcelCompany: "",
+        ParcelNumber: "",
+        RoomNumber: 0,
+        OwnerID: "",
+      };
+      console.log(predictionstr);
+      if (predictionstr != undefined) {
+        const predictions = JSON.parse(predictionstr);
+        predictions.forEach((prediction: Iprediction) => {
+          if (
+            prediction.confidence > 0.0 &&
+            emptydata[prediction.label][1] < prediction.confidence
+          ) {
+            emptydata[prediction.label] = [
+              prediction.value,
+              prediction.confidence,
+            ];
+            data[prediction.label] = prediction.value;
+          }
+        });
+        fillform({
+          // @ts-ignore
+          ParcelOwner: "", // @ts-ignore
+          ParcelCompany: "", // @ts-ignore
+          ParcelNumber: "",
+          PhoneNumber: "", // @ts-ignore
+          RoomNumber: 0, // @ts-ignore
+          OwnerID: "",
+          Comment: "",
+          ...data,
+        });
+      } else {
+        console.log("no predictions");
+      }
+    } catch (err) {
+      console.log(err);
+      console.log("BAD IMAGE");
+    }
     setLoading(false);
   };
+
   const [loading, setLoading] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       ParcelOwner: "",
       ParcelCompany: "",
-      ParcelID: "",
+      ParcelNumber: "",
       PhoneNumber: "",
       RoomNumber: 0,
       OwnerID: "",
+      Shelf: "A",
       Comment: "",
       Date: new Date(),
     },
@@ -104,12 +176,9 @@ const Page = () => {
 
   return (
     <>
-      <Link href="/" className="flex items-center -m-5">
-        <FaChevronLeft />
-        Go back
-      </Link>
-      <div className="flex flex-row justify-between gap-x-10 mt-14 ">
-        <div className="w-full p-5 border-primary_red border-8 rounded-md">
+      <h1 className="text-6xl font-bold mt-10">Add a Parcel</h1>
+      <div className="flex flex-row justify-between gap-x-10 mt-5">
+        <div className="w-full p-6">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <FormField
@@ -181,12 +250,15 @@ const Page = () => {
               />
               <FormField
                 control={form.control}
-                name="ParcelID"
+                name="ParcelNumber"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Parcel ID</FormLabel>
+                    <FormLabel>Parcel Number</FormLabel>
                     <FormControl>
-                      <Input placeholder="" {...field} />
+                      <Input
+                        placeholder="AWB number, order number, etc."
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -231,7 +303,28 @@ const Page = () => {
                   </FormItem>
                 )}
               />
-
+              <FormField
+                control={form.control}
+                name="Shelf"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Shelf</FormLabel>
+                    <FormControl>
+                      <Select defaultValue={field.value}>
+                        <SelectTrigger className="w-[180px]">
+                          <SelectValue placeholder="" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="A">Shelf A</SelectItem>
+                          <SelectItem value="B">Shelf B</SelectItem>
+                          <SelectItem value="C">Shelf C</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="Comment"
@@ -245,12 +338,14 @@ const Page = () => {
                   </FormItem>
                 )}
               />
+
               <Button className="bg-primary_red" type="submit">
                 Submit
               </Button>
             </form>
           </Form>
         </div>
+        <div className="bg-primary_black w-2 m-6 rounded-lg"></div>
         <div className="w-full">
           <div className=" flex items-center justify-center flex-col mt-24">
             {camOpen ? (
