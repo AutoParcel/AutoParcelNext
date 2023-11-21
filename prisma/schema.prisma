@@ -13,7 +13,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://postgres:7YumEm96axvQXyny@db.ydwxvgrxrvchtdabfjde.supabase.co:5432/postgres"
+  url      = env("DATABASE_URL")
 }
 
 // Guard Tale
@@ -27,34 +27,33 @@ datasource db {
 // }
 
 model Student {
-  student_id  String  @id @db.VarChar(15)
-  name        String  @db.VarChar(50)
+  student_id  String   @id @db.VarChar(15)
+  name        String   @db.VarChar(50)
   batch       Batch
-  ph_number   String  @unique @db.VarChar(14) // +234 966 324 8811
-  email       String  @unique
-  room_number String? @db.VarChar(4)
+  ph_number   String   @unique @db.VarChar(14) // +234 966 324 8811
+  email       String   @unique
+  room_number String?  @db.VarChar(4)
   parcels     Parcel[]
-
 }
 
 model Vendor {
-  vendor_id   Int     @id @default(autoincrement())
-  vendor_name String  @db.VarChar(30)
+  vendor_id   Int      @id @default(autoincrement())
+  vendor_name String   @db.VarChar(30)
   parcels     Parcel[]
 }
 
 model Parcel {
-  pID              String   @id @default(uuid()) // add default which is our own generator
-  vendor           Vendor?  @relation(fields: [vendor_id], references: [vendor_id])
-  vendor_id        Int?
-  student          Student?  @relation(fields: [student_id], references: [student_id])
-  student_id       String?
-  student_name     String @db.VarChar(50)
+  pID          String   @id @default(uuid()) // add default which is our own generator
+  vendor       Vendor?  @relation(fields: [vendor_id], references: [vendor_id])
+  vendor_id    Int?
+  student      Student? @relation(fields: [student_id], references: [student_id])
+  student_id   String?
+  student_name String   @db.VarChar(50)
   // last_updated_by  Guard?   @relation(fields: [guard_id], references: [id])
   // guard_id         Int?
-  createdAt        DateTime @default(now())    
-  status           Status @default(NC)
-  comment          String? @db.Text()
+  createdAt    DateTime @default(now())
+  status       Status   @default(NC)
+  comment      String?  @db.Text()
 }
 
 // notification model to be added
@@ -75,9 +74,6 @@ enum Status {
   C // collected
   NC // not_collected
 }
-  
-
-
 
 // model Post {
 //   id        Int      @id @default(autoincrement())
