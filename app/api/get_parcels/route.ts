@@ -1,8 +1,15 @@
 import { connectToDb } from "@/utils";
 import prisma from "@/prisma";
 import { NextResponse } from "next/server";
-export const GET = async (req: Request, parameter: any, func: any = 'findMany') => {
+export const POST = async (req: Request) => {
   try {
+
+    const data = await req.json();
+    console.log(data);
+
+    let func=data.func;
+    let parameter=data.parameter;
+
     await connectToDb();
     let funcs={'findMany':prisma.parcel.findMany,'findFirst':prisma.parcel.findFirst,'findUnique':prisma.parcel.findUnique}
     // const parcels = await prisma.parcel.findMany(parameter);
