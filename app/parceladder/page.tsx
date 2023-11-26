@@ -44,6 +44,28 @@ const getReceivers = async () => {
   return receivers.data.parcelRecievers;
 };
 
+const getVendors = async () => {
+  const receivers = await axios.get("/api/get_vendors");
+  return receivers.data.vendors;
+};
+
+function performDBMatch(list:any, query:string, key:string) {
+  const options = {
+    includeScore: true,
+    threshold: 0.5,
+    algorithms: ["levenshtein", "jaro-winkler"],
+    keys: [
+      {
+        name: key,
+      },
+    ]
+  }
+  const fuse = new Fuse(list, options);
+  return fuse.search(query);
+  // const result = fuse.search(query)
+  // console.log(result);
+}
+
 const formSchema = z.object({
   OwnerName: z.string().min(2, {
     message: "Name must be at least 3 characters.",
@@ -81,21 +103,9 @@ const Page = () => {
   const Callapi = async (img: any) => {
     try {
       const receivers = await getReceivers();
+      const vendors = await getVendors();
       console.log(receivers)
-      const options = {
-        includeScore: true,
-        algorithms: ["levenshtein", "jaro-winkler"],
-        keys: [
-          {
-            name: 'OwnerName',
-          },
-        ]
-      }
-      
-      const fuse = new Fuse(receivers, options)
-      const result = fuse.search("Jia Agawal")
-      console.log(result);
-
+      console.log(vendors)
 
       const predictionstr = await usePrediction(img);
       const emptydata: { [key: string]: [string | number, number] } = {
@@ -128,13 +138,34 @@ const Page = () => {
           }
         });
 
+        const receiver_result = performDBMatch(receivers, data.OwnerName,'OwnerName')
+        const vendor_result = performDBMatch(vendors, data.ParcelCompany,'ParcelCompany')
+        console.log(receiver_result)
+        console.log(vendor_result)
+        if(receiver_result.length > 0){
+          const ref_index = receiver_result[0].refIndex;
+          const receiver = receivers[ref_index];
+          data.OwnerID = receiver.OwnerID;
+          data.OwnerName = receiver.OwnerName;
+          data.PhoneNumber = receiver.PhoneNumber;
+          // what if the room number parameter is missing?
+          data.RoomNumber = receiver.RoomNumber;
+        }
+        if(vendor_result.length > 0){
+          const ref_index = vendor_result[0].refIndex;
+          const vendor = vendors[ref_index];
+          data.ParcelCompany = vendor.ParcelCompany;
+        }
+        // receiver_result.length > 0 ? console.log("receiver: ",receiver_result) : console.log("no receiver match")
+        // vendor_result.length > 0 ? console.log("vendor: ",vendor_result[0].refIndex) : console.log("no vendor match")
+
         fillform({
           // @ts-ignore
           OwnerName: "", // @ts-ignore
           ParcelCompany: "", // @ts-ignore
           ParcelNumber: "",
           PhoneNumber: "", // @ts-ignore
-          RoomNumber: 0, // @ts-ignore
+          RoomNumber: null, // @ts-ignore
           OwnerID: "",
           Comment: "",
           ...data,
@@ -166,6 +197,9 @@ const Page = () => {
   });
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
+    axios.post("/api/add_parcel", values).then((res) => {
+      console.log(res);
+    });
   }
   const webcamRef: any = React.useRef(null);
   const [image, setImage] = useState("");
