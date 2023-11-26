@@ -18,7 +18,7 @@ const getParcels = async (func: string, query: any) => {
 
 const generatePID = async (len: number = 6) => {
   let char_set = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  let pid = Array.from({ length: len }, () =>
+  let pid = "AP"+Array.from({ length: len }, () =>
     char_set.charAt(Math.floor(Math.random() * char_set.length))
   ).join("");
   while (await getParcels("findUnique", { ParcelID: pid })) {

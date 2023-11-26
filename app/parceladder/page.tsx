@@ -37,7 +37,7 @@ import Webcam from "react-webcam";
 import Link from "next/link";
 import usePrediction from "@/hooks/usePrediction";
 import Fuse from "fuse.js";
-import { getReceivers, getVendors, addVendor } from "@/utils";
+import { getReceivers, getVendors, addVendor, generatePID, addParcel } from "@/utils";
 // @ts-ignore
 var receiver = null;
 // @ts-ignore
@@ -160,6 +160,8 @@ const Page = () => {
           if (data.ParcelCompany.length > 0) {
             vendor = await addVendor({ ParcelCompany: data.ParcelCompany });
             // data.ParcelCompany = vendor.ParcelCompany;
+          } else {
+            vendor = {VendorID: null};
           }
         }
 
@@ -199,12 +201,11 @@ const Page = () => {
       Date: new Date(),
     },
   });
-  function onSubmit(values: any) {
+  async function onSubmit(values: any) {
     console.log(values);
     // if there's a receiver, then update the parcel without the spare (room number, ph number)
     // if there's no receiver, then update the parcel with the spare.
     // we also need vendor id
-    let post_values = {};
     let spare = "";
     // const uid = //generate uid
     delete values.Date;
@@ -217,12 +218,15 @@ const Page = () => {
       // @ts-ignore
       values.OwnerID = receiver.OwnerID;
     }
+    // @ts-ignore
     delete values.PhoneNumber;
     delete values.RoomNumber;
     delete values.Date;
     delete values.ParcelCompany;
     // @ts-ignore
-    values = { ...values, spare: spare, VendorID: vendor.VendorID };
+    values = { ...values, spare: spare, VendorID: vendor.VendorID, ParcelID: generatePID()};
+
+    const new_parcel = await addParcel(values);
     // if(receiver){
     //   delete values.PhoneNumber;
     //   delete values.RoomNumber;
