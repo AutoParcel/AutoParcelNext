@@ -3,8 +3,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
-import { FaCamera, FaCalendarAlt, FaChevronLeft } from "react-icons/fa";
 import { Oval } from "react-loader-spinner";
+import { FaCamera, FaCalendarAlt, FaChevronLeft } from "react-icons/fa";
+
 import { format, set } from "date-fns";
 import { cn } from "@/lib/utils";
 import {
@@ -36,48 +37,48 @@ import Webcam from "react-webcam";
 import Link from "next/link";
 import usePrediction from "@/hooks/usePrediction";
 // const Fuse = require('fuse.js');
-import Fuse from "fuse.js"
+import Fuse from "fuse.js";
 import axios from "axios";
 // @ts-ignore
-var receiver=null;
+var receiver = null;
 // @ts-ignore
-var vendor=null;
+var vendor = null;
 
 const getReceivers = async (query: any) => {
-  const receivers = await axios.post("/api/get_parcel_recievers",{query:query});
+  const receivers = await axios.post("/api/get_parcel_recievers", {
+    query: query,
+  });
   return receivers.data.parcelRecievers;
 };
 
 const getVendors = async (query: any) => {
-  const receivers = await axios.post("/api/get_vendors",{query:query});
+  const receivers = await axios.post("/api/get_vendors", { query: query });
   return receivers.data.vendors;
 };
 
 const addVendor = async (vendor: any) => {
-  const res = await axios.post("/api/add_vendor", {data:vendor});
+  const res = await axios.post("/api/add_vendor", { data: vendor });
   return res.data.vendor;
-}
+};
 
 const addParcel = async (parcel: any) => {
-  const res = await axios.post("/api/add_parcel", {data:parcel});
+  const res = await axios.post("/api/add_parcel", { data: parcel });
   return res.data.parcel;
-}
+};
 
 const getParcels = async (func: string, query: any) => {
-  const res = await axios.post("/api/get_parcels", {func:func, query:query});
+  const res = await axios.post("/api/get_parcels", {
+    func: func,
+    query: query,
+  });
   return res.data.parcels;
+};
+
+function generatePID(len: number = 6) {
+  let char_set = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 }
 
-
-async function generatePID(len:number=6) {
-  let char_set="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-  let pid=Array.from({ length: len }, () => char_set.charAt(Math.floor(Math.random() * char_set.length))).join('');
-  while(await getParcels("findMany",{where:{ParcelID:pid}})) {
-    pid=Array.from({ length: len }, () => char_set.charAt(Math.floor(Math.random() * char_set.length))).join('');
-  }
-}
-
-function performDBMatch(list:any, query:string, key:string) {
+function performDBMatch(list: any, query: string, key: string) {
   const options = {
     includeScore: true,
     threshold: 0.5,
@@ -86,8 +87,8 @@ function performDBMatch(list:any, query:string, key:string) {
       {
         name: key,
       },
-    ]
-  }
+    ],
+  };
   const fuse = new Fuse(list, options);
   return fuse.search(query);
   // const result = fuse.search(query)
@@ -132,8 +133,8 @@ const Page = () => {
     try {
       const receivers = await getReceivers({});
       const vendors = await getVendors({});
-      console.log(receivers)
-      console.log(vendors)
+      console.log(receivers);
+      console.log(vendors);
 
       const predictionstr = await usePrediction(img);
       const emptydata: { [key: string]: [string | number, number] } = {
@@ -166,11 +167,19 @@ const Page = () => {
           }
         });
 
-        const receiver_result = performDBMatch(receivers, data.OwnerName,'OwnerName')
-        const vendor_result = performDBMatch(vendors, data.ParcelCompany,'ParcelCompany')
-        console.log(receiver_result)
-        console.log(vendor_result)
-        if(receiver_result.length > 0){
+        const receiver_result = performDBMatch(
+          receivers,
+          data.OwnerName,
+          "OwnerName"
+        );
+        const vendor_result = performDBMatch(
+          vendors,
+          data.ParcelCompany,
+          "ParcelCompany"
+        );
+        console.log(receiver_result);
+        console.log(vendor_result);
+        if (receiver_result.length > 0) {
           const ref_index = receiver_result[0].refIndex;
           receiver = receivers[ref_index];
           data.OwnerID = receiver.OwnerID;
@@ -179,14 +188,14 @@ const Page = () => {
           // what if the room number parameter is missing?
           data.RoomNumber = receiver.RoomNumber;
         }
-        if(vendor_result.length > 0){
+        if (vendor_result.length > 0) {
           const ref_index = vendor_result[0].refIndex;
           vendor = vendors[ref_index];
           data.ParcelCompany = vendor.ParcelCompany;
         } else {
           // create a new vendor if there is some textual data from the form
-          if(data.ParcelCompany.length > 0) {
-            vendor = await addVendor({ParcelCompany: data.ParcelCompany});
+          if (data.ParcelCompany.length > 0) {
+            vendor = await addVendor({ ParcelCompany: data.ParcelCompany });
             // data.ParcelCompany = vendor.ParcelCompany;
           }
         }
@@ -232,25 +241,26 @@ const Page = () => {
     // if there's a receiver, then update the parcel without the spare (room number, ph number)
     // if there's no receiver, then update the parcel with the spare.
     // we also need vendor id
-    let post_values={}
-    let spare = ""
+    let post_values = {};
+    let spare = "";
     // const uid = //generate uid
     delete values.Date;
     // @ts-ignore
 
-    if(receiver==null) {
-      spare=`(${values.PhoneNumber}),(${values.RoomNumber}),(${values.OwnerID})`
-      values.OwnerID=null;
-    } else { // @ts-ignore
-      values.OwnerID=receiver.OwnerID;
+    if (receiver == null) {
+      spare = `(${values.PhoneNumber}),(${values.RoomNumber}),(${values.OwnerID})`;
+      values.OwnerID = null;
+    } else {
+      // @ts-ignore
+      values.OwnerID = receiver.OwnerID;
     }
     delete values.PhoneNumber;
     delete values.RoomNumber;
     delete values.Date;
     delete values.ParcelCompany;
     // @ts-ignore
-    values = {...values, spare: spare, VendorID: vendor.VendorID}
-    // if(receiver){ 
+    values = { ...values, spare: spare, VendorID: vendor.VendorID };
+    // if(receiver){
     //   delete values.PhoneNumber;
     //   delete values.RoomNumber;
     //   delete values.OwnerID;
