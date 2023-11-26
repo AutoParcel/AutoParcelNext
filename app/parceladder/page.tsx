@@ -40,7 +40,7 @@ import Fuse from "fuse.js"
 import axios from "axios";
 
 const getReceivers = async () => {
-  const receivers = await axios.get("/api/parcel_recievers");
+  const receivers = await axios.get("/api/get_parcel_recievers");
   return receivers.data.parcelRecievers;
 };
 

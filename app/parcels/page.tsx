@@ -4,7 +4,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 
 const getParcels = async () => {
-  const parcels = await axios.get("/api/parcels");
+  const parcels = await axios.get("/api/get_parcels");
   return parcels.data.parcels;
 };
 interface ParcelInterface {
