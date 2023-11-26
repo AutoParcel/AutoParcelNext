@@ -4,7 +4,9 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import writeXlsxFile from "write-excel-file";
-import { Schema } from "zod";
+import { Label } from "@/components/ui/label";
+
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
   SelectContent,
@@ -26,6 +28,7 @@ interface ParcelInterface {
   OwnerID: string;
   vendor_id: string;
 }
+
 const Parcel = () => {
   const [parcelsData, setParcelsData] = useState([]);
   useEffect(() => {
@@ -87,81 +90,77 @@ const Parcel = () => {
     });
   };
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-5">
-      <div className="flex items-center mb-8">
-        <div className="bg-gray-300 rounded-full p-2 focus:outline-none focus:border-gray-500 focus:ring focus:ring-gray-200">
+    <div className="flex min-h-screen flex-col items-center justify-between p-5 mx-14 gap-10 my-10">
+      <div className="mb-8 text-6xl font-bold self-start">Parcel Details</div>
+      <div className="flex flex-wrap items-center justify-between w-full gap-10">
+        <div className="flex border rounded-lg p-1 focus:outline-none focus:ring focus:ring-gray-100">
           <input
             type="text"
-            placeholder="Search brooo"
-            className="border-none bg-transparent p-2 rounded-full w-48 outline-none"
+            placeholder="Search By"
+            className="border-none bg-transparent p-2 md:w-48 lg:w-80 outline-none"
           />
+          <div className="">
+            <Select defaultValue="Name">
+              <SelectTrigger className="w-[160px]">
+                <SelectValue placeholder="Filter" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Name">Name</SelectItem>
+                <SelectItem value="ParcelID">Parcel ID</SelectItem>
+                <SelectItem value="OwnerID">User ID</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
-        <Select>
-          <SelectTrigger className="w-[180px]">
+        <Select defaultValue="allTime">
+          <SelectTrigger className="w-[160px]">
             <SelectValue placeholder="Filter" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="light">Light</SelectItem>
-            <SelectItem value="dark">Dark</SelectItem>
-            <SelectItem value="system">System</SelectItem>
+            <SelectItem value="Today">Today</SelectItem>
+            <SelectItem value="Week">This Week</SelectItem>
+            <SelectItem value="Month">This Month</SelectItem>
+            <SelectItem value="allTime">All Parcels</SelectItem>
           </SelectContent>
         </Select>
-        <div>
-          <div>
-            <button
-              id="optionsButton"
-              className="flex items-center border-solid border-gray-800 border-[1px] px-5 py-2 rounded cursor-pointer font-bold bg-gray-200 hover:bg-gray-300 transition duration-300 w-[200px]"
-            >
-              Filter
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="#000000"
-                height="20"
-                width="20"
-                viewBox="0 0 24 24"
-                className="ml-2 text-gray-600"
-              >
-                <path d="M7 10l5 5 5-5z" fill="rgba(0,0,0,0.87)"></path>
-              </svg>
-            </button>
-          </div>
-        </div>
+        <div className="flex justify-center items-center gap-2">
+          <div className="">Sort By: </div>
+          <Select defaultValue="Date">
+            <SelectTrigger className="w-[140px]">
+              <SelectValue placeholder="Choose" />
+            </SelectTrigger>
 
-        <div>
-          <button
-            id="optionsButton"
-            className="flex items-center border-solid border-gray-800 border-[1px] px-5 py-2 rounded cursor-pointer font-bold bg-gray-200 hover:bg-gray-300 transition duration-300 w-[200px]"
-          >
-            Sort By
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="#000000"
-              height="20"
-              width="20"
-              viewBox="0 0 24 24"
-              className="ml-2 text-gray-600"
-            >
-              <path d="M7 10l5 5 5-5z" fill="rgba(0,0,0,0.87)"></path>
-            </svg>
-          </button>
-          <div className="rounded border-[1px] border-gray-950 bg-blue-500 p-4 absolute top-[50-px] w-[200px] shadow-md hidden">
-            <div className="cursor-pointer hover:bg-slate-600">Name</div>
-            <div className="cursor-pointer hover:bg-slate-600">ID</div>
-            <div className="cursor-pointer hover:bg-slate-600">Shelf</div>
-            <div className="cursor-pointer hover:bg-slate-600">
-              Date Received
-            </div>
-          </div>
+            <SelectContent>
+              <SelectItem value="Today">Name</SelectItem>
+              <SelectItem value="Week">Shelf</SelectItem>
+              <SelectItem value="Month">Parcel ID</SelectItem>
+              <SelectItem value="Date">Date</SelectItem>
+              <SelectItem value="Status">Status</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
+        <RadioGroup defaultValue="option-one">
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="option-one" id="option-one" />
+            <Label htmlFor="option-one">All</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="option-two" id="option-two" />
+            <Label htmlFor="option-two">Collected</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="option-three" id="option-three" />
+            <Label htmlFor="option-three">Not Collected</Label>
+          </div>
+        </RadioGroup>
         <Button className="" onClick={downloadExcel}>
           Download Excel
         </Button>
       </div>
-      <div className="mb-8 text-3xl font-bold">Parcel Details</div>
       {parcelsData.length === 0 ? (
         "No Parcels"
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-10 w-full">
           {parcelsData.map((parcel: ParcelInterface) => (
             <ParcelCard
               name={parcel.OwnerName}
@@ -174,7 +173,7 @@ const Parcel = () => {
           ))}
         </div>
       )}
-    </main>
+    </div>
   );
 };
 
