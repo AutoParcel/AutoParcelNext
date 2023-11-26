@@ -2,7 +2,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { format, set } from "date-fns";
 import { cn } from "@/lib/utils";
 import {
   Popover,
@@ -69,7 +68,6 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
     form.setValue("PhoneNumber", data.ParcelReceiver.PhoneNumber);
     form.setValue("RoomNumber", data.ParcelReceiver.RoomNumber);
     form.setValue("OwnerID", data.OwnerID);
-    console.log(data.Shelf);
     form.setValue("Shelf", data.Shelf);
     form.setValue("Comment", data.Comment);
   };
@@ -96,9 +94,11 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
     });
     console.log(ParcelDetails[0]);
     fillform(ParcelDetails[0]);
+    setParcel(() => ParcelDetails[0]);
   };
   useEffect(() => {
     RequestDetails();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const [editStatus, setEditStatus] = useState(false);
   return (
@@ -112,47 +112,7 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <div className="flex items-center justify-between">
-                <FormField
-                  control={form.control}
-                  name="Date"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>Date</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant={"outline"}
-                              className={cn(
-                                "w-[240px] pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground"
-                              )}
-                            >
-                              {field.value ? (
-                                format(field.value, "PPP")
-                              ) : (
-                                <span>Pick a date</span>
-                              )}
-                              <FaCalendarAlt className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            disabled={(date) =>
-                              date > new Date() || date < new Date("1900-01-01")
-                            }
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div>Received At:</div>
                 <div className="flex gap-10">
                   <div className="p-3 bg-primary_white text-sm font-bold rounded-xl opacity-75">
                     Parcel Unique ID- {params.id}

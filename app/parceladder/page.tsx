@@ -37,7 +37,13 @@ import Webcam from "react-webcam";
 import Link from "next/link";
 import usePrediction from "@/hooks/usePrediction";
 import Fuse from "fuse.js";
-import { getReceivers, getVendors, addVendor, generatePID, addParcel } from "@/utils";
+import {
+  getReceivers,
+  getVendors,
+  addVendor,
+  generatePID,
+  addParcel,
+} from "@/utils";
 // @ts-ignore
 var receiver = null;
 // @ts-ignore
@@ -93,96 +99,90 @@ const Page = () => {
   }
 
   const Callapi = async (img: any) => {
-    try {
-      const receivers = await getReceivers({});
-      const vendors = await getVendors({});
-      console.log(receivers);
-      console.log(vendors);
-      //solve this
-      const predictionstr = await usePrediction(img);
-      const emptydata: { [key: string]: [string | number, number] } = {
-        OwnerName: ["", 0.0],
-        ParcelCompany: ["", 0.0],
-        ParcelNumber: ["", 0.0],
-        RoomNumber: [0, 0.0],
-        OwnerID: ["", 0.0],
-      };
-      const data: any = {
-        OwnerName: "",
-        ParcelCompany: "",
-        ParcelNumber: "",
-        RoomNumber: 0,
-        OwnerID: "",
-      };
-      console.log(predictionstr);
-      if (predictionstr != undefined) {
-        const predictions = JSON.parse(predictionstr);
-        predictions.forEach((prediction: Iprediction) => {
-          if (
-            prediction.confidence > 0.0 &&
-            emptydata[prediction.label][1] < prediction.confidence
-          ) {
-            emptydata[prediction.label] = [
-              prediction.value,
-              prediction.confidence,
-            ];
-            data[prediction.label] = prediction.value;
-          }
-        });
-
-        const receiver_result = performDBMatch(
-          receivers,
-          data.OwnerName,
-          // "abhinav Lodha",
-          "OwnerName"
-        );
-        const vendor_result = performDBMatch(
-          vendors,
-          data.ParcelCompany,
-          "ParcelCompany"
-        );
-        console.log(receiver_result);
-        console.log(vendor_result);
-        if (receiver_result.length > 0) {
-          const ref_index = receiver_result[0].refIndex;
-          receiver = receivers[ref_index];
-          data.OwnerID = receiver.OwnerID;
-          data.OwnerName = receiver.OwnerName;
-          data.PhoneNumber = receiver.PhoneNumber;
-          // what if the room number parameter is missing?
-          data.RoomNumber = receiver.RoomNumber;
+    const receivers = await getReceivers({});
+    const vendors = await getVendors({});
+    console.log(receivers);
+    console.log(vendors);
+    //solve this
+    const predictionstr = await usePrediction(img);
+    const emptydata: { [key: string]: [string | number, number] } = {
+      OwnerName: ["", 0.0],
+      ParcelCompany: ["", 0.0],
+      ParcelNumber: ["", 0.0],
+      RoomNumber: [0, 0.0],
+      OwnerID: ["", 0.0],
+    };
+    const data: any = {
+      OwnerName: "",
+      ParcelCompany: "",
+      ParcelNumber: "",
+      RoomNumber: 0,
+      OwnerID: "",
+    };
+    console.log(predictionstr);
+    if (predictionstr != undefined) {
+      const predictions = JSON.parse(predictionstr);
+      predictions.forEach((prediction: Iprediction) => {
+        if (
+          prediction.confidence > 0.0 &&
+          emptydata[prediction.label][1] < prediction.confidence
+        ) {
+          emptydata[prediction.label] = [
+            prediction.value,
+            prediction.confidence,
+          ];
+          data[prediction.label] = prediction.value;
         }
-        if (vendor_result.length > 0) {
-          const ref_index = vendor_result[0].refIndex;
-          vendor = vendors[ref_index];
-          data.ParcelCompany = vendor.ParcelCompany;
-        } else {
-          // create a new vendor if there is some textual data from the form
-          if (data.ParcelCompany.length > 0) {
-            vendor = await addVendor({ ParcelCompany: data.ParcelCompany });
-            // data.ParcelCompany = vendor.ParcelCompany;
-          } else {
-            vendor = {VendorID: null};
-          }
-        }
+      });
 
-        fillform({
-          // @ts-ignore
-          OwnerName: "", // @ts-ignore
-          ParcelCompany: "", // @ts-ignore
-          ParcelNumber: "",
-          PhoneNumber: "", // @ts-ignore
-          RoomNumber: null, // @ts-ignore
-          OwnerID: "",
-          Comment: "",
-          ...data,
-        });
-      } else {
-        console.log("no predictions");
+      const receiver_result = performDBMatch(
+        receivers,
+        data.OwnerName,
+        "OwnerName"
+      );
+      const vendor_result = performDBMatch(
+        vendors,
+        data.ParcelCompany,
+        "ParcelCompany"
+      );
+      console.log(receiver_result);
+      console.log(vendor_result);
+      if (receiver_result.length > 0) {
+        const ref_index = receiver_result[0].refIndex;
+        receiver = receivers[ref_index];
+        data.OwnerID = receiver.OwnerID;
+        data.OwnerName = receiver.OwnerName;
+        data.PhoneNumber = receiver.PhoneNumber;
+        // what if the room number parameter is missing?
+        data.RoomNumber = receiver.RoomNumber;
       }
-    } catch (err) {
-      console.log(err);
-      console.log("BAD IMAGE");
+      if (vendor_result.length > 0) {
+        const ref_index = vendor_result[0].refIndex;
+        vendor = vendors[ref_index];
+        data.ParcelCompany = vendor.ParcelCompany;
+      } else {
+        // create a new vendor if there is some textual data from the form
+        if (data.ParcelCompany.length > 0) {
+          vendor = await addVendor({ ParcelCompany: data.ParcelCompany });
+          // data.ParcelCompany = vendor.ParcelCompany;
+        } else {
+          vendor = { VendorID: null };
+        }
+      }
+
+      fillform({
+        // @ts-ignore
+        OwnerName: "", // @ts-ignore
+        ParcelCompany: "", // @ts-ignore
+        ParcelNumber: "",
+        PhoneNumber: "", // @ts-ignore
+        RoomNumber: null, // @ts-ignore
+        OwnerID: "",
+        Comment: "",
+        ...data,
+      });
+    } else {
+      console.log("no predictions");
     }
     setLoading(false);
   };
@@ -225,7 +225,13 @@ const Page = () => {
     delete values.Date;
     delete values.ParcelCompany;
     // @ts-ignore
-    values = { ...values, spare: spare, VendorID: vendor.VendorID, ParcelID: generatePID(), otp: getParcelOTP()};
+    values = {
+      ...values,
+      spare: spare,
+      // VendorID: vendor.VendorID,
+      ParcelID: generatePID(),
+      // otp: getParcelOTP(),
+    };
 
     const new_parcel = await addParcel(values);
     // if(receiver){
@@ -263,6 +269,7 @@ const Page = () => {
     Callapi(imageSrc);
     setImage(imageSrc);
     setCamOpen(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [webcamRef]);
 
   let videoConstraints: MediaTrackConstraints = {
