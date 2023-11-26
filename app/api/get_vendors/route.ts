@@ -8,7 +8,7 @@ export const POST = async (req: Request) => {
     console.log(data);
 
     await connectToDb();
-    const vendors = await prisma.vendor.findMany(data);
+    const vendors = await prisma.vendor.findMany(data.query);
     return NextResponse.json({ vendors }, { status: 200 });
   } catch (error) {
     console.log(error);
