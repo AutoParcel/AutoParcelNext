@@ -1,11 +1,12 @@
 import { connectToDb } from "@/utils";
 import prisma from "@/prisma";
 import { NextResponse } from "next/server";
-export const GET = async (req: Request) => {
+
+export const POST = async (req: Request, parameter: any) => {
   try {
     await connectToDb();
-    const parcels = await prisma.parcel.findMany();
-    return NextResponse.json({ parcels }, { status: 200 });
+    const parcel = await prisma.parcel.create({ data: parameter });
+    return NextResponse.json({ parcel }, { status: 200 });
   } catch (error) {
     console.log(error);
     //@ts-ignore

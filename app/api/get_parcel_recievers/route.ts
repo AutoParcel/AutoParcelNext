@@ -1,10 +1,10 @@
 import { connectToDb } from "@/utils";
 import prisma from "@/prisma";
 import { NextResponse } from "next/server";
-export const GET = async (req: Request) => {
+export const GET = async (req: Request, parameter:any) => {
   try {
     await connectToDb();
-    const parcelRecievers = await prisma.parcelReciever.findMany();
+    const parcelRecievers = await prisma.parcelReciever.findMany(parameter);
     return NextResponse.json({ parcelRecievers }, { status: 200 });
   } catch (error) {
     console.log(error);

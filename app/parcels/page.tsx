@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 const getParcels = async () => {
-  const parcels = await axios.get("/api/parcels");
+  const parcels = await axios.get("/api/get_parcels");
   return parcels.data.parcels;
 };
 interface ParcelInterface {

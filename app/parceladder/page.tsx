@@ -35,6 +35,14 @@ import React, { useState, useRef, useEffect, use } from "react";
 import Webcam from "react-webcam";
 import Link from "next/link";
 import usePrediction from "@/hooks/usePrediction";
+// const Fuse = require('fuse.js');
+import Fuse from "fuse.js"
+import axios from "axios";
+
+const getReceivers = async () => {
+  const receivers = await axios.get("/api/get_parcel_recievers");
+  return receivers.data.parcelRecievers;
+};
 
 const formSchema = z.object({
   OwnerName: z.string().min(2, {
@@ -72,6 +80,23 @@ const Page = () => {
 
   const Callapi = async (img: any) => {
     try {
+      const receivers = await getReceivers();
+      console.log(receivers)
+      const options = {
+        includeScore: true,
+        algorithms: ["levenshtein", "jaro-winkler"],
+        keys: [
+          {
+            name: 'OwnerName',
+          },
+        ]
+      }
+      
+      const fuse = new Fuse(receivers, options)
+      const result = fuse.search("Jia Agawal")
+      console.log(result);
+
+
       const predictionstr = await usePrediction(img);
       const emptydata: { [key: string]: [string | number, number] } = {
         OwnerName: ["", 0.0],
@@ -102,6 +127,7 @@ const Page = () => {
             data[prediction.label] = prediction.value;
           }
         });
+
         fillform({
           // @ts-ignore
           OwnerName: "", // @ts-ignore
