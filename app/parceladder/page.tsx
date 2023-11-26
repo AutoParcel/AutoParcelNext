@@ -44,28 +44,33 @@ var receiver = null;
 // @ts-ignore
 var vendor = null;
 
-const getReceivers = async () => {
-  const receivers = await axios.get("/api/get_parcel_recievers");
+const getReceivers = async (query: any) => {
+  const receivers = await axios.post("/api/get_parcel_recievers", {
+    query: query,
+  });
   return receivers.data.parcelRecievers;
 };
 
-const getVendors = async () => {
-  const receivers = await axios.get("/api/get_vendors");
+const getVendors = async (query: any) => {
+  const receivers = await axios.post("/api/get_vendors", { query: query });
   return receivers.data.vendors;
 };
 
 const addVendor = async (vendor: any) => {
-  const res = await axios.post("/api/add_vendor", vendor);
+  const res = await axios.post("/api/add_vendor", { data: vendor });
   return res.data.vendor;
 };
 
 const addParcel = async (parcel: any) => {
-  const res = await axios.post("/api/add_parcel", parcel);
+  const res = await axios.post("/api/add_parcel", { data: parcel });
   return res.data.parcel;
 };
 
-const getParcels = async (params: any) => {
-  const res = await axios.get("/api/get_parcels", params);
+const getParcels = async (func: string, query: any) => {
+  const res = await axios.post("/api/get_parcels", {
+    func: func,
+    query: query,
+  });
   return res.data.parcels;
 };
 
@@ -126,8 +131,8 @@ const Page = () => {
 
   const Callapi = async (img: any) => {
     try {
-      const receivers = await getReceivers();
-      const vendors = await getVendors();
+      const receivers = await getReceivers({});
+      const vendors = await getVendors({});
       console.log(receivers);
       console.log(vendors);
 
