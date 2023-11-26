@@ -37,7 +37,7 @@ model Parcel {
   ParcelReceiver ParcelReciever? @relation(fields: [OwnerID], references: [OwnerID])
   vendor         Vendor?         @relation(fields: [vendor_id], references: [vendor_id])
   spare          String?         @db.Text()
-  otp            String?         @db.Char(6)
+  otp            String          @db.Char(6)
 }
 
 enum Role {

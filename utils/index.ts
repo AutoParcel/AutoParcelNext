@@ -18,7 +18,7 @@ const getParcels = async (func: string, query: any) => {
 
 const generatePID = async (len: number = 6) => {
   let char_set = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  let pid = Array.from({ length: len }, () =>
+  let pid = "AP"+Array.from({ length: len }, () =>
     char_set.charAt(Math.floor(Math.random() * char_set.length))
   ).join("");
   while (await getParcels("findUnique", { ParcelID: pid })) {
@@ -26,6 +26,7 @@ const generatePID = async (len: number = 6) => {
       char_set.charAt(Math.floor(Math.random() * char_set.length))
     ).join("");
   }
+  return pid;
 };
 
 const addParcel = async (parcel: any) => {
@@ -48,6 +49,14 @@ const getReceivers = async (query: any) => {
     query: query,
   });
   return receivers.data.parcelRecievers;
+};
+
+const getParcelOTP = async (len: number = 6) => {
+  let char_set = "0123456789";
+  const pid = Array.from({ length: len }, () =>
+    char_set.charAt(Math.floor(Math.random() * char_set.length))
+  ).join("");
+  return pid;
 };
 
 export {
