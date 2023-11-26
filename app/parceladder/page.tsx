@@ -68,9 +68,13 @@ const getParcels = async (func: string, query: any) => {
   return res.data.parcels;
 }
 
-function generatePID(len:number=6) {
+
+async function generatePID(len:number=6) {
   let char_set="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-  
+  let pid=Array.from({ length: len }, () => char_set.charAt(Math.floor(Math.random() * char_set.length))).join('');
+  while(await getParcels("findMany",{where:{ParcelID:pid}})) {
+    pid=Array.from({ length: len }, () => char_set.charAt(Math.floor(Math.random() * char_set.length))).join('');
+  }
 }
 
 function performDBMatch(list:any, query:string, key:string) {
