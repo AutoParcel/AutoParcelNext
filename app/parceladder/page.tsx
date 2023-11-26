@@ -224,7 +224,7 @@ const Page = () => {
     delete values.Date;
     delete values.ParcelCompany;
     // @ts-ignore
-    values = { ...values, spare: spare, VendorID: vendor.VendorID, ParcelID: generatePID()};
+    values = { ...values, spare: spare, VendorID: vendor.VendorID, ParcelID: generatePID(), otp: getParcelOTP()};
 
     const new_parcel = await addParcel(values);
     // if(receiver){
