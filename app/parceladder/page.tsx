@@ -36,47 +36,12 @@ import React, { useState, useRef, useEffect, use } from "react";
 import Webcam from "react-webcam";
 import Link from "next/link";
 import usePrediction from "@/hooks/usePrediction";
-// const Fuse = require('fuse.js');
 import Fuse from "fuse.js";
-import axios from "axios";
+import { getReceivers, getVendors, addVendor } from "@/utils";
 // @ts-ignore
 var receiver = null;
 // @ts-ignore
 var vendor = null;
-
-const getReceivers = async (query: any) => {
-  const receivers = await axios.post("/api/get_parcel_recievers", {
-    query: query,
-  });
-  return receivers.data.parcelRecievers;
-};
-
-const getVendors = async (query: any) => {
-  const receivers = await axios.post("/api/get_vendors", { query: query });
-  return receivers.data.vendors;
-};
-
-const addVendor = async (vendor: any) => {
-  const res = await axios.post("/api/add_vendor", { data: vendor });
-  return res.data.vendor;
-};
-
-const addParcel = async (parcel: any) => {
-  const res = await axios.post("/api/add_parcel", { data: parcel });
-  return res.data.parcel;
-};
-
-const getParcels = async (func: string, query: any) => {
-  const res = await axios.post("/api/get_parcels", {
-    func: func,
-    query: query,
-  });
-  return res.data.parcels;
-};
-
-function generatePID(len: number = 6) {
-  let char_set = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-}
 
 function performDBMatch(list: any, query: string, key: string) {
   const options = {
@@ -91,8 +56,6 @@ function performDBMatch(list: any, query: string, key: string) {
   };
   const fuse = new Fuse(list, options);
   return fuse.search(query);
-  // const result = fuse.search(query)
-  // console.log(result);
 }
 
 const formSchema = z.object({
@@ -135,7 +98,7 @@ const Page = () => {
       const vendors = await getVendors({});
       console.log(receivers);
       console.log(vendors);
-
+      //solve this
       const predictionstr = await usePrediction(img);
       const emptydata: { [key: string]: [string | number, number] } = {
         OwnerName: ["", 0.0],

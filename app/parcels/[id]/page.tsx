@@ -34,7 +34,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-
+import { getParcels } from "@/utils";
 interface Iprediction {
   label: string;
   page: number;
@@ -43,7 +43,10 @@ interface Iprediction {
 }
 
 export default function ParcelPage({ params }: { params: { id: string } }) {
-  const onSubmit = async (data: any) => {};
+  const onSubmit = async (data: any) => {
+    console.log("submitted", data);
+    setEditStatus((prev) => !prev);
+  };
   const formSchema = z.object({
     OwnerName: z.string().min(2, {
       message: "Name must be at least 3 characters.",
@@ -83,15 +86,14 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
     },
   });
   const [parcel, setParcel] = React.useState(null);
-  //   React.useEffect(() => {
-  //     (async () => {
-  //       const res = await axios.get(`/api/get_parcels`, {
-  //         where: { ParcelID: params.id },
-  //       });
-  //       console.log(res.data);
-  //       setParcel(res.data);
-  //     })();
-  //   }, [params.id]);
+  React.useEffect(() => {
+    (async () => {
+      const Parcel = await getParcels("findMany", {
+        where: { ParcelID: params.id },
+      });
+      setParcel(Parcel[0]);
+    })();
+  }, []);
   const [editStatus, setEditStatus] = useState(false);
   return (
     <>

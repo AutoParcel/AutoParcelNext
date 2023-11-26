@@ -14,10 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-const getParcels = async () => {
-  const parcels = await axios.get("/api/get_parcels");
-  return parcels.data.parcels;
-};
+import { getParcels } from "@/utils";
 interface ParcelInterface {
   OwnerName: string;
   ParcelID: string;
@@ -33,7 +30,7 @@ const Parcel = () => {
   const [parcelsData, setParcelsData] = useState([]);
   useEffect(() => {
     (async () => {
-      const parcels = await getParcels();
+      const parcels = await getParcels("findMany", {});
       console.log(parcels);
       setParcelsData(parcels);
     })();
