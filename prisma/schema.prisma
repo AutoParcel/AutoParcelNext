@@ -30,7 +30,7 @@ model Parcel {
   OwnerName      String          @db.VarChar(50)
   ParcelID       String          @id
   ParcelNumber   String          @db.VarChar(30)
-  ReceivedAt     DateTime
+  ReceivedAt     DateTime        @default(now())
   Shelf          String?
   Status         Status          @default(NC)
   ParcelReceiver ParcelReciever? @relation(fields: [OwnerID], references: [OwnerID])

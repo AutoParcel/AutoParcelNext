@@ -38,6 +38,10 @@ import usePrediction from "@/hooks/usePrediction";
 // const Fuse = require('fuse.js');
 import Fuse from "fuse.js"
 import axios from "axios";
+// @ts-ignore
+var receiver=null;
+// @ts-ignore
+var vendor=null;
 
 const getReceivers = async () => {
   const receivers = await axios.get("/api/get_parcel_recievers");
@@ -48,6 +52,26 @@ const getVendors = async () => {
   const receivers = await axios.get("/api/get_vendors");
   return receivers.data.vendors;
 };
+
+const addVendor = async (vendor: any) => {
+  const res = await axios.post("/api/add_vendor", vendor);
+  return res.data.vendor;
+}
+
+const addParcel = async (parcel: any) => {
+  const res = await axios.post("/api/add_parcel", parcel);
+  return res.data.parcel;
+}
+
+const getParcels = async (params: any) => {
+  const res = await axios.get("/api/get_parcels", params);
+  return res.data.parcels;
+}
+
+function generatePID(len:number=6) {
+  let char_set="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+  
+}
 
 function performDBMatch(list:any, query:string, key:string) {
   const options = {
@@ -144,7 +168,7 @@ const Page = () => {
         console.log(vendor_result)
         if(receiver_result.length > 0){
           const ref_index = receiver_result[0].refIndex;
-          const receiver = receivers[ref_index];
+          receiver = receivers[ref_index];
           data.OwnerID = receiver.OwnerID;
           data.OwnerName = receiver.OwnerName;
           data.PhoneNumber = receiver.PhoneNumber;
@@ -153,11 +177,15 @@ const Page = () => {
         }
         if(vendor_result.length > 0){
           const ref_index = vendor_result[0].refIndex;
-          const vendor = vendors[ref_index];
+          vendor = vendors[ref_index];
           data.ParcelCompany = vendor.ParcelCompany;
+        } else {
+          // create a new vendor if there is some textual data from the form
+          if(data.ParcelCompany.length > 0) {
+            vendor = await addVendor({ParcelCompany: data.ParcelCompany});
+            // data.ParcelCompany = vendor.ParcelCompany;
+          }
         }
-        // receiver_result.length > 0 ? console.log("receiver: ",receiver_result) : console.log("no receiver match")
-        // vendor_result.length > 0 ? console.log("vendor: ",vendor_result[0].refIndex) : console.log("no vendor match")
 
         fillform({
           // @ts-ignore
@@ -184,22 +212,49 @@ const Page = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      OwnerName: "",
+      OwnerName: "", //
       ParcelCompany: "",
-      ParcelNumber: "",
+      ParcelNumber: "", //
       PhoneNumber: "",
       RoomNumber: 0,
-      OwnerID: "",
-      Shelf: "A",
-      Comment: "",
+      OwnerID: "", //
+      Shelf: "A", //
+      Comment: "", //
       Date: new Date(),
     },
   });
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(values: any) {
     console.log(values);
-    axios.post("/api/add_parcel", values).then((res) => {
-      console.log(res);
-    });
+    // if there's a receiver, then update the parcel without the spare (room number, ph number)
+    // if there's no receiver, then update the parcel with the spare.
+    // we also need vendor id
+    let post_values={}
+    let spare = ""
+    // const uid = //generate uid
+    delete values.Date;
+    // @ts-ignore
+
+    if(receiver==null) {
+      spare=`(${values.PhoneNumber}),(${values.RoomNumber}),(${values.OwnerID})`
+      values.OwnerID=null;
+    } else { // @ts-ignore
+      values.OwnerID=receiver.OwnerID;
+    }
+    delete values.PhoneNumber;
+    delete values.RoomNumber;
+    delete values.Date;
+    delete values.ParcelCompany;
+    // @ts-ignore
+    values = {...values, spare: spare, VendorID: vendor.VendorID}
+    // if(receiver){ 
+    //   delete values.PhoneNumber;
+    //   delete values.RoomNumber;
+    //   delete values.OwnerID;
+    //   values = {...values, OwnerID: receiver.OwnerID} // parcel id too
+    // } else {
+
+    // }
+    // @ts-ignore
   }
   const webcamRef: any = React.useRef(null);
   const [image, setImage] = useState("");
