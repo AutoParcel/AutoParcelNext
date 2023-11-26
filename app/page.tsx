@@ -6,7 +6,7 @@ import axios from "axios";
 export default function Home() {
   const sendRequest = async () => {
     const response = await axios.post("/api/test", {
-      data: { epic: "epic" },
+      epic:"epic",
     });
     console.log(response.data);
   };

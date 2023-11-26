@@ -8,13 +8,13 @@ export const POST = async (req: Request) => {
     console.log(data);
 
     let func=data.func;
-    let parameter=data.parameter;
+    let query=data.query;
 
     await connectToDb();
     let funcs={'findMany':prisma.parcel.findMany,'findFirst':prisma.parcel.findFirst,'findUnique':prisma.parcel.findUnique}
     // const parcels = await prisma.parcel.findMany(parameter);
     // @ts-ignore
-    const parcels = await funcs[func](parameter);
+    const parcels = await funcs[func](query);
     return NextResponse.json({ parcels }, { status: 200 });
   } catch (error) {
     console.log(error);

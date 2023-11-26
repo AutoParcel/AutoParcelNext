@@ -9,7 +9,7 @@ export const POST = async (req: Request) => {
     console.log(data);
 
     await connectToDb();
-    const parcel = await prisma.parcel.create({ data: data });
+    const parcel = await prisma.parcel.create(data);
     return NextResponse.json({ parcel }, { status: 200 });
   } catch (error) {
     console.log(error);

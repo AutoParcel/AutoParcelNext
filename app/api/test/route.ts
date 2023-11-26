@@ -4,5 +4,6 @@ import { NextResponse } from "next/server";
 export const POST = async (req: Request) => {
   const data = await req.json();
   console.log(data);
-  return NextResponse.json("This is from test", { status: 200 });
+  console.log("gello");
+  return NextResponse.json(data.epic, { status: 200 });
 };
