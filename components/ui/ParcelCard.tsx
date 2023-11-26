@@ -25,16 +25,12 @@ const ParcelCard = ({
         description: "",
         variant: "destructive",
         duration: 3000,
-        isClosable: true,
       });
     } else if (name == "Handover") {
       toast({
         title: "Parcel Handover",
         description: "Parcel Handover successfully!",
-
-        status: "success",
         duration: 3000,
-        isClosable: true,
       });
     } else {
       router.push("/parcels/" + id);
