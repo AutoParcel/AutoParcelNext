@@ -64,11 +64,14 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
   });
   const fillform = async (data: any) => {
     form.setValue("OwnerName", data.OwnerName);
-    form.setValue("ParcelCompany", data.ParcelCompany);
+    form.setValue("ParcelCompany", data.vendor.ParcelCompany);
     form.setValue("ParcelNumber", data.ParcelNumber);
-    form.setValue("PhoneNumber", data.PhoneNumber);
-    form.setValue("RoomNumber", data.RoomNumber);
+    form.setValue("PhoneNumber", data.ParcelReceiver.PhoneNumber);
+    form.setValue("RoomNumber", data.ParcelReceiver.RoomNumber);
     form.setValue("OwnerID", data.OwnerID);
+    console.log(data.Shelf);
+    form.setValue("Shelf", data.Shelf);
+    form.setValue("Comment", data.Comment);
   };
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -80,19 +83,22 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
       PhoneNumber: "",
       RoomNumber: 0,
       OwnerID: "", //
-      Shelf: "A", //
+      Shelf: "", //
       Comment: "", //
       Date: new Date(),
     },
   });
   const [parcel, setParcel] = React.useState(null);
-  React.useEffect(() => {
-    (async () => {
-      const Parcel = await getParcels("findMany", {
-        where: { ParcelID: params.id },
-      });
-      setParcel(Parcel[0]);
-    })();
+  const RequestDetails = async () => {
+    const ParcelDetails = await getParcels("findMany", {
+      where: { ParcelID: params.id },
+      include: { vendor: true, ParcelReceiver: true },
+    });
+    console.log(ParcelDetails[0]);
+    fillform(ParcelDetails[0]);
+  };
+  useEffect(() => {
+    RequestDetails();
   }, []);
   const [editStatus, setEditStatus] = useState(false);
   return (
@@ -260,9 +266,9 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
                           <SelectValue placeholder="" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="A">Shelf A</SelectItem>
-                          <SelectItem value="B">Shelf B</SelectItem>
-                          <SelectItem value="C">Shelf C</SelectItem>
+                          <SelectItem value="Shelf A">Shelf A</SelectItem>
+                          <SelectItem value="Shelf B">Shelf B</SelectItem>
+                          <SelectItem value="Shelf C">Shelf C</SelectItem>
                         </SelectContent>
                       </Select>
                     </FormControl>
