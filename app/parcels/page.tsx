@@ -2,7 +2,16 @@
 import ParcelCard from "@/components/ui/ParcelCard";
 import axios from "axios";
 import { useEffect, useState } from "react";
-
+import { Button } from "@/components/ui/button";
+import writeXlsxFile from "write-excel-file";
+import { Schema } from "zod";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 const getParcels = async () => {
   const parcels = await axios.get("/api/parcels");
   return parcels.data.parcels;
@@ -27,7 +36,56 @@ const Parcel = () => {
     })();
     return console.log("component unmounted");
   }, []);
-
+  const downloadExcel = async () => {
+    console.log("download excel");
+    console.log(parcelsData);
+    const schema = [
+      {
+        column: "OwnerName",
+        type: String,
+        value: (student: any) => student.OwnerName,
+      },
+      {
+        column: "OwnerID",
+        type: String,
+        value: (student: any) => student.OwnerID,
+      },
+      {
+        column: "ParcelID",
+        type: String,
+        value: (student: any) => student.ParcelID,
+      },
+      {
+        column: "Shelf",
+        type: String,
+        value: (student: any) => student.Shelf,
+      },
+      {
+        column: "ReceivedAt",
+        type: String,
+        value: (student: any) => student.ReceivedAt,
+      },
+      {
+        column: "Comment",
+        type: String,
+        value: (student: any) => student.Comment,
+      },
+      {
+        column: "Status",
+        type: String,
+        value: (student: any) => student.Status,
+      },
+      {
+        column: "vendor_id",
+        type: Number,
+        value: (student: any) => student.vendor_id,
+      },
+    ];
+    await writeXlsxFile(parcelsData, {
+      schema,
+      fileName: "file.xlsx",
+    });
+  };
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-5">
       <div className="flex items-center mb-8">
@@ -38,24 +96,16 @@ const Parcel = () => {
             className="border-none bg-transparent p-2 rounded-full w-48 outline-none"
           />
         </div>
-
-        <button className="bg-blue-500 text-white p-2.5 rounded-full ml-2">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            className="h-4 w-4"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M21 21l-6-6m2-7a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-        </button>
-
+        <Select>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Filter" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="light">Light</SelectItem>
+            <SelectItem value="dark">Dark</SelectItem>
+            <SelectItem value="system">System</SelectItem>
+          </SelectContent>
+        </Select>
         <div>
           <div>
             <button
@@ -103,8 +153,10 @@ const Parcel = () => {
             </div>
           </div>
         </div>
+        <Button className="" onClick={downloadExcel}>
+          Download Excel
+        </Button>
       </div>
-
       <div className="mb-8 text-3xl font-bold">Parcel Details</div>
       {parcelsData.length === 0 ? (
         "No Parcels"
@@ -122,8 +174,6 @@ const Parcel = () => {
           ))}
         </div>
       )}
-
-      {/* Rest of the content goes here */}
     </main>
   );
 };
