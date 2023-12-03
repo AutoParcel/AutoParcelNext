@@ -36,6 +36,7 @@ const Parcel = () => {
     sort: "D",
     status: "A",
   });
+
   useEffect(() => {
     (async () => {
       const parcels = await getParcels("findMany", {});
@@ -43,8 +44,9 @@ const Parcel = () => {
       setParcelsData(parcels);
       setFilteredParcelsData(parcels);
     })();
-    return console.log("component unmounted");
-  }, []);
+    return console.log("getting parcels!");
+  }, [, filterOptions]);
+
   useEffect(() => {
     if (searchParam !== "") {
       const filteredData = parcelsData.filter((parcel: ParcelInterface) => {
@@ -135,7 +137,14 @@ const Parcel = () => {
             </Select>
           </div>
         </div>
-        <Select defaultValue="allTime">
+        <Select
+          defaultValue={filterOptions.timefilt}
+          onValueChange={(val) =>
+            setFilterOptions((prev) => {
+              return { ...prev, timefilt: val };
+            })
+          }
+        >
           <SelectTrigger className="w-[160px]">
             <SelectValue placeholder="Filter" />
           </SelectTrigger>
@@ -148,7 +157,14 @@ const Parcel = () => {
         </Select>
         <div className="flex justify-center items-center gap-2">
           <div className="">Sort By: </div>
-          <Select defaultValue="Date">
+          <Select
+            defaultValue={filterOptions.sort}
+            onValueChange={(val) =>
+              setFilterOptions((prev) => {
+                return { ...prev, sort: val };
+              })
+            }
+          >
             <SelectTrigger className="w-[140px]">
               <SelectValue placeholder="Choose" />
             </SelectTrigger>
@@ -156,24 +172,31 @@ const Parcel = () => {
             <SelectContent>
               <SelectItem value="N">Name</SelectItem>
               <SelectItem value="S">Shelf</SelectItem>
-              <SelectItem value="PID">Parcel ID</SelectItem>
-              <SelectItem value="Date">Date</SelectItem>
-              <SelectItem value="Status">Status</SelectItem>
+              <SelectItem value="P">Parcel ID</SelectItem>
+              <SelectItem value="D">Date</SelectItem>
+              <SelectItem value="S">Status</SelectItem>
             </SelectContent>
           </Select>
         </div>
-        <RadioGroup defaultValue="option-one">
+        <RadioGroup
+          defaultValue={filterOptions.status}
+          onValueChange={(val) =>
+            setFilterOptions((prev) => {
+              return { ...prev, status: val };
+            })
+          }
+        >
           <div className="flex items-center space-x-2">
-            <RadioGroupItem value="option-one" id="option-one" />
-            <Label htmlFor="option-one">All</Label>
+            <RadioGroupItem value="A" id="A" />
+            <Label htmlFor="A">All</Label>
           </div>
           <div className="flex items-center space-x-2">
-            <RadioGroupItem value="option-two" id="option-two" />
-            <Label htmlFor="option-two">Collected</Label>
+            <RadioGroupItem value="C" id="C" />
+            <Label htmlFor="C">Collected</Label>
           </div>
           <div className="flex items-center space-x-2">
-            <RadioGroupItem value="option-three" id="option-three" />
-            <Label htmlFor="option-three">Not Collected</Label>
+            <RadioGroupItem value="NC" id="NC" />
+            <Label htmlFor="NC">Not Collected</Label>
           </div>
         </RadioGroup>
         <Button className="" onClick={downloadExcel}>
