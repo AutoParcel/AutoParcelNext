@@ -53,7 +53,7 @@ const ParcelCard = ({
       <div className="text-left -mt-3 mb-1 text-xs text-primary_yellow font-bold">
         {ownerid}
       </div>
-      <div className="text-left mb-2">{shelf}</div>
+      <div className="text-left mb-2">Shelf {shelf}</div>
       <div className="text-right mb-2">
         {newdate.getDate().toString() +
           "-" +

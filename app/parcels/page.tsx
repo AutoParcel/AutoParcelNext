@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getParcels,filter_sort_query } from "@/utils";
+import { getParcels, filter_sort_query } from "@/utils";
 interface ParcelInterface {
   OwnerName: string;
   ParcelID: string;
@@ -39,9 +39,14 @@ const Parcel = () => {
 
   useEffect(() => {
     (async () => {
-      const query = filter_sort_query(filterOptions.timefilt,filterOptions.sort,filterOptions.status);
+      const query = filter_sort_query(
+        filterOptions.timefilt,
+        filterOptions.sort,
+        filterOptions.status
+      );
+      // console.log(query);
       const parcels = await getParcels("findMany", query);
-      console.log(parcels);
+      // console.log(parcels);
       setParcelsData(parcels);
       setFilteredParcelsData(parcels);
     })();
