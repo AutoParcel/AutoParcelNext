@@ -253,9 +253,7 @@ const Page = () => {
     };
 
     const new_parcel = await addParcel(values);
-
-    // console.log(new_parcel.ParcelID);
-    // router.push("/parcels/" + new_parcel.ParcelID);
+    router.push("/parcels/" + new_parcel.ParcelID);
     // if(receiver){
     //   delete values.PhoneNumber;
     //   delete values.RoomNumber;
