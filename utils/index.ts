@@ -23,7 +23,7 @@ const generatePID = async (len: number = 4) => {
   var dd = String(today.getDate()).padStart(2, "0");
   var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
   var yyyy = String(today.getFullYear());
-  var date = yyyy + mm + dd;
+  var date = mm + dd + yyyy;
   let pid =
     "AP" +
     date +
@@ -70,53 +70,42 @@ const getParcelOTP = async (len: number = 6) => {
   return pid;
 };
 
+
 const startOfWeekDate = (date: Date) => {
   var diff = date.getDate() - date.getDay() + (date.getDay() === 0 ? 0 : 1);
   return new Date(date.setDate(diff));
-};
+}
 
 const startOfMonthDate = (date: Date) => {
   return new Date(date.getFullYear(), date.getMonth(), 1);
-};
+}
 
 const startOfDayDate = (date: Date) => {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-};
+}
 
-const filter_sort_query = (
-  time_filt: string,
-  sort_param: string,
-  status_filt: string
-) => {
+const filter_sort_query = (time_filt:string,sort_param:string,status_filt:string) => {
   // let time_filt_dict = {"T":startOfDayDate, "W":startOfWeekDate, "M":startOfMonthDate, "A":}
-  let time_filt_dict: time_filt_dictIn = {
-    T: { gte: startOfDayDate(new Date()) },
-    W: { gte: startOfWeekDate(new Date()) },
-    M: { gte: startOfMonthDate(new Date()) },
-    A: {},
-  };
-  let status_filt_dict: status_filt_dictIn = {
-    NC: ["NC"],
-    C: ["C"],
-    A: ["NC", "C"],
-  };
-  // let sort_param_dict={"N":prisma.parcel}
-  // N would be the ParcelOwner Field in the file
-  // D would be the receivedAt Field in the file
-  // S would be the status Field in the file
+  let time_filt_dict:time_filt_dictIn = {"T":{gte:startOfDayDate(new Date())}, "W":{gte:startOfWeekDate(new Date())}, "M":{gte:startOfMonthDate(new Date())}, "A":{}}
+  let status_filt_dict:status_filt_dictIn={"NC":["NC"],"C":["C"],"A":["NC","C"]}
+  let sort_param_dict:sort_param_dictIn={"N":{OwnerName:'asc'}, "D":{receivedAt:'asc'}, "S":{Status:'asc'},"Sh":{Shelf:'asc'},"P":{ParcelID:'asc'}}
 
-  interface time_filt_dictIn {
-    [key: string]: { gte: Date } | {};
+
+  interface time_filt_dictIn{
+    [key:string]:{gte:Date}|{}
   }
-  interface status_filt_dictIn {
-    [key: string]: string[];
+  interface status_filt_dictIn{
+    [key:string]:string[]
   }
-  let obj = {
-    where: {
-      receivedAt: time_filt_dict[time_filt],
-      status: {
-        in: status_filt_dict[status_filt],
-      },
+  interface sort_param_dictIn{
+    [key:string]:{}
+  }
+  let obj={
+    where:{
+      receivedAt:time_filt_dict[time_filt],
+      status:{
+        in:status_filt_dict[status_filt]
+      }
     },
     orderBy: sort_param_dict[sort_param]
   }
@@ -135,5 +124,5 @@ export {
   generatePID,
   connectToDb,
   getParcelOTP,
-  filter_sort_query,
+  filter_sort_query
 };
