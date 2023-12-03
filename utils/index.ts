@@ -59,6 +59,43 @@ const getParcelOTP = async (len: number = 6) => {
   return pid;
 };
 
+function startOfWeek(date: Date)
+  {
+    var diff = date.getDate() - date.getDay() + (date.getDay() === 0 ? 0 : 1);
+  
+    return new Date(date.setDate(diff));
+ 
+  }
+
+const startOfWeekDate = (date: Date) => {
+  var diff = date.getDate() - date.getDay() + (date.getDay() === 0 ? 0 : 1);
+  return new Date(date.setDate(diff));
+}
+
+const startOfMonthDate = (date: Date) => {
+  return new Date(date.getFullYear(), date.getMonth(), 1);
+}
+
+const startOfDayDate = (date: Date) => {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+let obj={where: 
+  {createdAt: 
+    {
+      gte: startOfWeekDate(new Date())
+    },
+    status: 'NC'
+  }, 
+  orderBy: [
+    {createdAt: 'desc'}
+  ]
+}
+
+// dt = new Date(); 
+
+// console.log(startOfWeek(dt).toString());
+
 export {
   getParcels,
   getVendors,
