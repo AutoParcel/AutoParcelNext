@@ -1,7 +1,7 @@
 "use client";
 import ParcelCard from "@/components/ui/ParcelCard";
 import axios from "axios";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import writeXlsxFile from "write-excel-file";
 import { Label } from "@/components/ui/label";
@@ -31,6 +31,7 @@ const Parcel = () => {
   const [filteredParcelsData, setFilteredParcelsData] = useState([]);
   const [searchWord, setSearchWord] = useState("");
   const [searchParam, setSearchParam] = useState("OwnerName");
+
   useEffect(() => {
     (async () => {
       const parcels = await getParcels("findMany", {});
