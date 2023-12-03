@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getParcels } from "@/utils";
+import { getParcels,filter_sort_query } from "@/utils";
 interface ParcelInterface {
   OwnerName: string;
   ParcelID: string;
@@ -39,7 +39,8 @@ const Parcel = () => {
 
   useEffect(() => {
     (async () => {
-      const parcels = await getParcels("findMany", {});
+      const query = filter_sort_query(filterOptions.timefilt,filterOptions.sort,filterOptions.status);
+      const parcels = await getParcels("findMany", query);
       console.log(parcels);
       setParcelsData(parcels);
       setFilteredParcelsData(parcels);
@@ -171,7 +172,7 @@ const Parcel = () => {
 
             <SelectContent>
               <SelectItem value="N">Name</SelectItem>
-              <SelectItem value="S">Shelf</SelectItem>
+              <SelectItem value="Sh">Shelf</SelectItem>
               <SelectItem value="P">Parcel ID</SelectItem>
               <SelectItem value="D">Date</SelectItem>
               <SelectItem value="S">Status</SelectItem>

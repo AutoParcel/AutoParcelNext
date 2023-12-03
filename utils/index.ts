@@ -84,14 +84,11 @@ const startOfDayDate = (date: Date) => {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
 }
 
-const filter_sort = (time_filt:string,sort_param:string,status_filt:string) => {
+const filter_sort_query = (time_filt:string,sort_param:string,status_filt:string) => {
   // let time_filt_dict = {"T":startOfDayDate, "W":startOfWeekDate, "M":startOfMonthDate, "A":}
   let time_filt_dict:time_filt_dictIn = {"T":{gte:startOfDayDate(new Date())}, "W":{gte:startOfWeekDate(new Date())}, "M":{gte:startOfMonthDate(new Date())}, "A":{}}
   let status_filt_dict:status_filt_dictIn={"NC":["NC"],"C":["C"],"A":["NC","C"]}
-  // let sort_param_dict={"N":prisma.parcel}
-  // N would be the ParcelOwner Field in the file
-  // D would be the receivedAt Field in the file
-  // S would be the status Field in the file
+  let sort_param_dict:sort_param_dictIn={"N":{OwnerName:'asc'}, "D":{receivedAt:'asc'}, "S":{Status:'asc'},"Sh":{Shelf:'asc'},"P":{ParcelID:'asc'}}
 
 
   interface time_filt_dictIn{
@@ -100,6 +97,9 @@ const filter_sort = (time_filt:string,sort_param:string,status_filt:string) => {
   interface status_filt_dictIn{
     [key:string]:string[]
   }
+  interface sort_param_dictIn{
+    [key:string]:{}
+  }
   let obj={
     where:{
       receivedAt:time_filt_dict[time_filt],
@@ -107,41 +107,12 @@ const filter_sort = (time_filt:string,sort_param:string,status_filt:string) => {
         in:status_filt_dict[status_filt]
       }
     },
-    orderBy: [
-// here
-    ]
+    orderBy: sort_param_dict[sort_param]
   }
+
+  return obj
 }  
 
-
-  // let obj={where: 
-  //   {createdAt: 
-  //     {
-  //       gte: time_filt
-  //     },
-  //     status: status_filt
-  //   }, 
-  //   orderBy: [
-  //     {createdAt: 'desc'}
-  //   ]
-  // }
-  // return obj
-
-let obj={where: 
-  {createdAt: 
-    {
-      gte: startOfWeekDate(new Date())
-    },
-    status: 'NC'
-  }, 
-  orderBy: [
-    {createdAt: 'desc'}
-  ]
-}
-
-// dt = new Date(); 
-
-// console.log(startOfWeek(dt).toString());
 
 export {
   getParcels,
@@ -152,4 +123,5 @@ export {
   generatePID,
   connectToDb,
   getParcelOTP,
+  filter_sort_query
 };
