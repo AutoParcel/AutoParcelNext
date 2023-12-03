@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "Parcel" ADD COLUMN     "CollectedAt" TIMESTAMP(3),
+ADD COLUMN     "spare" TEXT,
+ALTER COLUMN "ReceivedAt" SET DEFAULT CURRENT_TIMESTAMP;

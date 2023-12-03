@@ -31,13 +31,12 @@ model Parcel {
   ParcelID       String          @id
   ParcelNumber   String          @db.VarChar(30)
   ReceivedAt     DateTime        @default(now())
-  CollectedAt    DateTime?        
+  CollectedAt    DateTime?
   Shelf          String?
   Status         Status          @default(NC)
   ParcelReceiver ParcelReciever? @relation(fields: [OwnerID], references: [OwnerID])
   vendor         Vendor?         @relation(fields: [vendor_id], references: [vendor_id])
   spare          String?         @db.Text()
-  otp            String          @db.Char(6)
 }
 
 enum Role {

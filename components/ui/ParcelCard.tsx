@@ -3,12 +3,14 @@ import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 const ParcelCard = ({
   name,
+  ownerid,
   shelf,
   date,
   id,
   status,
 }: {
   name: string;
+  ownerid: string;
   shelf: string;
   id: string;
   date: string;
@@ -40,14 +42,17 @@ const ParcelCard = ({
   return (
     <div
       className={`${
-        status == "C" ? "bg-primary_beige opacity-50" : "bg-primary_white"
-      } p-4 rounded-md shadow-md text-center`}
+        status == "C" ? "opacity-50" : "hover:bg-primary_beige"
+      } p-4 rounded-md shadow-md text-center bg-primary_white cursor-pointer`}
       onClick={(e) => CardClicked(e)}
     >
       <div className="flex justify-center">
         <div className="text-xl font-semibold mb-2">{id}</div>
       </div>
       <div className="text-left mb-2">{name}</div>
+      <div className="text-left -mt-3 mb-1 text-xs text-primary_yellow font-bold">
+        {ownerid}
+      </div>
       <div className="text-left mb-2">{shelf}</div>
       <div className="text-right mb-2">
         {newdate.getDate().toString() +

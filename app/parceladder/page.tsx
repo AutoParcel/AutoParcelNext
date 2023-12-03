@@ -5,7 +5,7 @@ import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Oval } from "react-loader-spinner";
 import { FaCamera, FaCalendarAlt, FaChevronLeft } from "react-icons/fa";
-
+import { useRouter } from "next/navigation";
 import { format, set } from "date-fns";
 import { cn } from "@/lib/utils";
 import {
@@ -63,18 +63,33 @@ function performDBMatch(list: any, query: string, key: string) {
   const fuse = new Fuse(list, options);
   return fuse.search(query);
 }
+function getOrdinalNum(n: number) {
+  return (
+    n +
+    (n > 0
+      ? ["th", "st", "nd", "rd"][(n > 3 && n < 21) || n % 10 > 3 ? 0 : n % 10]
+      : "")
+  );
+}
+const getDate = () => {
+  let date = new Date();
+  let currentDayOrdinal = getOrdinalNum(date.getDate());
+  let currentMonth = date.toLocaleString("default", { month: "long" });
 
+  let currentYear = date.getFullYear();
+
+  let currentDate = `${currentDayOrdinal} ${currentMonth} ${currentYear}`;
+  return currentDate;
+};
 const formSchema = z.object({
   OwnerName: z.string().min(2, {
     message: "Name must be at least 3 characters.",
   }),
-  Date: z.date({
-    required_error: "Date of arrival of package is required.",
-  }),
+  Date: z.date(),
   ParcelCompany: z.string(),
   ParcelNumber: z.string(),
   PhoneNumber: z.string(),
-  RoomNumber: z.number(),
+  RoomNumber: z.string(),
   OwnerID: z.string(),
   Shelf: z.string(),
   Comment: z.string(),
@@ -83,6 +98,7 @@ const FACING_MODE_ENVIRONMENT = "environment";
 
 // const FACING_MODE_USER = "user";
 const Page = () => {
+  const router = useRouter();
   const fillform = async (data: any) => {
     form.setValue("OwnerName", data.OwnerName);
     form.setValue("ParcelCompany", data.ParcelCompany);
@@ -101,8 +117,7 @@ const Page = () => {
   const Callapi = async (img: any) => {
     const receivers = await getReceivers({});
     const vendors = await getVendors({});
-    console.log(receivers);
-    console.log(vendors);
+
     //solve this
     const predictionstr = await usePrediction(img);
     const emptydata: { [key: string]: [string | number, number] } = {
@@ -176,7 +191,7 @@ const Page = () => {
         ParcelCompany: "", // @ts-ignore
         ParcelNumber: "",
         PhoneNumber: "", // @ts-ignore
-        RoomNumber: null, // @ts-ignore
+        RoomNumber: "", // @ts-ignore
         OwnerID: "",
         Comment: "",
         ...data,
@@ -195,7 +210,7 @@ const Page = () => {
       ParcelCompany: "",
       ParcelNumber: "", //
       PhoneNumber: "",
-      RoomNumber: 0,
+      RoomNumber: "",
       OwnerID: "", //
       Shelf: "A", //
       Comment: "", //
@@ -224,16 +239,21 @@ const Page = () => {
     delete values.RoomNumber;
     delete values.Date;
     delete values.ParcelCompany;
+    let pid = await generatePID();
+    console.log("pid", pid);
     // @ts-ignore
     values = {
       ...values,
       spare: spare,
       // VendorID: vendor.VendorID,
-      ParcelID: generatePID(),
+      ParcelID: await generatePID(),
       // otp: getParcelOTP(),
     };
 
     const new_parcel = await addParcel(values);
+
+    // console.log(new_parcel.ParcelID);
+    // router.push("/parcels/" + new_parcel.ParcelID);
     // if(receiver){
     //   delete values.PhoneNumber;
     //   delete values.RoomNumber;
@@ -251,17 +271,6 @@ const Page = () => {
     console.log("camera opened");
     setCamOpen(true);
   };
-  // const [facingMode, setFacingMode] = React.useState(FACING_MODE_USER);
-
-  // const switchMode = React.useCallback(() => {
-  //   setFacingMode((prevState) =>
-  //     prevState === FACING_MODE_USER
-  //       ? FACING_MODE_ENVIRONMENT
-  //       : FACING_MODE_USER
-  //   );
-  // }, []);
-
-  // console.log(facingMode + videoConstraints);
 
   const capture = React.useCallback(() => {
     const imageSrc = webcamRef.current.getScreenshot();
@@ -280,58 +289,18 @@ const Page = () => {
 
   return (
     <>
-      <h1 className="text-6xl font-bold mt-10">Add a Parcel</h1>
+      <div className="flex justify-between items-center">
+        <h1 className="text-6xl font-bold mt-2">Add a Parcel</h1>
+        <div className="flex justify-end place-self-end">
+          <div className="font-bold bg-primary_white rounded-md p-3 ">
+            {getDate()}
+          </div>
+        </div>
+      </div>
       <div className="flex flex-row justify-between gap-x-10 mt-5">
         <div className="w-full p-6">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <div className="flex items-center justify-between">
-                <FormField
-                  control={form.control}
-                  name="Date"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>Date</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant={"outline"}
-                              className={cn(
-                                "w-[240px] pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground"
-                              )}
-                            >
-                              {field.value ? (
-                                format(field.value, "PPP")
-                              ) : (
-                                <span>Pick a date</span>
-                              )}
-                              <FaCalendarAlt className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            disabled={(date) =>
-                              date > new Date() || date < new Date("1900-01-01")
-                            }
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                {/*"TO DO    AUTO GENERATE THIS ID"*/}
-                <div className="p-3 bg-primary_white text-sm font-bold rounded-xl opacity-75">
-                  Parcel Unique ID- UX32454
-                </div>
-              </div>
               <FormField
                 control={form.control}
                 name="OwnerName"
@@ -381,7 +350,7 @@ const Page = () => {
                   <FormItem>
                     <FormLabel>Phone Number</FormLabel>
                     <FormControl>
-                      <Input placeholder="" {...field} />
+                      <Input placeholder="" {...field} type="number" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -394,7 +363,7 @@ const Page = () => {
                   <FormItem>
                     <FormLabel>Room Number</FormLabel>
                     <FormControl>
-                      <Input placeholder="000" {...field} />
+                      <Input placeholder="000" type="number" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -448,8 +417,7 @@ const Page = () => {
                   </FormItem>
                 )}
               />
-
-              <Button className="bg-primary_red" type="submit">
+              <Button className="bg-primary_black" type="submit">
                 Submit
               </Button>
             </form>

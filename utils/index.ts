@@ -16,12 +16,23 @@ const getParcels = async (func: string, query: any) => {
   return res.data.parcels;
 };
 
-const generatePID = async (len: number = 6) => {
-  let char_set = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  let pid = "AP"+Array.from({ length: len }, () =>
-    char_set.charAt(Math.floor(Math.random() * char_set.length))
-  ).join("");
-  while (await getParcels("findUnique", { ParcelID: pid })) {
+const generatePID = async (len: number = 4) => {
+  // let char_set = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let char_set = "0123456789";
+  var today = new Date();
+  var dd = String(today.getDate()).padStart(2, "0");
+  var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
+  var yyyy = String(today.getFullYear());
+  var date = mm + dd + yyyy;
+  let pid =
+    "AP" +
+    date +
+    Array.from({ length: len }, () =>
+      char_set.charAt(Math.floor(Math.random() * char_set.length))
+    ).join("");
+  while (
+    (await getParcels("findUnique", { where: { ParcelID: pid } })) != null
+  ) {
     pid = Array.from({ length: len }, () =>
       char_set.charAt(Math.floor(Math.random() * char_set.length))
     ).join("");

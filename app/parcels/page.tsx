@@ -1,11 +1,11 @@
 "use client";
 import ParcelCard from "@/components/ui/ParcelCard";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import writeXlsxFile from "write-excel-file";
 import { Label } from "@/components/ui/label";
-
+import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
@@ -28,17 +28,32 @@ interface ParcelInterface {
 
 const Parcel = () => {
   const [parcelsData, setParcelsData] = useState([]);
+  const [filteredParcelsData, setFilteredParcelsData] = useState([]);
+  const [searchWord, setSearchWord] = useState("");
+  const [searchParam, setSearchParam] = useState("OwnerName");
   useEffect(() => {
     (async () => {
       const parcels = await getParcels("findMany", {});
       console.log(parcels);
       setParcelsData(parcels);
+      setFilteredParcelsData(parcels);
     })();
     return console.log("component unmounted");
   }, []);
+  useEffect(() => {
+    if (searchParam !== "") {
+      const filteredData = parcelsData.filter((parcel: ParcelInterface) => {
+        return parcel[searchParam as keyof ParcelInterface]
+          .toLowerCase()
+          .includes(searchWord.toLowerCase());
+      });
+      setFilteredParcelsData(filteredData);
+    } else {
+      setFilteredParcelsData(parcelsData);
+    }
+  }, [searchWord, searchParam]);
+
   const downloadExcel = async () => {
-    console.log("download excel");
-    console.log(parcelsData);
     const schema = [
       {
         column: "OwnerName",
@@ -81,28 +96,34 @@ const Parcel = () => {
         value: (student: any) => student.vendor_id,
       },
     ];
-    await writeXlsxFile(parcelsData, {
+    await writeXlsxFile(filteredParcelsData, {
       schema,
       fileName: "file.xlsx",
     });
   };
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-between p-5 mx-14 gap-10 my-10">
-      <div className="mb-8 text-6xl font-bold self-start">Parcel Details</div>
+      <div className="mb-4 text-6xl font-bold self-start">Parcel Details</div>
       <div className="flex flex-wrap items-center justify-between w-full gap-10">
         <div className="flex border rounded-lg p-1 focus:outline-none focus:ring focus:ring-gray-100">
-          <input
+          <Input
             type="text"
             placeholder="Search By"
             className="border-none bg-transparent p-2 md:w-48 lg:w-80 outline-none"
+            value={searchWord}
+            onChange={(e) => setSearchWord(e.target.value)}
           />
           <div className="">
-            <Select defaultValue="Name">
+            <Select
+              defaultValue={searchParam}
+              onValueChange={(val) => setSearchParam(val)}
+            >
               <SelectTrigger className="w-[160px]">
                 <SelectValue placeholder="Filter" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Name">Name</SelectItem>
+                <SelectItem value="OwnerName">Name</SelectItem>
                 <SelectItem value="ParcelID">Parcel ID</SelectItem>
                 <SelectItem value="OwnerID">User ID</SelectItem>
               </SelectContent>
@@ -158,9 +179,10 @@ const Parcel = () => {
         "No Parcels"
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-10 w-full">
-          {parcelsData.map((parcel: ParcelInterface) => (
+          {filteredParcelsData.map((parcel: ParcelInterface) => (
             <ParcelCard
               name={parcel.OwnerName}
+              ownerid={parcel.OwnerID}
               shelf={parcel.Shelf}
               id={parcel.ParcelID}
               date={parcel.ReceivedAt}
