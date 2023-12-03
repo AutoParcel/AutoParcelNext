@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Parcel" ALTER COLUMN "otp" SET DATA TYPE CHAR(6);
