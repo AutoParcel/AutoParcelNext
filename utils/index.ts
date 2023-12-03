@@ -83,7 +83,7 @@ const startOfDayDate = (date: Date) => {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
 };
 
-const filter_sort = (
+const filter_sort_query = (
   time_filt: string,
   sort_param: string,
   status_filt: string
@@ -160,4 +160,5 @@ export {
   generatePID,
   connectToDb,
   getParcelOTP,
+  filter_sort_query,
 };
