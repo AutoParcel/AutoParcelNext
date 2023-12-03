@@ -70,13 +70,6 @@ const getParcelOTP = async (len: number = 6) => {
   return pid;
 };
 
-function startOfWeek(date: Date)
-  {
-    var diff = date.getDate() - date.getDay() + (date.getDay() === 0 ? 0 : 1);
-  
-    return new Date(date.setDate(diff));
- 
-  }
 
 const startOfWeekDate = (date: Date) => {
   var diff = date.getDate() - date.getDay() + (date.getDay() === 0 ? 0 : 1);
@@ -90,6 +83,49 @@ const startOfMonthDate = (date: Date) => {
 const startOfDayDate = (date: Date) => {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
 }
+
+const filter_sort = (time_filt:string,sort_param:string,status_filt:string) => {
+  // let time_filt_dict = {"T":startOfDayDate, "W":startOfWeekDate, "M":startOfMonthDate, "A":}
+  let time_filt_dict:time_filt_dictIn = {"T":{gte:startOfDayDate(new Date())}, "W":{gte:startOfWeekDate(new Date())}, "M":{gte:startOfMonthDate(new Date())}, "A":{}}
+  let status_filt_dict:status_filt_dictIn={"NC":["NC"],"C":["C"],"A":["NC","C"]}
+  // let sort_param_dict={"N":prisma.parcel}
+  // N would be the ParcelOwner Field in the file
+  // D would be the receivedAt Field in the file
+  // S would be the status Field in the file
+
+
+  interface time_filt_dictIn{
+    [key:string]:{gte:Date}|{}
+  }
+  interface status_filt_dictIn{
+    [key:string]:string[]
+  }
+  let obj={
+    where:{
+      receivedAt:time_filt_dict[time_filt],
+      status:{
+        in:status_filt_dict[status_filt]
+      }
+    },
+    orderBy: [
+// here
+    ]
+  }
+}  
+
+
+  // let obj={where: 
+  //   {createdAt: 
+  //     {
+  //       gte: time_filt
+  //     },
+  //     status: status_filt
+  //   }, 
+  //   orderBy: [
+  //     {createdAt: 'desc'}
+  //   ]
+  // }
+  // return obj
 
 let obj={where: 
   {createdAt: 
