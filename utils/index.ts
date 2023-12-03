@@ -151,4 +151,5 @@ export {
   addVendor,
   generatePID,
   connectToDb,
+  getParcelOTP,
 };
