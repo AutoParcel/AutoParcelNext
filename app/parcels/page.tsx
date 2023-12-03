@@ -31,7 +31,11 @@ const Parcel = () => {
   const [filteredParcelsData, setFilteredParcelsData] = useState([]);
   const [searchWord, setSearchWord] = useState("");
   const [searchParam, setSearchParam] = useState("OwnerName");
-
+  const [filterOptions, setFilterOptions] = useState({
+    timefilt: "A",
+    sort: "D",
+    status: "A",
+  });
   useEffect(() => {
     (async () => {
       const parcels = await getParcels("findMany", {});
@@ -136,10 +140,10 @@ const Parcel = () => {
             <SelectValue placeholder="Filter" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="Today">Today</SelectItem>
-            <SelectItem value="Week">This Week</SelectItem>
-            <SelectItem value="Month">This Month</SelectItem>
-            <SelectItem value="allTime">All Parcels</SelectItem>
+            <SelectItem value="T">Today</SelectItem>
+            <SelectItem value="W">This Week</SelectItem>
+            <SelectItem value="M">This Month</SelectItem>
+            <SelectItem value="A">All Parcels</SelectItem>
           </SelectContent>
         </Select>
         <div className="flex justify-center items-center gap-2">
@@ -150,9 +154,9 @@ const Parcel = () => {
             </SelectTrigger>
 
             <SelectContent>
-              <SelectItem value="Today">Name</SelectItem>
-              <SelectItem value="Week">Shelf</SelectItem>
-              <SelectItem value="Month">Parcel ID</SelectItem>
+              <SelectItem value="N">Name</SelectItem>
+              <SelectItem value="S">Shelf</SelectItem>
+              <SelectItem value="PID">Parcel ID</SelectItem>
               <SelectItem value="Date">Date</SelectItem>
               <SelectItem value="Status">Status</SelectItem>
             </SelectContent>
