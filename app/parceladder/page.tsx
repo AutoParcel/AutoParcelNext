@@ -43,6 +43,7 @@ import {
   addVendor,
   generatePID,
   addParcel,
+  getParcelOTP,
 } from "@/utils";
 // @ts-ignore
 var receiver = null;
@@ -239,14 +240,15 @@ const Page = () => {
     delete values.RoomNumber;
     delete values.Date;
     delete values.ParcelCompany;
-    let pid = await generatePID();
-    console.log("pid", pid);
+    // let pid = await generatePID();
+    // console.log("pid", pid);
     // @ts-ignore
     values = {
       ...values,
       spare: spare,
       // VendorID: vendor.VendorID,
       ParcelID: await generatePID(),
+      otp: getParcelOTP(),
       // otp: getParcelOTP(),
     };
 
