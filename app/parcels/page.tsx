@@ -103,7 +103,7 @@ const Parcel = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-between p-5 mx-14 gap-10 my-10">
+    <div className="flex flex-col items-center justify-between p-5 mx-14 gap-10 my-10">
       <div className="mb-4 text-6xl font-bold self-start">Parcel Details</div>
       <div className="flex flex-wrap items-center justify-between w-full gap-10">
         <div className="flex border rounded-lg p-1 focus:outline-none focus:ring focus:ring-gray-100">
