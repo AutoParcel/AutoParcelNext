@@ -9,6 +9,14 @@ import { cn } from "@/lib/utils";
 export const metadata: Metadata = {
   title: "AutoParcel",
   description: "Created with love",
+  icons: [
+    {
+      rel: "icon",
+      type: "image/png",
+      sizes: "64x64",
+      url: "favicon.ico",
+    },
+  ],
 };
 
 export default function RootLayout({
