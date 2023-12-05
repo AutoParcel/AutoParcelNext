@@ -50,19 +50,32 @@ var receiver = null;
 // @ts-ignore
 var vendor = null;
 
+// const receivers = await getReceivers({});
+// const vendors = await getVendors({});
+
 function performDBMatch(list: any, query: string, key: string) {
+  // @ts-ignore
+  const lowercaseNames = list.map(user => ({
+    ...user,
+    // update the value of the key to lowercase
+    [key]: user[key].toLowerCase(),
+  }));
   const options = {
     includeScore: true,
     threshold: 0.5,
     algorithms: ["levenshtein", "jaro-winkler"],
     keys: [
-      {
-        name: key,
-      },
+      // key.toLowerCase()
+      key
+      // {
+      //   name: key,
+      // },
     ],
   };
-  const fuse = new Fuse(list, options);
-  return fuse.search(query);
+  // const fuse = new Fuse(list, options);
+  const fuse = new Fuse(lowercaseNames, options);
+  // return fuse.search(query.toLowerCase());
+  return fuse.search(query.toLowerCase());
 }
 function getOrdinalNum(n: number) {
   return (
@@ -176,15 +189,16 @@ const Page = () => {
         const ref_index = vendor_result[0].refIndex;
         vendor = vendors[ref_index];
         data.ParcelCompany = vendor.ParcelCompany;
-      } else {
-        // create a new vendor if there is some textual data from the form
-        if (data.ParcelCompany.length > 0) {
-          vendor = await addVendor({ ParcelCompany: data.ParcelCompany });
-          // data.ParcelCompany = vendor.ParcelCompany;
-        } else {
-          vendor = { VendorID: null };
-        }
       }
+      // else {
+      //   // create a new vendor if there is some textual data from the form
+      //   if (data.ParcelCompany.length > 0) {
+      //     vendor = await addVendor({ ParcelCompany: data.ParcelCompany });
+      //     // data.ParcelCompany = vendor.ParcelCompany;
+      //   } else {
+      //     vendor = { VendorID: null };
+      //   }
+      // }
 
       fillform({
         // @ts-ignore
@@ -228,40 +242,104 @@ const Page = () => {
     delete values.Date;
     // @ts-ignore
 
-    if (receiver == null) {
-      spare = `(${values.PhoneNumber}),(${values.RoomNumber}),(${values.OwnerID})`;
-      values.OwnerID = null;
-    } else {
-      // @ts-ignore
-      values.OwnerID = receiver.OwnerID;
+
+    // here we again conduct fuzzy search and update the receiver
+    // if there's a parcel vendor then create the parcel vendor.
+
+    ///////////////////////////////////////////////////////
+    const receivers = await getReceivers({});
+    const vendors = await getVendors({});
+
+    // perform db match only if the name has changed
+    // @ts-ignore
+    // if the values are not the same, then we need to update the receiver. If not, we just have to make sure that the original receiver's id is taken
+    // if(receiver != null && (receiver.OwnerName.toLowerCase() != values.OwnerName.toLowerCase())){
+    if((receiver != null && (receiver.OwnerName.toLowerCase() != values.OwnerName.toLowerCase().trim())) || receiver == null){
+      console.log("in here")
+      const receiver_result = performDBMatch(
+        receivers,
+        values.OwnerName.trim(),
+        "OwnerName"
+      );
+      console.log("here are the matches: ",receiver_result);
+      if (receiver_result.length > 0) {
+        const ref_index = receiver_result[0].refIndex;
+        receiver = receivers[ref_index];
+        values.OwnerID = receiver.OwnerID;
+        values.OwnerName = receiver.OwnerName;
+        values.PhoneNumber = receiver.PhoneNumber;
+        // what if the room number parameter is missing?
+        values.RoomNumber = receiver.RoomNumber;
+      }
+      // if there's no match, then we don't update all this shit but update spare
+      else { //trim?
+        spare = `(${values.PhoneNumber}),(${values.RoomNumber}),(${values.OwnerID})`;
+        values.OwnerID = null;
+      }
+    // here check, if the above is false, then there are two cases: It's null, so update the spare. Or the two are equal, so make sure Id is not changed
+    // @ts-ignore
     }
+// @ts-ignore
+    else if(receiver.OwnerName.toLowerCase() == values.OwnerName.toLowerCase().trim()) { // @ts-ignore
+      values.OwnerID=receiver.OwnerID
+    }
+    // check if vendor name has changed. If vendor name has changed, then perform search. If nothing exists, then create. 
+    // @ts-ignore
+    // SAME LOGIC AS VENDOR, BUT JUST HAVE TO MAKE SURE IF THE INPUT FIELD IS NULL OR NOT
+    console.log("outside if: ",values.ParcelCompany)
+    if(values.ParcelCompany==null || values.ParcelCompany.trim()==''){
+      vendor = null;
+      values.ParcelCompany=''
+    } else { //@ts-ignore
+      console.log("vendor: ",values.ParcelCompany) //@ts-ignore
+      if((vendor!=null && (vendor.ParcelCompany.toLowerCase()!=values.ParcelCompany.toLowerCase().trim()))||vendor==null) {
+        //@ts-ignore
+        console.log("vendor: ",values.ParcelCompany)
+        const vendor_result = performDBMatch(
+          vendors,
+          values.ParcelCompany.trim(),
+          "ParcelCompany"
+        );
+        console.log("here are the matches: ",vendor_result);
+        if (vendor_result.length > 0) {
+          const ref_index = vendor_result[0].refIndex;
+          vendor = vendors[ref_index];
+          console.log("vendor_var",vendor)
+          values.ParcelCompany = vendor.ParcelCompany;
+          values = {...values, vendor_id: vendor.vendor_id}
+        } else {
+          // create a new vendor if there is some textual data from the form
+          // so we know that the parcel company length is not zero, so we can create a new vendor
+          vendor = await addVendor({ ParcelCompany: values.ParcelCompany.trim() });
+          values.ParcelCompany = vendor.ParcelCompany;
+          values = {...values, vendor_id: vendor.vendor_id}
+        }
+      } else {
+        // here put the code
+      }
+    }
+
     // @ts-ignore
     delete values.PhoneNumber;
     delete values.RoomNumber;
     delete values.Date;
     delete values.ParcelCompany;
-    // let pid = await generatePID();
-    // console.log("pid", pid);
+
     // @ts-ignore
     values = {
       ...values,
       spare: spare,
       // VendorID: vendor.VendorID,
       ParcelID: await generatePID(),
-      otp: getParcelOTP(),
+      otp: await getParcelOTP(),
       // otp: getParcelOTP(),
     };
 
     const new_parcel = await addParcel(values);
-    router.push("/parcels/" + new_parcel.ParcelID);
-    // if(receiver){
-    //   delete values.PhoneNumber;
-    //   delete values.RoomNumber;
-    //   delete values.OwnerID;
-    //   values = {...values, OwnerID: receiver.OwnerID} // parcel id too
-    // } else {
+    if(new_parcel != null) {
+      router.push("/parcels/" + new_parcel.ParcelID);
+    }
 
-    // }
     // @ts-ignore
   }
   const webcamRef: any = React.useRef(null);
