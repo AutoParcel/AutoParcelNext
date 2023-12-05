@@ -18,9 +18,10 @@ const TopNav = () => {
       </div>
       <div className="flex gap-5">
         <div className="flex gap-5 text-sm items-center">
+          <Link href="/">Home</Link>
           <Link href="/parceladder">Add Parcel</Link>
           <Link href="/parcels">Parcels</Link>
-          <Link href="/">Statistics</Link>
+          <Link href="/statistics">Statistics</Link>
           <Link href="/about">About Us</Link>
         </div>
         <UserButton afterSignOutUrl="/" />

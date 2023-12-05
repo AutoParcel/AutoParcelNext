@@ -73,7 +73,7 @@ const getParcelOTP = (len: number = 6) => {
 };
 
 const startOfWeekDate = (date: Date) => {
-  var diff = date.getDate() - date.getDay() + (date.getDay() === 0 ? 0 : 1);
+  var diff = date.getDate() - date.getDay() + (date.getDay() === 0 ? -6 : 1);
   return new Date(date.setDate(diff));
 };
 
