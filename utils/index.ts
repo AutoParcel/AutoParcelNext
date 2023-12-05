@@ -9,6 +9,7 @@ const connectToDb = async () => {
 };
 
 const getParcels = async (func: string, query: any) => {
+  console.log(query);
   const res = await axios.post("/api/get_parcels", {
     func: func,
     query: query,
@@ -22,8 +23,8 @@ const generatePID = async (len: number = 4) => {
   var today = new Date();
   var dd = String(today.getDate()).padStart(2, "0");
   var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
-  var yyyy = String(today.getFullYear());
-  var date = mm + dd + yyyy;
+  var yy = String(today.getFullYear() % 100);
+  var date = yy + mm + dd;
   let pid =
     "AP" +
     date +
@@ -62,58 +63,75 @@ const getReceivers = async (query: any) => {
   return receivers.data.parcelRecievers;
 };
 
-const getParcelOTP = async (len: number = 6) => {
+const getParcelOTP = (len: number = 6) => {
   let char_set = "0123456789";
-  const pid = Array.from({ length: len }, () =>
+  const pid: any = Array.from({ length: len }, () =>
     char_set.charAt(Math.floor(Math.random() * char_set.length))
   ).join("");
+  console.log(pid);
   return pid;
 };
 
-
 const startOfWeekDate = (date: Date) => {
-  var diff = date.getDate() - date.getDay() + (date.getDay() === 0 ? 0 : 1);
+  var diff = date.getDate() - date.getDay() + (date.getDay() === 0 ? -6 : 1);
   return new Date(date.setDate(diff));
-}
+};
 
 const startOfMonthDate = (date: Date) => {
   return new Date(date.getFullYear(), date.getMonth(), 1);
-}
+};
 
 const startOfDayDate = (date: Date) => {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-}
+};
 
-const filter_sort_query = (time_filt:string,sort_param:string,status_filt:string) => {
+const filter_sort_query = (
+  time_filt: string,
+  sort_param: string,
+  status_filt: string
+) => {
   // let time_filt_dict = {"T":startOfDayDate, "W":startOfWeekDate, "M":startOfMonthDate, "A":}
-  let time_filt_dict:time_filt_dictIn = {"T":{gte:startOfDayDate(new Date())}, "W":{gte:startOfWeekDate(new Date())}, "M":{gte:startOfMonthDate(new Date())}, "A":{}}
-  let status_filt_dict:status_filt_dictIn={"NC":["NC"],"C":["C"],"A":["NC","C"]}
-  let sort_param_dict:sort_param_dictIn={"N":{OwnerName:'asc'}, "D":{receivedAt:'asc'}, "S":{Status:'asc'},"Sh":{Shelf:'asc'},"P":{ParcelID:'asc'}}
+  let time_filt_dict: time_filt_dictIn = {
+    T: { gte: startOfDayDate(new Date()) },
+    W: { gte: startOfWeekDate(new Date()) },
+    M: { gte: startOfMonthDate(new Date()) },
+    A: {},
+  };
+  let status_filt_dict: status_filt_dictIn = {
+    NC: ["NC"],
+    C: ["C"],
+    A: ["NC", "C"],
+  };
+  let sort_param_dict: sort_param_dictIn = {
+    N: { OwnerName: "asc" },
+    D: { ReceivedAt: "asc" },
+    S: { Status: "asc" },
+    Sh: { Shelf: "asc" },
+    P: { ParcelID: "asc" },
+  };
 
-
-  interface time_filt_dictIn{
-    [key:string]:{gte:Date}|{}
+  interface time_filt_dictIn {
+    [key: string]: { gte: Date } | {};
   }
-  interface status_filt_dictIn{
-    [key:string]:string[]
+  interface status_filt_dictIn {
+    [key: string]: string[];
   }
-  interface sort_param_dictIn{
-    [key:string]:{}
+  interface sort_param_dictIn {
+    [key: string]: {};
   }
-  let obj={
-    where:{
-      receivedAt:time_filt_dict[time_filt],
-      status:{
-        in:status_filt_dict[status_filt]
-      }
+  let obj = {
+    where: {
+      ReceivedAt: time_filt_dict[time_filt],
+      Status: {
+        in: status_filt_dict[status_filt],
+      },
     },
-    orderBy: sort_param_dict[sort_param]
-  }
+    orderBy: sort_param_dict[sort_param],
+  };
   //
 
-  return obj
-}  
-
+  return obj;
+};
 
 export {
   getParcels,
@@ -124,5 +142,5 @@ export {
   generatePID,
   connectToDb,
   getParcelOTP,
-  filter_sort_query
+  filter_sort_query,
 };

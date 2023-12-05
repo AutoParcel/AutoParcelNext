@@ -2,7 +2,7 @@ import React from "react";
 import { FaShieldCat } from "react-icons/fa6";
 export default function About() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+    <main className="flex min-h-[calc(100vh-60px)] flex-col items-center justify-between p-24">
       <div className="container mx-auto p-8 flex justify-between items-start">
         <div className="w-2/3">
           <h2 className="text-3xl font-bold mb-4">About Us</h2>

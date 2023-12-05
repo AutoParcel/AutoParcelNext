@@ -4,17 +4,9 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Oval } from "react-loader-spinner";
-import { FaCamera, FaCalendarAlt, FaChevronLeft } from "react-icons/fa";
+import { FaCamera } from "react-icons/fa";
 import { useRouter } from "next/navigation";
-import { format, set } from "date-fns";
-import { cn } from "@/lib/utils";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
-import { Calendar } from "@/components/ui/calendar";
 import {
   Select,
   SelectContent,
@@ -25,16 +17,14 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import React, { useState, useRef, useEffect, use } from "react";
+import React, { useState } from "react";
 import Webcam from "react-webcam";
-import Link from "next/link";
 import usePrediction from "@/hooks/usePrediction";
 import Fuse from "fuse.js";
 import {
