@@ -43,7 +43,7 @@ var vendor = null;
 // const receivers = await getReceivers({});
 // const vendors = await getVendors({});
 
-function performDBMatch(list: any, query: string, key: string) {
+function performDBMatch(list: any, query: string, key: string, threshold: number=0.5) {
   // @ts-ignore
   const lowercaseNames = list.map(user => ({
     ...user,
@@ -52,7 +52,7 @@ function performDBMatch(list: any, query: string, key: string) {
   }));
   const options = {
     includeScore: true,
-    threshold: 0.5,
+    threshold: threshold,
     algorithms: ["levenshtein", "jaro-winkler"],
     keys: [
       // key.toLowerCase()
@@ -276,19 +276,24 @@ const Page = () => {
     // check if vendor name has changed. If vendor name has changed, then perform search. If nothing exists, then create. 
     // @ts-ignore
     // SAME LOGIC AS VENDOR, BUT JUST HAVE TO MAKE SURE IF THE INPUT FIELD IS NULL OR NOT
-    console.log("outside if: ",values.ParcelCompany)
+    // console.log("outside if: ",values.ParcelCompany)
     if(values.ParcelCompany==null || values.ParcelCompany.trim()==''){
       vendor = null;
       values.ParcelCompany=''
     } else { //@ts-ignore
-      console.log("vendor: ",values.ParcelCompany) //@ts-ignore
+      // console.log("1")
+      // console.log("vendor1: ",values.ParcelCompany) //@ts-ignore
+//@ts-ignore
+      // vendor==null?console.log("vendor is null"):console.log("not null bitch")
+      // console.log("lmaoooo")
       if((vendor!=null && (vendor.ParcelCompany.toLowerCase()!=values.ParcelCompany.toLowerCase().trim()))||vendor==null) {
         //@ts-ignore
-        console.log("vendor: ",values.ParcelCompany)
+        // console.log("vendor: ",values.ParcelCompany)
         const vendor_result = performDBMatch(
           vendors,
           values.ParcelCompany.trim(),
-          "ParcelCompany"
+          "ParcelCompany",
+          0.0
         );
         console.log("here are the matches: ",vendor_result);
         if (vendor_result.length > 0) {
@@ -306,6 +311,8 @@ const Page = () => {
         }
       } else {
         // here put the code
+        //@ts-ignore
+        values = {...values, vendor_id: vendor.vendor_id}
       }
     }
 
@@ -321,7 +328,7 @@ const Page = () => {
       spare: spare,
       // VendorID: vendor.VendorID,
       ParcelID: await generatePID(),
-      otp: await getParcelOTP(),
+      otp: getParcelOTP(),
       // otp: getParcelOTP(),
     };
 
