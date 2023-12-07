@@ -19,41 +19,31 @@ const Page = () => {
   }, []);
   const [parcelsData, setParcelsData] = useState([[], [], [], []]);
   return (
-    <div className="flex m-10 gap-6">
-      <div className="flex gap-6 flex-col">
-        <div className=" flex bg-primary_beige w-[27rem] h-[27rem] rounded-xl justify-center items-center">
-          <div className="justify-center items-center flex flex-col">
-            <div className="font-medium text-9xl">{parcelsData[0].length}</div>
-            <div className="">parcels all time</div>
+    <div className="flex flex-col md:flex-row m-4 md:m-10 gap-6">
+      {/* Left side with parcel counts */}
+      <div className="flex flex-col md:flex-row gap-6">
+        {/* Parcel count for all time */}
+        <div className="flex bg-primary_beige md:w-72 h-72 rounded-xl justify-center items-center">
+          <div className="flex flex-col items-center">
+            <div className="font-medium text-4xl md:text-9xl">{parcelsData[0].length}</div>
+            <div className="text-xs md:text-base text-center">Parcels all time</div>
           </div>
         </div>
+
+        {/* Parcel counts for this month, this week, and today */}
         <div className="flex gap-6">
-          <div className=" flex bg-primary_white w-32 h-32 rounded-xl justify-center items-center">
-            <div className="justify-center items-center flex flex-col">
-              <div className="font-medium text-4xl">
-                {parcelsData[1].length}
+          {['This Month', 'This Week', 'Today'].map((period, index) => (
+            <div key={index} className="flex bg-primary_white md:w-32 h-32 rounded-xl justify-center items-center">
+              <div className="flex flex-col items-center">
+                <div className="font-medium text-4xl">{parcelsData[index + 1].length}</div>
+                <div className="text-xs md:text-sm text-center">{`Parcels ${period}`}</div>
               </div>
-              <div className="text-xs text-center">parcels this month</div>
             </div>
-          </div>
-          <div className=" flex bg-primary_white w-32 h-32 rounded-xl justify-center items-center">
-            <div className="justify-center items-center flex flex-col">
-              <div className="font-medium text-4xl">
-                {parcelsData[2].length}
-              </div>
-              <div className="text-xs text-center">parcels this week</div>
-            </div>
-          </div>
-          <div className=" flex bg-primary_white w-32 h-32 rounded-xl justify-center items-center">
-            <div className="justify-center items-center flex flex-col">
-              <div className="font-medium text-4xl">
-                {parcelsData[3].length}
-              </div>
-              <div className="text-xs text-center">parcels today</div>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
+
+      {/* Right side with graph */}
       <div className="bg-primary_white w-full h-[27rem] rounded-xl justify-center items-center flex">
         GRAPH
       </div>
