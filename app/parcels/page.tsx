@@ -118,9 +118,11 @@ const Parcel = () => {
 
   return (
     <div className="flex flex-col items-center justify-between p-5 mx-4 md:mx-8 lg:mx-14 gap-5 my-5 md:my-8 lg:my-10">
-    <div className="mb-4 text-3xl md:text-4xl lg:text-6xl font-bold self-start">Parcel Details</div>
-    <div className="flex flex-wrap items-center justify-between w-full gap-5 md:gap-8">
-      <div className="flex border rounded-3xl p-1 focus:outline-none focus:ring focus:ring-gray-100">
+      <div className="mb-4 text-3xl md:text-4xl lg:text-6xl font-bold self-start">
+        Parcel Details
+      </div>
+      <div className="flex flex-wrap items-center justify-between w-full gap-5 md:gap-8">
+        <div className="flex border rounded-xl p-1 focus:outline-none focus:ring focus:ring-gray-100">
           <Input
             type="text"
             placeholder="Search By"
