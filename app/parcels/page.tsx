@@ -17,7 +17,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { getParcels, filter_sort_query } from "@/utils";
-import { set } from "date-fns";
 interface ParcelInterface {
   OwnerName: string;
   ParcelID: string;
@@ -27,6 +26,8 @@ interface ParcelInterface {
   Status: string;
   OwnerID: string;
   vendor_id: string;
+  ParcelReceiver: any;
+  vendor: any;
 }
 
 const Parcel = () => {
@@ -49,9 +50,10 @@ const Parcel = () => {
         filterOptions.sort,
         filterOptions.status
       );
+
       // console.log(query);
       const parcels = await getParcels("findMany", query);
-      // console.log("parcels: ",parcels);
+      console.log("parcels: ", parcels);
       setParcelsData(parcels);
       setFilteredParcelsData(parcels);
     })();
@@ -61,7 +63,27 @@ const Parcel = () => {
 
   useEffect(() => {
     setLoading(true);
-    if (searchParam !== "") {
+    if (searchParam == "Batch" || searchParam == "OwnerID") {
+      const filteredData = parcelsData.filter((parcel: ParcelInterface) => {
+        console.log(parcel);
+        if (parcel.ParcelReceiver != null) {
+          return parcel.ParcelReceiver[searchParam as keyof ParcelInterface]
+            .toLowerCase()
+            .includes(searchWord.toLowerCase());
+        }
+      });
+      setFilteredParcelsData(filteredData);
+    } else if (searchParam == "ParcelCompany") {
+      const filteredData = parcelsData.filter((parcel: ParcelInterface) => {
+        if (parcel.vendor != null) {
+          return parcel.vendor[searchParam as keyof ParcelInterface]
+            .toLowerCase()
+            .includes(searchWord.toLowerCase());
+        }
+      });
+
+      setFilteredParcelsData(filteredData);
+    } else if (searchParam !== "") {
       const filteredData = parcelsData.filter((parcel: ParcelInterface) => {
         return parcel[searchParam as keyof ParcelInterface]
           .toLowerCase()
@@ -149,6 +171,8 @@ const Parcel = () => {
                 <SelectItem value="OwnerName">Name</SelectItem>
                 <SelectItem value="ParcelID">Parcel ID</SelectItem>
                 <SelectItem value="OwnerID">User ID</SelectItem>
+                <SelectItem value="Batch">Batch</SelectItem>
+                <SelectItem value="ParcelCompany">Parcel Company</SelectItem>
               </SelectContent>
             </Select>
           </div>
