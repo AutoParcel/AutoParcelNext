@@ -7,6 +7,7 @@ import { FaEdit } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
 import { Oval } from "react-loader-spinner";
+import sendMessage from "@/hooks/sendTwilio";
 import {
   Dialog,
   DialogContent,
@@ -39,6 +40,7 @@ import { Button } from "@/components/ui/button";
 import { getParcels } from "@/utils";
 
 export default function ParcelPage({ params }: { params: { id: string } }) {
+  const [userotp, setUserotp] = useState("");
   const [loading, setLoading] = useState(true);
   const [editStatus, setEditStatus] = useState(false);
   const onSubmit = async (data: any) => {
@@ -93,7 +95,7 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
     OwnerID: "",
     Shelf: "",
     Comment: "",
-    status: "",
+    Status: "",
     ReceivedAt: "",
   });
   function getOrdinalNum(n: number) {
@@ -106,7 +108,6 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
   }
   const getDate = (olddate: string) => {
     let date = new Date(olddate);
-    console.log(Date.parse(olddate));
     let currentDayOrdinal = getOrdinalNum(date.getDate());
     let currentMonth = date.toLocaleString("default", { month: "long" });
 
@@ -135,7 +136,7 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
   }, []);
   const router = useRouter();
   const { toast } = useToast();
-  const CardClicked = (event: any, name = "") => {
+  const CardClicked = async (event: any, name = "") => {
     if (name == "Collected") {
       toast({
         title: "Parcel Already Collected!",
@@ -143,14 +144,78 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
         variant: "destructive",
         duration: 3000,
       });
-    } else if (name == "Handover") {
-      console.log("handover opened");
-      toast({
-        title: "Parcel Handover",
-        description: "Parcel Handover successfully!",
-        duration: 3000,
+    } else if (name == "freepass") {
+      let otp_user = await getParcels("update", {
+        where: {
+          ParcelID: params.id,
+        },
+        data: {
+          Status: "C",
+        },
       });
+      if (otp_user.Status == "C") {
+        toast({
+          title: "Parcel Handover",
+          description: "Parcel Handover Successful!",
+          duration: 3000,
+        });
+        await sendMessage(otp_user, "0", "h");
+      } else {
+        toast({
+          title: "Parcel Handover",
+          description: "Parcel Handover Failed! Try Again.",
+          variant: "destructive",
+          duration: 3000,
+        });
+      }
+    } else if (name == "handover") {
+      console.log("handover opened");
+      console.log("otp and ", userotp);
+
+      let otp_user = await getParcels("findUnique", {
+        where: {
+          ParcelID: params.id,
+          otp: userotp,
+        },
+        //include: { vendor: true, ParcelReceiver: true }
+      });
+      console.log("otp_user", parcel.OwnerID);
+      if (otp_user != null) {
+        otp_user = await getParcels("update", {
+          where: {
+            ParcelID: params.id,
+          },
+          data: {
+            Status: "C",
+          },
+          include: { vendor: true, ParcelReceiver: true },
+        });
+        console.log("with include: ", otp_user);
+        if (otp_user.Status == "C") {
+          toast({
+            title: "Parcel Handover",
+            description: "Parcel Handover Successful!",
+            duration: 3000,
+          });
+          await sendMessage(otp_user, "0", "h");
+        } else {
+          toast({
+            title: "Parcel Handover",
+            description: "Parcel Handover Failed! Try Again.",
+            variant: "destructive",
+            duration: 3000,
+          });
+        }
+      } else {
+        toast({
+          title: "Parcel Handover",
+          description: "Incorrect OTP! Try Again!",
+          variant: "destructive",
+          duration: 3000,
+        });
+      }
     } else if (name == "epic") {
+      console.log("epicc");
     } else {
       // router.push("/parcels/" + id);
       console.log("clicked");
@@ -181,13 +246,10 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
               <div className="text-primary_red">{params.id}</div>
             </h1>
             <div className="self-end">
-              {parcel.status == "C" ? (
-                <button
-                  className="bg-primary_black text-primary_white p-4 rounded-md w-full"
-                  onClick={(e) => CardClicked(e, "Collected")}
-                >
-                  Collected
-                </button>
+              {parcel.Status == "C" ? (
+                <div className="bg-primary_yellow text-white p-4 rounded-md">
+                  Collected ✅
+                </div>
               ) : (
                 <Dialog>
                   <button
@@ -204,20 +266,31 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
                         Please enter OTP to handover parcel
                       </DialogTitle>
                       <DialogDescription>
-                        <div className="flex flex-col gap-5 mt-5">
-                          <div className="flex gap-4">
-                            <Input type="number" placeholder="OTP" />
-                            <Button className="w-full bg-primary_black">
-                              Generate OTP
+                        {parcel.OwnerID == null ? (
+                          <div className="flex flex-col gap-5 mt-5">
+                            <div className="text-primary_red">
+                              No Phone Number Found!
+                            </div>
+                            <Button onClick={(e) => CardClicked(e, "freepass")}>
+                              Handover Parcel
                             </Button>
                           </div>
-                          <Button
-                            onClick={(e) => CardClicked(e, "Handover")}
-                            className="bg-primary_black"
-                          >
-                            Handover Parcel
-                          </Button>
-                        </div>
+                        ) : (
+                          <div className="flex flex-col gap-5 mt-5">
+                            <div className="flex gap-4">
+                              <Input
+                                type="number"
+                                placeholder="OTP"
+                                value={userotp}
+                                onChange={(e) => setUserotp(e.target.value)}
+                              />
+                              <Button className="w-full">Resend OTP</Button>
+                            </div>
+                            <Button onClick={(e) => CardClicked(e, "handover")}>
+                              Handover Parcel
+                            </Button>
+                          </div>
+                        )}
                       </DialogDescription>
                     </DialogHeader>
                   </DialogContent>

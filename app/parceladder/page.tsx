@@ -530,7 +530,7 @@ const Page = () => {
                   <FormItem>
                     <FormLabel>Comment</FormLabel>
                     <FormControl>
-                      <Textarea />
+                      <Textarea {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
