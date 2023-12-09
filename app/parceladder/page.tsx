@@ -1,3 +1,4 @@
+//@ts-nocheck
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -37,6 +38,7 @@ import {
   getParcelOTP,
   getParcels,
 } from "@/utils";
+
 // @ts-ignore
 var receiver = null;
 // @ts-ignore
@@ -45,9 +47,14 @@ var vendor = null;
 // const receivers = await getReceivers({});
 // const vendors = await getVendors({});
 
-function performDBMatch(list: any, query: string, key: string, threshold: number=0.5) {
+function performDBMatch(
+  list: any,
+  query: string,
+  key: string,
+  threshold: number = 0.5
+) {
   // @ts-ignore
-  const lowercaseNames = list.map(user => ({
+  const lowercaseNames = list.map((user) => ({
     ...user,
     // update the value of the key to lowercase
     [key]: user[key].toLowerCase(),
@@ -58,7 +65,7 @@ function performDBMatch(list: any, query: string, key: string, threshold: number
     algorithms: ["levenshtein", "jaro-winkler"],
     keys: [
       // key.toLowerCase()
-      key
+      key,
       // {
       //   name: key,
       // },
@@ -83,8 +90,11 @@ const getDate = () => {
   let currentMonth = date.toLocaleString("default", { month: "long" });
 
   let currentYear = date.getFullYear();
-
-  let currentDate = `${currentDayOrdinal} ${currentMonth} ${currentYear}`;
+  let currentTime = date.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  let currentDate = `${currentTime} ${currentDayOrdinal} ${currentMonth} ${currentYear}`;
   return currentDate;
 };
 const formSchema = z.object({
@@ -225,6 +235,7 @@ const Page = () => {
     },
   });
   async function onSubmit(values: any) {
+    setLoading(true);
     console.log(values);
     // if there's a receiver, then update the parcel without the spare (room number, ph number)
     // if there's no receiver, then update the parcel with the spare.
@@ -233,7 +244,6 @@ const Page = () => {
     // const uid = //generate uid
     delete values.Date;
     // @ts-ignore
-
 
     // here we again conduct fuzzy search and update the receiver
     // if there's a parcel vendor then create the parcel vendor.
@@ -246,14 +256,19 @@ const Page = () => {
     // @ts-ignore
     // if the values are not the same, then we need to update the receiver. If not, we just have to make sure that the original receiver's id is taken
     // if(receiver != null && (receiver.OwnerName.toLowerCase() != values.OwnerName.toLowerCase())){
-    if((receiver != null && (receiver.OwnerName.toLowerCase() != values.OwnerName.toLowerCase().trim())) || receiver == null){
-      console.log("in here")
+    if (
+      (receiver != null &&
+        receiver.OwnerName.toLowerCase() !=
+          values.OwnerName.toLowerCase().trim()) ||
+      receiver == null
+    ) {
+      console.log("in here");
       const receiver_result = performDBMatch(
         receivers,
         values.OwnerName.trim(),
         "OwnerName"
       );
-      console.log("here are the matches: ",receiver_result);
+      console.log("here are the matches: ", receiver_result);
       if (receiver_result.length > 0) {
         const ref_index = receiver_result[0].refIndex;
         receiver = receivers[ref_index];
@@ -264,32 +279,41 @@ const Page = () => {
         values.RoomNumber = receiver.RoomNumber;
       }
       // if there's no match, then we don't update all this shit but update spare
-      else { //trim?
+      else {
+        //trim?
         spare = `(${values.PhoneNumber}),(${values.RoomNumber}),(${values.OwnerID})`;
         values.OwnerID = null;
       }
-    // here check, if the above is false, then there are two cases: It's null, so update the spare. Or the two are equal, so make sure Id is not changed
+      // here check, if the above is false, then there are two cases: It's null, so update the spare. Or the two are equal, so make sure Id is not changed
+      // @ts-ignore
+    }
     // @ts-ignore
+    else if (
+      receiver.OwnerName.toLowerCase() == values.OwnerName.toLowerCase().trim()
+    ) {
+      // @ts-ignore
+      values.OwnerID = receiver.OwnerID;
     }
-// @ts-ignore
-    else if(receiver.OwnerName.toLowerCase() == values.OwnerName.toLowerCase().trim()) { // @ts-ignore
-      values.OwnerID=receiver.OwnerID,// @ts-ignore
-      values.OwnerName = receiver.OwnerName;
-    }
-    // check if vendor name has changed. If vendor name has changed, then perform search. If nothing exists, then create. 
+    // check if vendor name has changed. If vendor name has changed, then perform search. If nothing exists, then create.
     // @ts-ignore
     // SAME LOGIC AS VENDOR, BUT JUST HAVE TO MAKE SURE IF THE INPUT FIELD IS NULL OR NOT
     // console.log("outside if: ",values.ParcelCompany)
-    if(values.ParcelCompany==null || values.ParcelCompany.trim()==''){
+    if (values.ParcelCompany == null || values.ParcelCompany.trim() == "") {
       vendor = null;
-      values.ParcelCompany=''
-    } else { //@ts-ignore
+      values.ParcelCompany = "";
+    } else {
+      //@ts-ignore
       // console.log("1")
       // console.log("vendor1: ",values.ParcelCompany) //@ts-ignore
-//@ts-ignore
+      //@ts-ignore
       // vendor==null?console.log("vendor is null"):console.log("not null bitch")
       // console.log("lmaoooo")
-      if((vendor!=null && (vendor.ParcelCompany.toLowerCase()!=values.ParcelCompany.toLowerCase().trim()))||vendor==null) {
+      if (
+        (vendor != null &&
+          vendor.ParcelCompany.toLowerCase() !=
+            values.ParcelCompany.toLowerCase().trim()) ||
+        vendor == null
+      ) {
         //@ts-ignore
         // console.log("vendor: ",values.ParcelCompany)
         const vendor_result = performDBMatch(
@@ -298,24 +322,26 @@ const Page = () => {
           "ParcelCompany",
           0.0
         );
-        console.log("here are the matches: ",vendor_result);
+        console.log("here are the matches: ", vendor_result);
         if (vendor_result.length > 0) {
           const ref_index = vendor_result[0].refIndex;
           vendor = vendors[ref_index];
-          console.log("vendor_var",vendor)
+          console.log("vendor_var", vendor);
           values.ParcelCompany = vendor.ParcelCompany;
-          values = {...values, vendor_id: vendor.vendor_id}
+          values = { ...values, vendor_id: vendor.vendor_id };
         } else {
           // create a new vendor if there is some textual data from the form
           // so we know that the parcel company length is not zero, so we can create a new vendor
-          vendor = await addVendor({ ParcelCompany: values.ParcelCompany.trim() });
+          vendor = await addVendor({
+            ParcelCompany: values.ParcelCompany.trim(),
+          });
           values.ParcelCompany = vendor.ParcelCompany;
-          values = {...values, vendor_id: vendor.vendor_id}
+          values = { ...values, vendor_id: vendor.vendor_id };
         }
       } else {
         // here put the code
         //@ts-ignore
-        values = {...values, vendor_id: vendor.vendor_id}
+        values = { ...values, vendor_id: vendor.vendor_id };
       }
     }
 
@@ -353,9 +379,10 @@ const Page = () => {
     
       // router.push("/parcels/" + new_parcel.ParcelID);
     }
-
+    setLoading(false);
     // @ts-ignore
   }
+
   const webcamRef: any = React.useRef(null);
   const [image, setImage] = useState("");
   const [camOpen, setCamOpen] = useState(false);
@@ -509,7 +536,11 @@ const Page = () => {
                   </FormItem>
                 )}
               />
-              <Button className="bg-primary_black" type="submit">
+              <Button
+                className="bg-primary_black"
+                type="submit"
+                disabled={loading}
+              >
                 Submit
               </Button>
             </form>

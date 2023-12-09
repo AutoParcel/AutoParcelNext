@@ -131,6 +131,7 @@ const filter_sort_query = (
       },
     },
     orderBy: sort_param_dict[sort_param],
+    include: { vendor: true, ParcelReceiver: true },
   };
   //
 

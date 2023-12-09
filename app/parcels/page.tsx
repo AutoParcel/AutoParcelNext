@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import writeXlsxFile from "write-excel-file";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Oval } from "react-loader-spinner";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 import {
@@ -25,9 +26,12 @@ interface ParcelInterface {
   Status: string;
   OwnerID: string;
   vendor_id: string;
+  ParcelReceiver: any;
+  vendor: any;
 }
 
 const Parcel = () => {
+  const [loading, setLoading] = useState(false);
   const [parcelsData, setParcelsData] = useState([]);
   const [filteredParcelsData, setFilteredParcelsData] = useState([]);
   const [searchWord, setSearchWord] = useState("");
@@ -39,23 +43,47 @@ const Parcel = () => {
   });
 
   useEffect(() => {
+    setLoading(true);
     (async () => {
       const query = filter_sort_query(
         filterOptions.timefilt,
         filterOptions.sort,
         filterOptions.status
       );
+
       // console.log(query);
       const parcels = await getParcels("findMany", query);
-      // console.log("parcels: ",parcels);
+      console.log("parcels: ", parcels);
       setParcelsData(parcels);
       setFilteredParcelsData(parcels);
     })();
+    setLoading(false);
     return console.log("getting parcels!");
   }, [, filterOptions]);
 
   useEffect(() => {
-    if (searchParam !== "") {
+    setLoading(true);
+    if (searchParam == "Batch" || searchParam == "OwnerID") {
+      const filteredData = parcelsData.filter((parcel: ParcelInterface) => {
+        console.log(parcel);
+        if (parcel.ParcelReceiver != null) {
+          return parcel.ParcelReceiver[searchParam as keyof ParcelInterface]
+            .toLowerCase()
+            .includes(searchWord.toLowerCase());
+        }
+      });
+      setFilteredParcelsData(filteredData);
+    } else if (searchParam == "ParcelCompany") {
+      const filteredData = parcelsData.filter((parcel: ParcelInterface) => {
+        if (parcel.vendor != null) {
+          return parcel.vendor[searchParam as keyof ParcelInterface]
+            .toLowerCase()
+            .includes(searchWord.toLowerCase());
+        }
+      });
+
+      setFilteredParcelsData(filteredData);
+    } else if (searchParam !== "") {
       const filteredData = parcelsData.filter((parcel: ParcelInterface) => {
         return parcel[searchParam as keyof ParcelInterface]
           .toLowerCase()
@@ -65,6 +93,7 @@ const Parcel = () => {
     } else {
       setFilteredParcelsData(parcelsData);
     }
+    setLoading(false);
   }, [searchWord, searchParam]);
 
   const downloadExcel = async () => {
@@ -142,6 +171,8 @@ const Parcel = () => {
                 <SelectItem value="OwnerName">Name</SelectItem>
                 <SelectItem value="ParcelID">Parcel ID</SelectItem>
                 <SelectItem value="OwnerID">User ID</SelectItem>
+                <SelectItem value="Batch">Batch</SelectItem>
+                <SelectItem value="ParcelCompany">Parcel Company</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -212,7 +243,20 @@ const Parcel = () => {
           Download Excel
         </Button>
       </div>
-      {parcelsData.length === 0 ? (
+      {loading ? (
+        <Oval
+          height={60}
+          width={60}
+          color="var(--primary_red)"
+          wrapperStyle={{}}
+          wrapperClass=""
+          visible={true}
+          ariaLabel="oval-loading"
+          secondaryColor="var(--primary_red)"
+          strokeWidth={6}
+          strokeWidthSecondary={3}
+        />
+      ) : parcelsData.length === 0 ? (
         "No Parcels"
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-10 w-full">
