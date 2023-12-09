@@ -1,5 +1,6 @@
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
+
 import {
   Dialog,
   DialogContent,
@@ -95,6 +96,7 @@ const ParcelCard = ({
           )}
         </div>
       </div>
+
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Please enter OTP to handover parcel</DialogTitle>

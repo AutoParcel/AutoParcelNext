@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import writeXlsxFile from "write-excel-file";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Oval } from "react-loader-spinner";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 import {
@@ -16,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { getParcels, filter_sort_query } from "@/utils";
+import { set } from "date-fns";
 interface ParcelInterface {
   OwnerName: string;
   ParcelID: string;
@@ -28,6 +30,7 @@ interface ParcelInterface {
 }
 
 const Parcel = () => {
+  const [loading, setLoading] = useState(false);
   const [parcelsData, setParcelsData] = useState([]);
   const [filteredParcelsData, setFilteredParcelsData] = useState([]);
   const [searchWord, setSearchWord] = useState("");
@@ -39,6 +42,7 @@ const Parcel = () => {
   });
 
   useEffect(() => {
+    setLoading(true);
     (async () => {
       const query = filter_sort_query(
         filterOptions.timefilt,
@@ -51,10 +55,12 @@ const Parcel = () => {
       setParcelsData(parcels);
       setFilteredParcelsData(parcels);
     })();
+    setLoading(false);
     return console.log("getting parcels!");
   }, [, filterOptions]);
 
   useEffect(() => {
+    setLoading(true);
     if (searchParam !== "") {
       const filteredData = parcelsData.filter((parcel: ParcelInterface) => {
         return parcel[searchParam as keyof ParcelInterface]
@@ -65,6 +71,7 @@ const Parcel = () => {
     } else {
       setFilteredParcelsData(parcelsData);
     }
+    setLoading(false);
   }, [searchWord, searchParam]);
 
   const downloadExcel = async () => {
@@ -212,7 +219,20 @@ const Parcel = () => {
           Download Excel
         </Button>
       </div>
-      {parcelsData.length === 0 ? (
+      {loading ? (
+        <Oval
+          height={60}
+          width={60}
+          color="var(--primary_red)"
+          wrapperStyle={{}}
+          wrapperClass=""
+          visible={true}
+          ariaLabel="oval-loading"
+          secondaryColor="var(--primary_red)"
+          strokeWidth={6}
+          strokeWidthSecondary={3}
+        />
+      ) : parcelsData.length === 0 ? (
         "No Parcels"
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-10 w-full">
