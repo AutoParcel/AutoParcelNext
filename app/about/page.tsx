@@ -8,7 +8,7 @@ export default function About() {
         <div className="w-full md:w-2/3 mb-4 md:mb-0 md:pr-4">
           <h2 className="text-3xl font-bold mb-4">About Us</h2>
           <p className="text-gray-700 mb-4">
-            AutoParcel is your one-stop shop for all your car shipping needs. We offer a variety of shipping options to fit your budget and time constraints, and we make the process of shipping your car as easy as possible. We'll pick up your car from your driveway and deliver it to your destination safely and securely. You can track your car's progress every step of the way, and we'll keep you updated on any changes. AutoParcel is your one-stop shop for all your car shipping needs. We offer a variety of shipping options to fit your budget and time constraints, and we make the process of shipping your car as easy as possible. We'll pick up your car from your driveway and deliver it to your destination safely and securely. You can track your car's progress every step of the way, and we'll keep you updated on any changes. AutoParcel is your one-stop shop for all your car shipping needs. We offer a variety of shipping options to fit your budget and time constraints, and we make the process of shipping your car as easy as possible. We'll pick up your car from your driveway and deliver it to your destination safely and securely. You can track your car's progress every step of the way, and we'll keep you updated on any changes.
+            AutoParcel is your one-stop shop for all your car shipping needs.
           </p>
         </div>
 
@@ -19,4 +19,3 @@ export default function About() {
     </main>
   );
 }
-

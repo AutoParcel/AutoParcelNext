@@ -361,23 +361,23 @@ const Page = () => {
       // otp: getParcelOTP(),
     };
     // values= {...values, include: { vendor: true, ParcelReceiver: true }}
-    console.log("values:\n",values)
+    console.log("values:\n", values);
     let new_parcel = await addParcel(values);
-    if(new_parcel != null) {
-      const otp=new_parcel.otp;
-      new_parcel = await getParcels('findUnique', {
+    if (new_parcel != null) {
+      const otp = new_parcel.otp;
+      new_parcel = await getParcels("findUnique", {
         where: {
           ParcelID: new_parcel.ParcelID,
         },
         include: { vendor: true, ParcelReceiver: true },
-      })
-      console.log("sending to twilio")
-      console.log("new_parcel:",new_parcel)
-      await sendMessage(new_parcel,otp,"c");
+      });
+      console.log("sending to twilio");
+      console.log("new_parcel:", new_parcel);
+      await sendMessage(new_parcel, otp, "c");
       // sendMessage()
-      console.log("sent to twilio")
-    
-      // router.push("/parcels/" + new_parcel.ParcelID);
+      console.log("sent to twilio");
+
+      router.push("/parcels/" + new_parcel.ParcelID);
     }
     setLoading(false);
     // @ts-ignore
