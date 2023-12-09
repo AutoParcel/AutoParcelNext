@@ -271,7 +271,8 @@ const Page = () => {
     }
 // @ts-ignore
     else if(receiver.OwnerName.toLowerCase() == values.OwnerName.toLowerCase().trim()) { // @ts-ignore
-      values.OwnerID=receiver.OwnerID
+      values.OwnerID=receiver.OwnerID,// @ts-ignore
+      values.OwnerName = receiver.OwnerName;
     }
     // check if vendor name has changed. If vendor name has changed, then perform search. If nothing exists, then create. 
     // @ts-ignore
