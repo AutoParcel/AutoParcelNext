@@ -13,6 +13,7 @@ import { Button } from "./button";
 import { Input } from "./input";
 import { getParcels } from "@/utils";
 import { useState } from "react";
+import sendMessage from "@/hooks/sendTwilio";
 const ParcelCard = ({
   name,
   ownerid,
@@ -49,6 +50,7 @@ const ParcelCard = ({
           ParcelID: id,
           otp: userotp,
         },
+        //include: { vendor: true, ParcelReceiver: true }
       });
       console.log("otp_user",otp_user);
       if(otp_user != null){
@@ -59,13 +61,16 @@ const ParcelCard = ({
           data: {
             Status: "C",
           },
+          include: { vendor: true, ParcelReceiver: true }
         });
+        console.log("with include: ",otp_user)
         if(otp_user.Status == "C"){
           toast({
             title: "Parcel Handover",
             description: "Parcel Handover Successful!",
             duration: 3000,
           });
+          await sendMessage(otp_user, "0", "h")
         } else {
           toast({
             title: "Parcel Handover",
