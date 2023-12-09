@@ -26,6 +26,7 @@ import { Input } from "@/components/ui/input";
 import React, { useState } from "react";
 import Webcam from "react-webcam";
 import usePrediction from "@/hooks/usePrediction";
+import sendMessage from "@/hooks/sendTwilio";
 import Fuse from "fuse.js";
 import {
   getReceivers,
@@ -34,6 +35,7 @@ import {
   generatePID,
   addParcel,
   getParcelOTP,
+  getParcels,
 } from "@/utils";
 // @ts-ignore
 var receiver = null;
@@ -332,10 +334,24 @@ const Page = () => {
       otp: getParcelOTP(),
       // otp: getParcelOTP(),
     };
-
-    const new_parcel = await addParcel(values);
+    // values= {...values, include: { vendor: true, ParcelReceiver: true }}
+    console.log("values:\n",values)
+    let new_parcel = await addParcel(values);
     if(new_parcel != null) {
-      router.push("/parcels/" + new_parcel.ParcelID);
+      const otp=new_parcel.otp;
+      new_parcel = await getParcels('findUnique', {
+        where: {
+          ParcelID: new_parcel.ParcelID,
+        },
+        include: { vendor: true, ParcelReceiver: true },
+      })
+      console.log("sending to twilio")
+      console.log("new_parcel:",new_parcel)
+      await sendMessage(new_parcel,otp,"c");
+      // sendMessage()
+      console.log("sent to twilio")
+    
+      // router.push("/parcels/" + new_parcel.ParcelID);
     }
 
     // @ts-ignore

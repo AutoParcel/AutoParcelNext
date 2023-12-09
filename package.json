@@ -33,6 +33,7 @@
     "fs": "0.0.1-security",
     "fuse.js": "^7.0.0",
     "lucide-react": "^0.287.0",
+    "net": "^1.0.2",
     "next": "13.5.4",
     "pnpm": "^8.10.5",
     "react": "^18",
@@ -44,6 +45,8 @@
     "react-webcam": "^7.1.1",
     "tailwind-merge": "^1.14.0",
     "tailwindcss-animate": "^1.0.7",
+    "tls": "^0.0.1",
+    "twilio": "^4.19.3",
     "write-excel-file": "^1.4.27",
     "zod": "^3.22.4",
     "zustand": "^4.4.3"

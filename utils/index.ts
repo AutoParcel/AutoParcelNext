@@ -1,5 +1,9 @@
 import prisma from "@/prisma";
 import axios from "axios";
+import { NextApiRequest, NextApiResponse } from 'next';
+import twilio from 'twilio';
+// import {Twilio} from "twilio";
+// import twilio from "twilio";
 const connectToDb = async () => {
   try {
     await prisma.$connect();
@@ -133,6 +137,74 @@ const filter_sort_query = (
   return obj;
 };
 
+const sendMessage = async () => {
+  // console.log(query);
+  console.log("in sendMessage at utils")
+  // const res = axios.post("/api/twilio");
+  const res = await fetch('/api/sendMessage', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({}),
+  });
+  const apiResponse = await res.json();
+  // return res.data.parcels;
+};
+
+// const sendMessage = (parcel_obj:Object, otp: string,type:string) =>
+// {  const accountSid = 'ACabcdafb0cabe490bac017324e60bd268';
+//   const authToken = 'eaaf744c3e060a675a8fc1b1bcaf2ab3';
+//   const client = new Twilio(accountSid, authToken);
+//   // const client = twilio(accountSid, authToken);
+//   // const client = require('twilio')(accountSid, authToken);
+//   let body=''
+
+//   if(type.toLowerCase().trim()=="c"){ //@ts-ignore
+//     body=`Dear ${parcel_obj.OwnerName},\nYour parcel ${parcel_obj.id} has arrived at Gate 1 at ${parcel_obj.ReceivedAt}.\n Kindly use ${otp} as your AutoParcel One Time Password (OTP) to collect your parcel.`
+//   } else if(type.toLowerCase().trim()=="h") { //@ts-ignore
+//     body=`Dear ${parcel_obj.OwnerName},\nYour parcel has been collected from Gate 1 at ${parcel_obj.CollectedAt}.\n Thank you for using AutoParcel :)`
+//   } else {
+//     body='AutoParcel OTP'
+//   }
+
+//   client.messages.create({ //@ts-ignore
+//           body: `Dear ${parcel_obj.OwnerName},\nYour parcel ${parcel_obj.id} has arrived at Gate 1.\n Kindly use ${otp} as your One Time Password (OTP) to collect your parcel.`,
+//           from: 'whatsapp:+14155238886',
+//           to: 'whatsapp:+917892564481'
+//       }) //@ts-ignore
+//       .then(message => console.log(message.sid))
+//       // .done();}
+//     }
+
+
+
+    
+// const sendMessage = (req: NextApiRequest, res: NextApiResponse) => {
+//   const accountSid = 'ACabcdafb0cabe490bac017324e60bd268';
+//   const token = 'eaaf744c3e060a675a8fc1b1bcaf2ab3';
+//   const client = twilio(accountSid, token);
+//   // const { phone, message } = req.body;
+//   // console.log(phone, message);
+//   client.messages
+//     .create({
+//       body: "test message",
+//       from: 'whatsapp:+14155238886',
+//       to: 'whatsapp:+917892564481',
+//     })
+//     .then((message) =>
+//       res.json({
+//         success: true,
+//       })
+//     )
+//     .catch((error) => {
+//       console.log(error);
+//       res.json({
+//         success: false,
+//       });
+//     });
+// }
+
 export {
   getParcels,
   getVendors,
@@ -143,4 +215,6 @@ export {
   connectToDb,
   getParcelOTP,
   filter_sort_query,
+  sendMessage,
+  // sendMessage
 };
