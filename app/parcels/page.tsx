@@ -51,7 +51,7 @@ const Parcel = () => {
       );
       // console.log(query);
       const parcels = await getParcels("findMany", query);
-      // console.log(parcels);
+      // console.log("parcels: ",parcels);
       setParcelsData(parcels);
       setFilteredParcelsData(parcels);
     })();

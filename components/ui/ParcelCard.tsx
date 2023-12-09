@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "./button";
 import { Input } from "./input";
+import { getParcels } from "@/utils";
+import { useState } from "react";
 const ParcelCard = ({
   name,
   ownerid,
@@ -26,10 +28,11 @@ const ParcelCard = ({
   date: string;
   status: string;
 }) => {
+  const [userotp, setUserotp] = useState("");
   const router = useRouter();
   const { toast } = useToast();
   const newdate = new Date(date);
-  const CardClicked = (event: any, name = "") => {
+  const CardClicked = async (event: any, name = "") => {
     event.stopPropagation();
     if (name == "Collected") {
       toast({
@@ -40,11 +43,47 @@ const ParcelCard = ({
       });
     } else if (name == "Handover") {
       console.log("handover opened");
-      toast({
-        title: "Parcel Handover",
-        description: "Parcel Handover successfully!",
-        duration: 3000,
+      // console.log("otp",parseInt(userotp));
+      let otp_user = await getParcels("findUnique", {
+        where: {
+          ParcelID: id,
+          otp: userotp,
+        },
       });
+      console.log("otp_user",otp_user);
+      if(otp_user != null){
+        otp_user = await getParcels("update", {
+          where: {
+            ParcelID: id,
+          },
+          data: {
+            Status: "C",
+          },
+        });
+        if(otp_user.Status == "C"){
+          toast({
+            title: "Parcel Handover",
+            description: "Parcel Handover Successful!",
+            duration: 3000,
+          });
+        } else {
+          toast({
+            title: "Parcel Handover",
+            description: "Parcel Handover Failed! Try Again.",
+            variant: "destructive",
+            duration: 3000,
+          });
+        }
+      } else {
+        toast({
+          title: "Parcel Handover",
+          description: "Incorrect OTP! Try Again!",
+          variant: "destructive",
+          duration: 3000,
+        });
+      }
+      // we'll send a query to find a unique parcel with the id and then update it's status to collected
+
     } else if (name == "epic") {
     } else {
       router.push("/parcels/" + id);
@@ -103,7 +142,7 @@ const ParcelCard = ({
           <DialogDescription>
             <div className="flex flex-col gap-5 mt-5">
               <div className="flex gap-4">
-                <Input type="number" placeholder="OTP" />
+                <Input type="number" placeholder="OTP" value={userotp} onChange={(e)=>setUserotp(e.target.value)}/>
                 <Button className="w-full">Generate OTP</Button>
               </div>
               <Button onClick={(e) => CardClicked(e, "Handover")}>
