@@ -50,8 +50,8 @@ const ParcelCard = ({
           otp: userotp,
         },
       });
-      console.log("otp_user",otp_user);
-      if(otp_user != null){
+      console.log("otp_user", otp_user);
+      if (otp_user != null) {
         otp_user = await getParcels("update", {
           where: {
             ParcelID: id,
@@ -60,7 +60,7 @@ const ParcelCard = ({
             Status: "C",
           },
         });
-        if(otp_user.Status == "C"){
+        if (otp_user.Status == "C") {
           toast({
             title: "Parcel Handover",
             description: "Parcel Handover Successful!",
@@ -83,7 +83,6 @@ const ParcelCard = ({
         });
       }
       // we'll send a query to find a unique parcel with the id and then update it's status to collected
-
     } else if (name == "epic") {
     } else {
       router.push("/parcels/" + id);
@@ -142,8 +141,13 @@ const ParcelCard = ({
           <DialogDescription>
             <div className="flex flex-col gap-5 mt-5">
               <div className="flex gap-4">
-                <Input type="number" placeholder="OTP" value={userotp} onChange={(e)=>setUserotp(e.target.value)}/>
-                <Button className="w-full">Generate OTP</Button>
+                <Input
+                  type="number"
+                  placeholder="OTP"
+                  value={userotp}
+                  onChange={(e) => setUserotp(e.target.value)}
+                />
+                <Button className="w-full">Resend OTP</Button>
               </div>
               <Button onClick={(e) => CardClicked(e, "Handover")}>
                 Handover Parcel

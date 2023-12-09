@@ -65,7 +65,7 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
     form.setValue("ParcelCompany", data.vendor?.ParcelCompany);
     form.setValue("ParcelNumber", data.ParcelNumber);
     form.setValue("PhoneNumber", data.ParcelReceiver?.PhoneNumber);
-    form.setValue("RoomNumber", data.ParcelReceiver?.RoomNumber);
+    form.setValue("RoomNumber", parseInt(data.ParcelReceiver?.RoomNumber));
     form.setValue("OwnerID", data.OwnerID == null ? "" : data.OwnerID);
     form.setValue("Shelf", data.Shelf);
     form.setValue("Comment", data.Comment);
@@ -191,7 +191,7 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
               ) : (
                 <Dialog>
                   <button
-                    className="bg-primary_black text-primary_white rounded-md w-full"
+                    className="bg-primary_black text-white rounded-md w-full"
                     onClick={(e) => CardClicked(e, "epic")}
                   >
                     <DialogTrigger className="p-4">
@@ -235,7 +235,7 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
                   <div className="flex items-center justify-between">
                     <div className="flex gap-2">
                       Received At:
-                      <div className="text-primary_yellow font-bold">
+                      <div className=" font-bold">
                         {getDate(parcel.ReceivedAt)}
                       </div>
                     </div>
