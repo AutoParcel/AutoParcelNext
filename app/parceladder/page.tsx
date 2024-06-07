@@ -153,6 +153,7 @@ const Page = () => {
     console.log(predictionstr);
     if (predictionstr != undefined) {
       const predictions = JSON.parse(predictionstr);
+      console.log("THIS WORKS ", predictions);
       predictions.forEach((prediction: Iprediction) => {
         if (
           prediction.confidence > 0.0 &&
