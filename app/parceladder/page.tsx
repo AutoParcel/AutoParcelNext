@@ -59,6 +59,7 @@ function performDBMatch(
     // update the value of the key to lowercase
     [key]: user[key].toLowerCase(),
   }));
+
   const options = {
     includeScore: true,
     threshold: threshold,
@@ -76,6 +77,7 @@ function performDBMatch(
   // return fuse.search(query.toLowerCase());
   return fuse.search(query.toLowerCase());
 }
+
 function getOrdinalNum(n: number) {
   return (
     n +
@@ -84,6 +86,7 @@ function getOrdinalNum(n: number) {
       : "")
   );
 }
+
 const getDate = () => {
   let date = new Date();
   let currentDayOrdinal = getOrdinalNum(date.getDate());
