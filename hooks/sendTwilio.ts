@@ -25,6 +25,7 @@ export default async function sendMessage(
     };
     const headers = {
       "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
     };
 
     const result = await axios
