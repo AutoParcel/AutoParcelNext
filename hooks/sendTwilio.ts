@@ -25,11 +25,10 @@ export default async function sendMessage(
     };
     const headers = {
       "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
     };
 
     const result = await axios
-      .post("http://pythonserver-ftnw.onrender.com/twilio", Data, { headers })
+      .post("https://pythonserver-ftnw.onrender.com/twilio", Data, { headers })
       // .post("http://127.0.0.1:8000/twilio", Data, { headers })
       .then((res) => {
         console.log("resssssssss", res.data);
