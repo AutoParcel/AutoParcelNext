@@ -252,14 +252,9 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
                 </div>
               ) : (
                 <Dialog>
-                  <button
-                    className="bg-primary_black text-white rounded-md w-full"
-                    onClick={(e) => CardClicked(e, "epic")}
-                  >
-                    <DialogTrigger className="p-4">
+                    <DialogTrigger className="p-4 bg-primary_black text-white rounded-md w-full" onClick={(e) => CardClicked(e, "epic")}>
                       Handover Parcel
                     </DialogTrigger>
-                  </button>
                   <DialogContent>
                     <DialogHeader>
                       <DialogTitle>
@@ -326,7 +321,7 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
                           className="flex gap-3 bg-primary_black"
                           type="button"
                         >
-                          <p>Edit Parcel </p>
+                          Edit Parcel
                           <FaEdit />
                         </Button>
                       )}
