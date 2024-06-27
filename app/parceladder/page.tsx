@@ -38,10 +38,9 @@ import {
   getParcelOTP,
   getParcels,
 } from "@/utils";
+import OwnerSearch from "@/components/ownersearch"
 
-// @ts-ignore
 var receiver = null;
-// @ts-ignore
 var vendor = null;
 
 // const receivers = await getReceivers({});
@@ -422,6 +421,7 @@ const Page = () => {
       </div>
       <div className="flex flex-row justify-between gap-x-10 mt-5">
         <div className="w-full p-6">
+            <OwnerSearch />
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <FormField
