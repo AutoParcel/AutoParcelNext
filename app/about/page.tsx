@@ -8,7 +8,8 @@ export default function About() {
         <div className="w-full md:w-2/3 mb-4 md:mb-0 md:pr-4">
           <h2 className="text-3xl font-bold mb-4">About Us</h2>
           <p className="text-gray-700 mb-4">
-            AutoParcel is your one-stop shop for all your car shipping needs.
+          Started by a group of college students, 
+            AutoParcel is your one-stop shop for all your parcel management needs.
           </p>
         </div>
 
