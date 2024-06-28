@@ -58,8 +58,9 @@ const Parcel = () => {
       setFilteredParcelsData(parcels);
     })();
     setLoading(false);
-    return console.log("getting parcels!");
-  }, [, filterOptions]);
+    console.log("getting parcels!");
+    // return console.log("getting parcels!");
+  }, [filterOptions,]);
 
   useEffect(() => {
     setLoading(true);

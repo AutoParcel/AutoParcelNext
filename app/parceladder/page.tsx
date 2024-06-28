@@ -38,14 +38,11 @@ import {
   getParcelOTP,
   getParcels,
 } from "@/utils";
+import OwnerSearch from "@/components/ownersearch"
 
-// @ts-ignore
 var receiver = null;
-// @ts-ignore
 var vendor = null;
 
-// const receivers = await getReceivers({});
-// const vendors = await getVendors({});
 
 function performDBMatch(
   list: any,
@@ -72,9 +69,7 @@ function performDBMatch(
       // },
     ],
   };
-  // const fuse = new Fuse(list, options);
   const fuse = new Fuse(lowercaseNames, options);
-  // return fuse.search(query.toLowerCase());
   return fuse.search(query.toLowerCase());
 }
 
@@ -117,15 +112,35 @@ const FACING_MODE_ENVIRONMENT = "environment";
 
 // const FACING_MODE_USER = "user";
 const Page = () => {
+
+
+  const [loading, setLoading] = useState(false);
+  const [image, setImage] = useState("");
+  const [camOpen, setCamOpen] = useState(false);
+  const [receivers, setReceivers] = useState([]);
+  const webcamRef: any = React.useRef(null);
   const router = useRouter();
-  const fillform = async (data: any) => {
-    form.setValue("OwnerName", data.OwnerName);
-    form.setValue("ParcelCompany", data.ParcelCompany);
-    form.setValue("ParcelNumber", data.ParcelNumber);
-    form.setValue("PhoneNumber", data.PhoneNumber);
-    form.setValue("RoomNumber", data.RoomNumber);
-    form.setValue("OwnerID", data.OwnerID);
+
+  React.useEffect(() => {
+    async function fetchData() {
+      const receivers = await getReceivers({});
+      console.log(receivers)
+      setReceivers(()=>receivers)
+    }
+    fetchData()
+  },[]);
+
+  const fillform = (data: any) => {
+    data.OwnerName ? form.setValue("OwnerName", data.OwnerName): ""
+    data.ParcelCompany ? form.setValue("ParcelCompany", data.ParcelCompany): ""
+    data.PhoneNumber ? form.setValue("PhoneNumber", data.PhoneNumber): ""
+    data.RoomNumber ? form.setValue("RoomNumber", data.RoomNumber): ""
+    data.OwnerID ? form.setValue("OwnerID", data.OwnerID): ""
+    data.ParcelNumber ? form.setValue("ParcelNumber", data.ParcelNumber): ""
+    data.Shelf ? form.setValue("Shelf", data.Shelf): ""
+    data.Comment ? form.setValue("Comment", data.Comment): ""
   };
+
   interface Iprediction {
     label: string;
     page: number;
@@ -197,24 +212,24 @@ const Page = () => {
         data.ParcelCompany = vendor.ParcelCompany;
       }
       // else {
-      //   // create a new vendor if there is some textual data from the form
-      //   if (data.ParcelCompany.length > 0) {
-      //     vendor = await addVendor({ ParcelCompany: data.ParcelCompany });
-      //     // data.ParcelCompany = vendor.ParcelCompany;
-      //   } else {
-      //     vendor = { VendorID: null };
-      //   }
-      // }
-
-      fillform({
-        // @ts-ignore
-        OwnerName: "", // @ts-ignore
-        ParcelCompany: "", // @ts-ignore
-        ParcelNumber: "",
-        PhoneNumber: "", // @ts-ignore
-        RoomNumber: "", // @ts-ignore
-        OwnerID: "",
-        Comment: "",
+        //   // create a new vendor if there is some textual data from the form
+        //   if (data.ParcelCompany.length > 0) {
+          //     vendor = await addVendor({ ParcelCompany: data.ParcelCompany });
+          //     // data.ParcelCompany = vendor.ParcelCompany;
+          //   } else {
+            //     vendor = { VendorID: null };
+            //   }
+            // }
+            
+            fillform({
+              // @ts-ignore
+              OwnerName: "", // @ts-ignore
+              ParcelCompany: "", // @ts-ignore
+              ParcelNumber: "",
+              PhoneNumber: "", // @ts-ignore
+              RoomNumber: "", // @ts-ignore
+              OwnerID: "",
+              Comment: "",
         ...data,
       });
     } else {
@@ -222,8 +237,7 @@ const Page = () => {
     }
     setLoading(false);
   };
-
-  const [loading, setLoading] = useState(false);
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -255,7 +269,6 @@ const Page = () => {
     ///////////////////////////////////////////////////////
     const receivers = await getReceivers({});
     const vendors = await getVendors({});
-
     // perform db match only if the name has changed
     // @ts-ignore
     // if the values are not the same, then we need to update the receiver. If not, we just have to make sure that the original receiver's id is taken
@@ -279,7 +292,6 @@ const Page = () => {
         values.OwnerID = receiver.OwnerID;
         values.OwnerName = receiver.OwnerName;
         values.PhoneNumber = receiver.PhoneNumber;
-        // what if the room number parameter is missing?
         values.RoomNumber = receiver.RoomNumber;
       }
       // if there's no match, then we don't update all this shit but update spare
@@ -306,12 +318,7 @@ const Page = () => {
       vendor = null;
       values.ParcelCompany = "";
     } else {
-      //@ts-ignore
-      // console.log("1")
-      // console.log("vendor1: ",values.ParcelCompany) //@ts-ignore
-      //@ts-ignore
-      // vendor==null?console.log("vendor is null"):console.log("not null bitch")
-      // console.log("lmaoooo")
+
       if (
         (vendor != null &&
           vendor.ParcelCompany.toLowerCase() !=
@@ -319,7 +326,6 @@ const Page = () => {
         vendor == null
       ) {
         //@ts-ignore
-        // console.log("vendor: ",values.ParcelCompany)
         const vendor_result = performDBMatch(
           vendors,
           values.ParcelCompany.trim(),
@@ -362,7 +368,6 @@ const Page = () => {
       // VendorID: vendor.VendorID,
       ParcelID: await generatePID(),
       otp: getParcelOTP(),
-      // otp: getParcelOTP(),
     };
     // values= {...values, include: { vendor: true, ParcelReceiver: true }}
     console.log("values:\n", values);
@@ -375,11 +380,11 @@ const Page = () => {
         },
         include: { vendor: true, ParcelReceiver: true },
       });
-      console.log("sending to twilio");
+      // console.log("sending to twilio");
       console.log("new_parcel:", new_parcel);
-      await sendMessage(new_parcel, otp, "c");
+      // await sendMessage(new_parcel, otp, "c");
       // sendMessage()
-      console.log("sent to twilio");
+      // console.log("sent to twilio");
 
       router.push("/parcels/" + new_parcel.ParcelID);
     }
@@ -387,9 +392,7 @@ const Page = () => {
     // @ts-ignore
   }
 
-  const webcamRef: any = React.useRef(null);
-  const [image, setImage] = useState("");
-  const [camOpen, setCamOpen] = useState(false);
+
   const opencamera = () => {
     console.log("camera opened");
     setCamOpen(true);
@@ -409,6 +412,11 @@ const Page = () => {
     width: 1000,
     height: 640,
   };
+
+  const handleNameChange = (data)=>{
+    fillform(data)
+    
+  }
 
   return (
     <>
@@ -431,7 +439,10 @@ const Page = () => {
                   <FormItem>
                     <FormLabel>Parcel Owner</FormLabel>
                     <FormControl>
-                      <Input placeholder="Parcel owner name" {...field} />
+                      <div className="">
+                      <OwnerSearch options={receivers} handleNameChange={handleNameChange}/>
+                      {/* <Input placeholder="Parcel owner name" {...field} /> */}
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
