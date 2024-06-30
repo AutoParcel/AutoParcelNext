@@ -1,5 +1,3 @@
-import { useState, useEffect } from "react";
-import { Bar } from "react-chartjs-2";
 
 //number of parcels per company
 interface ParcelReceiver {

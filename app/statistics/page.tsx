@@ -1,10 +1,14 @@
 "use client";
 import { getParcels, filter_sort_query } from "@/utils";
 import { useState, useEffect } from "react";
+import {
+  BarChartAlltime,
+  HorizontalBarChartCompany,
+  PieChartStatus,
+  PieChartBatch,
+} from "@/components/ui/graph";
+import { getStatus, avgTime } from "@/app/statistics/getData";
 import { Oval } from "react-loader-spinner";
-import { BarChartAlltime, HorizontalBarChartCompany, PieChartStatus, PieChartBatch } from '@/components/ui/graph';
-import {getStatus, avgTime} from '@/app/statistics/getData';
-
 const Page = () => {
   useEffect(() => {
     (async () => {
@@ -29,57 +33,105 @@ const Page = () => {
   console.log("parcels data", parcelsData[0]);
   console.log("avg", avgTime(parcelsData[1]));
   return (
-    <div className="flex flex-col md:flex-row m-4 md:m-10 gap-6">
-      {/* Left side with parcel counts */}
-      <div className="flex flex-col md:flex-row gap-6">
-        {/* Parcel count for all time */}
-        <div className="flex flex-col bg-primary_beige md:w-50 h-70 rounded-xl justify-center items-center">
-          <div className='text-xs md:text-base text-center'>Average Days taken to collect parcel this month</div>
-          <div className="font-medium text-4xl md:text-9xl">{avgTime(parcelsData[1])}</div>
+    <>
+      {parcelsData[0].length == 0 ? (
+        <div className="w-full flex flex-col h-[90vh] justify-center items-center">
+          <Oval
+            height={60}
+            width={60}
+            color="var(--primary_red)"
+            wrapperStyle={{}}
+            wrapperClass=""
+            visible={true}
+            ariaLabel="oval-loading"
+            secondaryColor="var(--primary_red)"
+            strokeWidth={6}
+            strokeWidthSecondary={3}
+          />
+          Counting parcels...
         </div>
-        <div className="flex bg-primary_beige md:w-50 h-50 rounded-xl justify-center items-center">
-          <div className='flex flex-1 justify-center items-center'>
-            <div className="flex flex-col items-center">
-              <div className="font-medium text-4xl md:text-9xl">{parcelsData[0].length}</div>
-              <div className="text-xs md:text-base text-center">Parcels all time</div>
-            </div>
+      ) : (
+        <div className="flex flex-col m-4 md:m-10 gap-6">
+          <div className="mb-4 text-3xl md:text-4xl lg:text-6xl font-bold self-start">
+            Statistics
           </div>
-          <div className="flex flex-1 flex-col">
-          <div className="font-medium text-3xl md:text-9xl text-center">{parcelStatus_alltime.collected_count}</div>
-            <div className="text-xs md:text-base text-center"> Collected Parcels </div>
-          <div className="h-5"/>
-          <div className="font-medium text-3xl md:text-9xl text-center">{parcelStatus_alltime.uncollected_count}</div>
-            <div className="text-xs md:text-base text-center"> Uncollected Parcels </div>
-          </div>
-        </div>
-
-        {/* Parcel counts for this month, this week, and today */}
-        <div className="flex gap-6">
-          {['This Month', 'This Week', 'Today'].map((period, index) => (
-            <div key={index} className="flex bg-primary_white md:w-32 h-32 rounded-xl justify-center items-center">
-              <div className="flex flex-col items-center">
-                <div className="font-medium text-4xl">{parcelsData[index + 1].length}</div>
-                <div className="text-xs md:text-sm text-center">{`Parcels ${period}`}</div>
+          {/* Left side with parcel counts */}
+          <div className="flex flex-row gap-6 h-[70vh] ">
+            {/* Parcel count for all time */}
+            <div className="flex-col flex w-2/6 gap-6 h-full">
+              <div className="flex flex-col bg-primary_white rounded-xl justify-around items-center p-6 h-1/2">
+                <div className="text-xs md:text-base text-center">
+                  Average Days taken to collect parcel this month
+                </div>
+                <div className="font-medium text-4xl md:text-7xl">
+                  {avgTime(parcelsData[1])}
+                </div>
               </div>
-              <PieChartStatus parcels={parcelsData[index + 1]} /> 
+              <div className="flex bg-primary_white rounded-xl justify-around items-center p-6 h-1/2">
+                <div className="flex justify-center items-center">
+                  <div className="flex flex-col items-center">
+                    <div className="font-medium text-4xl md:text-7xl">
+                      {parcelsData[0].length}
+                    </div>
+                    <div className="text-xs md:text-base text-center">
+                      Total Parcels (all time)
+                    </div>
+                  </div>
+                </div>
+                <div className="flex flex-col">
+                  <div className="font-medium text-4xl md:text-7xl text-center">
+                    {parcelStatus_alltime.collected_count}
+                  </div>
+                  <div className="text-xs md:text-base text-center">
+                    Collected Parcels
+                  </div>
+                  <div className="" />
+                  <div className="font-medium text-4xl md:text-7xl text-center">
+                    {parcelStatus_alltime.uncollected_count}
+                  </div>
+                  <div className="text-xs md:text-base text-center">
+                    {" "}
+                    Uncollected Parcels{" "}
+                  </div>
+                </div>
+              </div>
             </div>
-          ))}
-        </div>
-      </div>
+            {/* Parcel counts for this month, this week, and today */}
+            <div className="bg-primary_white w-4/6 h-full rounded-xl justify-center items-center flex p-6">
+              <BarChartAlltime parcels={parcelsData[0]} />
+            </div>
+          </div>
+            <div className="flex gap-6 flex-row w-full h-full">
+              {["This Month", "This Week", "Today"].map((period, index) => (
+                <div
+                  key={index}
+                  className="flex bg-primary_white w-full rounded-xl justify-center items-center p-6"
+                >
+                  <div className="flex flex-col items-center w-2/6">
+                    <div className="font-medium text-4xl">
+                      {parcelsData[index + 1].length}
+                    </div>
+                    <div className="text-xs md:text-sm text-center">{`Parcels ${period}`}</div>
+                  </div>
+                  <div className="w-4/6">
+                    <PieChartStatus parcels={parcelsData[index + 1]} />
+                  </div>
+                </div>
+              ))}
+            </div>
 
-      {/* Right side with graph */}
-      <div className="bg-primary_white w-full h-[27rem] rounded-xl justify-center items-center flex">
-        <BarChartAlltime parcels={parcelsData[0]} />
-      </div>
-      <div className="bg-primary_white w-full h-[27rem] rounded-xl overflow-hidden flex flex-row">
-        <div className="flex flex-1 justify-center items-center">
-        <HorizontalBarChartCompany parcels={parcelsData[0]} />
+          {/* Right side with graph */}
+          <div className="bg-primary_white w-full h-[27rem] rounded-xl overflow-hidden flex flex-row p-6">
+            <div className="flex flex-1 justify-center items-center">
+              <HorizontalBarChartCompany parcels={parcelsData[0]} />
+            </div>
+            <div className="flex flex-1 justify-center items-center">
+              <PieChartBatch parcels={parcelsData[0]} />
+            </div>
+          </div>
         </div>
-        <div className="flex flex-1 justify-center items-center">
-          <PieChartBatch parcels={parcelsData[0]} />
-        </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 };
 

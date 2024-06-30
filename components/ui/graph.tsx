@@ -73,13 +73,14 @@ const PieChartStatus: React.FC<{ parcels: any[] }> = ({ parcels }) => {
         ],
     };    const options = {
         responsive: true,
+        
         plugins: {
             legend: {
                 position: 'bottom' as const,
             },
         },
     };
-    return <Pie data={data} options={options} />;
+    return <Pie data={data} options={options} redraw={true}/>;
 } 
 
 const PieChartBatch: React.FC<{ parcels: any[] }> = ({ parcels }) => {

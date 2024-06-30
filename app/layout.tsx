@@ -26,6 +26,7 @@ export default function RootLayout({
 }) {
   return (
     <ClerkProvider>
+      
       <html lang="en">
         <body className={cn(inter.className, "text-primary_black")}>
           <TopNav />
