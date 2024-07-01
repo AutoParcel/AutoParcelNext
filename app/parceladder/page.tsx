@@ -383,7 +383,7 @@ const Page = () => {
       console.log("sending to smtp");
       console.log("new_parcel:", new_parcel);
       await sendMessage(new_parcel, otp, "c");
-      sendMessage()
+      // sendMessage()
       console.log("sent to smtp");
 
       router.push("/parcels/" + new_parcel.ParcelID);
