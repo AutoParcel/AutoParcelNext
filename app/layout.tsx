@@ -6,6 +6,7 @@ const inter = Inter({ subsets: ["latin"] });
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
+import { Analytics } from "@vercel/analytics/react"
 export const metadata: Metadata = {
   title: "AutoParcel",
   description: "Created with love",
@@ -32,6 +33,7 @@ export default function RootLayout({
           <TopNav />
           {children}
           <Toaster />
+        <Analytics/>
         </body>
       </html>
     </ClerkProvider>
