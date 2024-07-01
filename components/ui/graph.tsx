@@ -1,5 +1,5 @@
 import { Bar, Pie } from 'react-chartjs-2';
-import { Chart, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, LegendItem } from 'chart.js';
+import { Chart, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, LegendItem, Colors } from 'chart.js';
 import { Chart as ChartJS, ArcElement} from 'chart.js';
 import  {getChartData_company, getChartData_day, getStatus, getStaffBatch} from '@/app/statistics/getData';
 
@@ -23,7 +23,7 @@ const BarChartAlltime: React.FC<{ parcels: any[] }> = ({ parcels }) => {
     plugins: {
     title: {
         display: true,
-        text: 'Number of Parcels Received By Day'
+        text: 'Daily Parcel Intake'
     }
     }
   };
@@ -44,7 +44,7 @@ const HorizontalBarChartCompany: React.FC<{ parcels: any[] }> = ({ parcels }) =>
       plugins: {
       title: {
           display: true,
-          text: 'Number of Parcels Received By Company'
+          text: 'Parcel Distribution By Company'
       }
       }
     };
@@ -61,26 +61,25 @@ const PieChartStatus: React.FC<{ parcels: any[] }> = ({ parcels }) => {
             {
                 data: [collected_count, uncollected_count],
                 backgroundColor: [
-                    'rgba(54, 162, 235, 0.6)',
-                    'rgba(255, 99, 132, 0.6)',
+                    '#e4b363ff',
+                    '#ef6461ff',
                 ],
                 borderColor: [
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 99, 132, 1)',
+                    '#e4b363ff',
+                    '#ef6461ff',
                 ],
                 borderWidth: 1,
             },
         ],
     };    const options = {
         responsive: true,
-        
         plugins: {
             legend: {
                 position: 'bottom' as const,
             },
         },
     };
-    return <Pie data={data} options={options} redraw={true}/>;
+    return <Pie data={data} options={options} />;
 } 
 
 const PieChartBatch: React.FC<{ parcels: any[] }> = ({ parcels }) => {
@@ -91,12 +90,12 @@ const PieChartBatch: React.FC<{ parcels: any[] }> = ({ parcels }) => {
           {
               data: [staff_count, bacth_count],
               backgroundColor: [
-                  'rgba(54, 162, 235, 0.6)',
-                  'rgba(255, 99, 132, 0.6)',
+                  '#e4b363ff',
+                  '#ef6461ff',
               ],
               borderColor: [
-                  'rgba(54, 162, 235, 1)',
-                  'rgba(255, 99, 132, 1)',
+                  '#e4b363ff',
+                  '#ef6461ff',
               ],
               borderWidth: 1,
           },
@@ -109,7 +108,7 @@ const PieChartBatch: React.FC<{ parcels: any[] }> = ({ parcels }) => {
           },
           title: {
             display:true,
-            text: 'Parcels belonging to Staff or Students'
+            text: 'Parcel Ownership: Staff vs Students'
           }
       },
       radius: '70%'

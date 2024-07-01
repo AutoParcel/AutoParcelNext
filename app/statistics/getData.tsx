@@ -44,8 +44,8 @@ interface ParcelReceiver {
       datasets: [{
         label: 'Number of Parcels',
         data: Object.values(countPerCompany),
-        backgroundColor: 'rgba(255, 99, 132, 0.5)',
-        borderColor: 'rgba(255, 99, 132, 1)',
+        backgroundColor: '#ef6461ff',
+        borderColor: '#ef6461ff',
         borderWidth: 1,
       }],
     };
@@ -75,8 +75,8 @@ const getChartData_day = (parcels: Parcel[]) => {
     datasets: [{
       label: 'Number of Parcels',
       data: Object.values(dayCounts), // Get counts for each day in order
-      backgroundColor: 'rgba(255, 99, 132, 0.5)',
-      borderColor: 'rgba(255, 99, 132, 1)',
+      backgroundColor: '#ef6461ff',
+      borderColor: '#ef6461ff',
       borderWidth: 1,
     }],
   };
