@@ -19,8 +19,20 @@ import {
 } from "@/components/ui/popover"
 
 
-const ComboboxDemo = ({options,handleNameChange}: {any,any}) => {
-  const [open, setOpen] = React.useState(false)
+type Option = {
+  OwnerID: string;
+  OwnerName: string;
+};
+
+type HandleNameChange = (data: Option | undefined ) => void;
+
+interface ComboboxDemoProps {
+  options: Option[];
+  handleNameChange: HandleNameChange;
+}
+
+const ComboboxDemo: React.FC<ComboboxDemoProps> = ({ options, handleNameChange }) => {
+  const [open, setOpen] = React.useState<boolean>(false);
   const [value, setValue] = React.useState("")
   const [list, setList] = React.useState(options);
   React.useEffect(() => { setList(options) }, [options]);
