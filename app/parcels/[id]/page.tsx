@@ -98,6 +98,7 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
     Status: "",
     ReceivedAt: "",
   });
+  
   function getOrdinalNum(n: number) {
     return (
       n +
@@ -130,13 +131,16 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
     setParcel(() => ParcelDetails[0]);
     setLoading(false);
   };
+
   useEffect(() => {
     RequestDetails();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   const router = useRouter();
   const { toast } = useToast();
   const CardClicked = async (event: any, name = "") => {
+    event.stopPropagation();
     if (name == "Collected") {
       toast({
         title: "Parcel Already Collected!",
@@ -151,6 +155,7 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
         },
         data: {
           Status: "C",
+          CollectedAt: new Date()
         },
       });
       if (otp_user.Status == "C") {
@@ -159,7 +164,9 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
           description: "Parcel Handover Successful!",
           duration: 3000,
         });
-        await sendMessage(otp_user, "0", "h");
+        sendMessage(otp_user, "0", "h");
+        router.push("/parcels/" + params.id);
+        router.refresh();
       } else {
         toast({
           title: "Parcel Handover",
@@ -170,7 +177,6 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
       }
     } else if (name == "handover") {
       console.log("handover opened");
-      console.log("otp and ", userotp);
 
       let otp_user = await getParcels("findUnique", {
         where: {
@@ -179,6 +185,7 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
         },
         //include: { vendor: true, ParcelReceiver: true }
       });
+
       console.log("otp_user", parcel.OwnerID);
       if (otp_user != null) {
         otp_user = await getParcels("update", {
@@ -191,14 +198,17 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
           },
           include: { vendor: true, ParcelReceiver: true },
         });
-        console.log("with include: ", otp_user);
         if (otp_user.Status == "C") {
           toast({
             title: "Parcel Handover",
             description: "Parcel Handover Successful!",
             duration: 3000,
           });
-          await sendMessage(otp_user, "0", "h");
+          sendMessage(otp_user, "0", "h");
+          console.log("this is running!!")
+          router.push("/parcels/" + params.id);
+          window.location.reload();
+
         } else {
           toast({
             title: "Parcel Handover",
@@ -218,9 +228,10 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
     } else if (name == "epic") {
       console.log("epicc");
     } else {
-      // router.push("/parcels/" + id);
+      
       console.log("clicked");
     }
+    console.log("Reached here!");
   };
   return (
     <>
@@ -280,7 +291,7 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
                                 value={userotp}
                                 onChange={(e) => setUserotp(e.target.value)}
                               />
-                              <Button className="w-full">Resend OTP</Button>
+                              <Button className="w-full" onClick={(e) => sendMessage(parcel, userotp , "resend")}>Resend OTP</Button>
                             </div>
                             <Button onClick={(e) => CardClicked(e, "handover")}>
                               Handover Parcel

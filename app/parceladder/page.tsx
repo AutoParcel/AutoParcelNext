@@ -142,6 +142,7 @@ const Page = () => {
     data.ParcelNumber ? form.setValue("ParcelNumber", data.ParcelNumber): ""
     data.Shelf ? form.setValue("Shelf", data.Shelf): ""
     data.Comment ? form.setValue("Comment", data.Comment): ""
+    data.Email ? form.setValue("Email", data.Email): ""
   };
 
   interface Iprediction {
@@ -248,6 +249,7 @@ const Page = () => {
       ParcelCompany: "",
       ParcelNumber: "", //
       PhoneNumber: "",
+      Email: "",
       RoomNumber: "",
       OwnerID: "", //
       Shelf: "A", //
@@ -365,7 +367,7 @@ const Page = () => {
     // @ts-ignore
     delete values.PhoneNumber;
     delete values.RoomNumber;
-    // delete values.Date;
+    delete values.Email;
     delete values.ParcelCompany;
     
     
@@ -445,9 +447,9 @@ const Page = () => {
                   <FormItem>
                     <FormLabel>Parcel Owner</FormLabel>
                     <FormControl>
-                      <div className="flex flex-row justify-start gap-3">
+                      <div className="flex flex-row justify-start gap-3 items-center">
                       <OwnerSearch options={receivers} handleNameChange={handleNameChange}/>
-                    <div className={`p-2 bg-primary_yellow rounded-lg font-semibold ${Batch ? "" : "hidden"}`}>{Batch}</div>
+                    <div className={`p-2 bg-primary_red rounded-lg font-semibold text-sm text-white ${Batch ? "" : "hidden"}`}>{Batch}</div>
                       </div>
                     </FormControl>
                     <FormMessage />
@@ -491,6 +493,19 @@ const Page = () => {
                     <FormLabel>Phone Number</FormLabel>
                     <FormControl>
                       <Input placeholder="" {...field} type="number" disabled />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="Email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>E-mail Address</FormLabel>
+                    <FormControl>
+                      <Input placeholder="example@plaksha.edu.in" {...field} type="string" disabled />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

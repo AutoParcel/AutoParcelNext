@@ -60,6 +60,7 @@ const ParcelCard = ({
           },
           data: {
             Status: "C",
+            CollectedAt : new Date(),
           },
           include: { vendor: true, ParcelReceiver: true },
         });
@@ -71,6 +72,7 @@ const ParcelCard = ({
             duration: 3000,
           });
           await sendMessage(otp_user, "0", "h");
+          router.push("/parcels/" + id);
         } else {
           toast({
             title: "Parcel Handover",

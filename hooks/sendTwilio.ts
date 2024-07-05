@@ -21,7 +21,7 @@ export default async function sendMessage(
     //@ts-ignore
       subject = `Your Parcel ${parcel_obj.ParcelID} Handed-Over!`;
     } else {
-      body = "AutoParcel OTP";
+      body = `Kindly use ${otp} as your AutoParcel One Time Password (OTP) to collect your parcel.`;
       subject = "AutoParcel OTP";
     }
     const Data = {
@@ -38,7 +38,7 @@ export default async function sendMessage(
       .post("https://pythonserver-ftnw.onrender.com/smtp", Data, { headers })
       // .post("http://127.0.0.1:8000/twilio", Data, { headers })
       .then((res) => {
-        console.log("resssssssss", res.data);
+        console.log("Message response: ", res.data);
       })
       .catch((error) => {
         console.error("Failed to send a message", error);
