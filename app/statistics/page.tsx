@@ -10,6 +10,7 @@ import {
 import { getStatus, avgTime } from "@/app/statistics/getData";
 import { Oval } from "react-loader-spinner";
 const Page = () => {
+  const [avg, setAvg] = useState(0);
   useEffect(() => {
     (async () => {
       const queryAllTime = filter_sort_query("A", "N", "A");
@@ -20,18 +21,21 @@ const Page = () => {
       const parcelsMonth = await getParcels("findMany", queryMonth);
       const parcelsWeek = await getParcels("findMany", queryWeek);
       const parcelsToday = await getParcels("findMany", queryToday);
+      const avg_time = avgTime(parcelsMonth)
+      setAvg(avg_time? avg_time: 0)
       setParcelsData([parcelsAllTime, parcelsMonth, parcelsWeek, parcelsToday]);
     })();
     return console.log("getting parcels!");
   }, []);
+
   const [parcelsData, setParcelsData] = useState([[], [], [], []]);
   const parcelStatus_alltime = getStatus(parcelsData[0]);
-  const parcelStatus_month = getStatus(parcelsData[1]);
-  const parcelStatus_week = getStatus(parcelsData[2]);
-  const parcelStatus_today = getStatus(parcelsData[3]);
+  // const parcelStatus_month = getStatus(parcelsData[1]);
+  // const parcelStatus_week = getStatus(parcelsData[2]);
+  // const parcelStatus_today = getStatus(parcelsData[3]);
 
-  console.log("parcels data", parcelsData[0]);
-  console.log("avg", avgTime(parcelsData[1]));
+  // console.log("parcels data", parcelsData[0]);
+  // console.log("avg", avgTime(parcelsData[1]));
   return (
     <>
       {parcelsData[0].length == 0 ? (
@@ -64,7 +68,7 @@ const Page = () => {
                   Average Days taken to collect parcel this month
                 </div>
                 <div className="font-medium text-4xl md:text-7xl">
-                  {avgTime(parcelsData[1])}
+                  {avg}
                 </div>
               </div>
               <div className="flex bg-primary_white rounded-xl justify-around items-center p-6 h-1/2">

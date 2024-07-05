@@ -5,9 +5,7 @@ import { NextResponse } from "next/server";
 export const POST = async (req: Request) => {
   try {
     
-    const data = await req.json();
-    console.log(data);
-
+    let data = await req.json();
     await connectToDb();
     const parcel = await prisma.parcel.create(data);
     return NextResponse.json({ parcel }, { status: 200 });

@@ -100,7 +100,9 @@ const formSchema = z.object({
     message: "Name must be at least 3 characters.",
   }),
   Date: z.date(),
-  ParcelCompany: z.string(),
+  ParcelCompany: z.string().min(2, {
+    message: "Parcel Company must be at least 3 characters.",
+  }),
   ParcelNumber: z.string(),
   PhoneNumber: z.string(),
   RoomNumber: z.string(),
@@ -117,6 +119,7 @@ const Page = () => {
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState("");
   const [camOpen, setCamOpen] = useState(false);
+  const [Batch, setBatch] = useState("");
   const [receivers, setReceivers] = useState([]);
   const webcamRef: any = React.useRef(null);
   const router = useRouter();
@@ -209,7 +212,7 @@ const Page = () => {
       if (vendor_result.length > 0) {
         const ref_index = vendor_result[0].refIndex;
         vendor = vendors[ref_index];
-        data.ParcelCompany = vendor.ParcelCompany;
+        data.ParcelCompany = vendor?.ParcelCompany;
       }
       // else {
         //   // create a new vendor if there is some textual data from the form
@@ -254,7 +257,6 @@ const Page = () => {
   });
   async function onSubmit(values: any) {
     setLoading(true);
-    console.log(values);
     // if there's a receiver, then update the parcel without the spare (room number, ph number)
     // if there's no receiver, then update the parcel with the spare.
     // we also need vendor id
@@ -267,105 +269,111 @@ const Page = () => {
     // if there's a parcel vendor then create the parcel vendor.
 
     ///////////////////////////////////////////////////////
-    const receivers = await getReceivers({});
+    // const receivers = await getReceivers({});
     const vendors = await getVendors({});
+    let vendor = vendors.find((elem)=> elem.ParcelCompany.toLowerCase() == values.ParcelCompany.toLowerCase())
+    if(!vendor){
+      vendor = vendors.find((elem)=> "others" == values.ParcelCompany.toLowerCase())
+    }
     // perform db match only if the name has changed
     // @ts-ignore
     // if the values are not the same, then we need to update the receiver. If not, we just have to make sure that the original receiver's id is taken
     // if(receiver != null && (receiver.OwnerName.toLowerCase() != values.OwnerName.toLowerCase())){
-    if (
-      (receiver != null &&
-        receiver.OwnerName.toLowerCase() !=
-          values.OwnerName.toLowerCase().trim()) ||
-      receiver == null
-    ) {
-      console.log("in here");
-      const receiver_result = performDBMatch(
-        receivers,
-        values.OwnerName.trim(),
-        "OwnerName"
-      );
-      console.log("here are the matches: ", receiver_result);
-      if (receiver_result.length > 0) {
-        const ref_index = receiver_result[0].refIndex;
-        receiver = receivers[ref_index];
-        values.OwnerID = receiver.OwnerID;
-        values.OwnerName = receiver.OwnerName;
-        values.PhoneNumber = receiver.PhoneNumber;
-        values.RoomNumber = receiver.RoomNumber;
-      }
-      // if there's no match, then we don't update all this shit but update spare
-      else {
-        //trim?
-        spare = `(${values.PhoneNumber}),(${values.RoomNumber}),(${values.OwnerID})`;
-        values.OwnerID = null;
-      }
-      // here check, if the above is false, then there are two cases: It's null, so update the spare. Or the two are equal, so make sure Id is not changed
-      // @ts-ignore
-    }
-    // @ts-ignore
-    else if (
-      receiver.OwnerName.toLowerCase() == values.OwnerName.toLowerCase().trim()
-    ) {
-      // @ts-ignore
-      values.OwnerID = receiver.OwnerID;
-    }
+    // if (
+    //   (receiver != null &&
+    //     receiver.OwnerName.toLowerCase() !=
+    //       values.OwnerName.toLowerCase().trim()) ||
+    //   receiver == null
+    // ) {
+    //   console.log("in here");
+    //   const receiver_result = performDBMatch(
+    //     receivers,
+    //     values.OwnerName.trim(),
+    //     "OwnerName"
+    //   );
+    //   console.log("here are the matches: ", receiver_result);
+    //   if (receiver_result.length > 0) {
+    //     const ref_index = receiver_result[0].refIndex;
+    //     receiver = receivers[ref_index];
+    //     values.OwnerID = receiver.OwnerID;
+    //     values.OwnerName = receiver.OwnerName;
+    //     values.PhoneNumber = receiver.PhoneNumber;
+    //     values.RoomNumber = receiver.RoomNumber;
+    //   }
+    //   // if there's no match, then we don't update all this shit but update spare
+    //   else {
+    //     //trim?
+    //     spare = `(${values.PhoneNumber}),(${values.RoomNumber}),(${values.OwnerID})`;
+    //     values.OwnerID = null;
+    //   }
+    //   // here check, if the above is false, then there are two cases: It's null, so update the spare. Or the two are equal, so make sure Id is not changed
+    //   // @ts-ignore
+    // }
+    // // @ts-ignore
+    // else if (
+    //   receiver.OwnerName.toLowerCase() == values.OwnerName.toLowerCase().trim()
+    // ) {
+    //   // @ts-ignore
+    //   values.OwnerID = receiver.OwnerID;
+    // }
+
+    // values.OwnerID = receiver.OwnerID;
     // check if vendor name has changed. If vendor name has changed, then perform search. If nothing exists, then create.
     // @ts-ignore
     // SAME LOGIC AS VENDOR, BUT JUST HAVE TO MAKE SURE IF THE INPUT FIELD IS NULL OR NOT
     // console.log("outside if: ",values.ParcelCompany)
-    if (values.ParcelCompany == null || values.ParcelCompany.trim() == "") {
-      vendor = null;
-      values.ParcelCompany = "";
-    } else {
+    // if (values.ParcelCompany == null || values.ParcelCompany.trim() == "") {
+    //   vendor = null;
+    //   values.ParcelCompany = "";
+    // } else {
 
-      if (
-        (vendor != null &&
-          vendor.ParcelCompany.toLowerCase() !=
-            values.ParcelCompany.toLowerCase().trim()) ||
-        vendor == null
-      ) {
-        //@ts-ignore
-        const vendor_result = performDBMatch(
-          vendors,
-          values.ParcelCompany.trim(),
-          "ParcelCompany",
-          0.0
-        );
-        console.log("here are the matches: ", vendor_result);
-        if (vendor_result.length > 0) {
-          const ref_index = vendor_result[0].refIndex;
-          vendor = vendors[ref_index];
-          console.log("vendor_var", vendor);
-          values.ParcelCompany = vendor.ParcelCompany;
-          values = { ...values, vendor_id: vendor.vendor_id };
-        } else {
-          // create a new vendor if there is some textual data from the form
-          // so we know that the parcel company length is not zero, so we can create a new vendor
-          vendor = await addVendor({
-            ParcelCompany: values.ParcelCompany.trim(),
-          });
-          values.ParcelCompany = vendor.ParcelCompany;
-          values = { ...values, vendor_id: vendor.vendor_id };
-        }
-      } else {
-        // here put the code
-        //@ts-ignore
-        values = { ...values, vendor_id: vendor.vendor_id };
-      }
-    }
-
+    //   if (
+    //     (vendor != null &&
+    //       vendor.ParcelCompany.toLowerCase() !=
+    //         values.ParcelCompany.toLowerCase().trim()) ||
+    //     vendor == null
+    //   ) {
+    //     //@ts-ignore
+    //     const vendor_result = performDBMatch(
+    //       vendors,
+    //       values.ParcelCompany.trim(),
+    //       "ParcelCompany",
+    //       0.0
+    //     );
+    //     console.log("here are the matches: ", vendor_result);
+    //     if (vendor_result.length > 0) {
+    //       const ref_index = vendor_result[0].refIndex;
+    //       vendor = vendors[ref_index];
+    //       console.log("vendor_var", vendor);
+    //       values.ParcelCompany = vendor.ParcelCompany;
+    //       values = { ...values, vendor_id: vendor.vendor_id };
+    //     } else {
+    //       // create a new vendor if there is some textual data from the form
+    //       // so we know that the parcel company length is not zero, so we can create a new vendor
+    //       vendor = await addVendor({
+    //         ParcelCompany: values.ParcelCompany.trim(),
+    //       });
+    //       values.ParcelCompany = vendor.ParcelCompany;
+    //       values = { ...values, vendor_id: vendor.vendor_id };
+    //     }
+    //   } else {
+    //     // here put the code
+    //     //@ts-ignore
+    //     values = { ...values, vendor_id: vendor.vendor_id };
+    //   }
+    // }
     // @ts-ignore
     delete values.PhoneNumber;
     delete values.RoomNumber;
-    delete values.Date;
+    // delete values.Date;
     delete values.ParcelCompany;
-
-    // @ts-ignore
+    
+    
+    // // @ts-ignore
     values = {
       ...values,
       spare: spare,
-      // VendorID: vendor.VendorID,
+      vendor_id: vendor.vendor_id,
       ParcelID: await generatePID(),
       otp: getParcelOTP(),
     };
@@ -382,10 +390,8 @@ const Page = () => {
       });
       console.log("sending to smtp");
       console.log("new_parcel:", new_parcel);
-      await sendMessage(new_parcel, otp, "c");
-      // sendMessage()
+      sendMessage(new_parcel, otp, "c");
       console.log("sent to smtp");
-
       router.push("/parcels/" + new_parcel.ParcelID);
     }
     setLoading(false);
@@ -415,7 +421,7 @@ const Page = () => {
 
   const handleNameChange = (data)=>{
     fillform(data)
-    
+    setBatch(data.Batch)
   }
 
   return (
@@ -439,9 +445,9 @@ const Page = () => {
                   <FormItem>
                     <FormLabel>Parcel Owner</FormLabel>
                     <FormControl>
-                      <div className="">
+                      <div className="flex flex-row justify-start gap-3">
                       <OwnerSearch options={receivers} handleNameChange={handleNameChange}/>
-                      {/* <Input placeholder="Parcel owner name" {...field} /> */}
+                    <div className={`p-2 bg-primary_yellow rounded-lg font-semibold ${Batch ? "" : "hidden"}`}>{Batch}</div>
                       </div>
                     </FormControl>
                     <FormMessage />
@@ -484,7 +490,7 @@ const Page = () => {
                   <FormItem>
                     <FormLabel>Phone Number</FormLabel>
                     <FormControl>
-                      <Input placeholder="" {...field} type="number" />
+                      <Input placeholder="" {...field} type="number" disabled />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -495,9 +501,9 @@ const Page = () => {
                 name="RoomNumber"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Room Number</FormLabel>
+                    <FormLabel>{Batch == "STAFF" ? "Cabin/Desk Number" : "Room Number"}</FormLabel>
                     <FormControl>
-                      <Input placeholder="000" type="number" {...field} />
+                      <Input placeholder="000" type="number" {...field} disabled />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -510,7 +516,7 @@ const Page = () => {
                   <FormItem>
                     <FormLabel>Owner ID</FormLabel>
                     <FormControl>
-                      <Input placeholder="U20XX0XXX" {...field} />
+                      <Input placeholder="U20XX0XXX" {...field} disabled/>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -597,6 +603,7 @@ const Page = () => {
                 <Button
                   className="m-4 bg-primary_black"
                   type="button"
+                  disabled
                   onClick={opencamera}
                 >
                   {image ? "Retake" : "Scan Label"}

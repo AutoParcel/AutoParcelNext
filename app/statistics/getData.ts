@@ -31,7 +31,7 @@ interface ParcelReceiver {
   
   const getChartData_company = (parcels: Parcel[]) => {
     const countPerCompany = parcels.reduce((acc: Record<string, number>, parcel: Parcel) => {
-      const companyName = parcel.vendor.ParcelCompany;
+      const companyName = parcel.vendor?.ParcelCompany;
       if (!acc[companyName]) {
         acc[companyName] = 0;
       }
@@ -117,15 +117,14 @@ const avgTime = (parcels: Parcel[]) => {
     let totalDifferenceinDays = 0;
     let collectedParcelsCount = 0;
     parcels.forEach(parcel => {
-        if (parcel.Status != "NC" && parcel.CollectedAt != null) {
+        if (parcel.Status == "C" && parcel.CollectedAt != null) {
             const receivedAt = new Date(parcel.ReceivedAt); // Convert ReceivedAt to a Date object
             const collectedAt = new Date(parcel.CollectedAt); // Convert CollectedAt to a Date object
         const differenceInMilliseconds = collectedAt.getTime() - receivedAt.getTime();
         const differenceInDays = differenceInMilliseconds / (1000 * 3600 * 24);
         totalDifferenceinDays += differenceInDays;
         collectedParcelsCount += 1;
-        console.log("dates", receivedAt, collectedAt)
-    }
+          }
 });
     console.log("totalDifferenceinDays", totalDifferenceinDays, "collectedParcelsCount", collectedParcelsCount)
     if (collectedParcelsCount == 0) return null;

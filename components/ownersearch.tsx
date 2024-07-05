@@ -22,6 +22,7 @@ import {
 type Option = {
   OwnerID: string;
   OwnerName: string;
+  Batch: string;
 };
 
 type HandleNameChange = (data: Option | undefined ) => void;
@@ -44,7 +45,7 @@ const ComboboxDemo: React.FC<ComboboxDemoProps> = ({ options, handleNameChange }
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between text-black"
+          className="w-[300px] justify-between text-black"
         >
           {value
             ? list.find((option) => {
@@ -53,7 +54,7 @@ const ComboboxDemo: React.FC<ComboboxDemoProps> = ({ options, handleNameChange }
           <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
+      <PopoverContent className="w-[300px] p-0">
         <Command     filter={(value, search) => {
           let temp = value.toLowerCase();
       if (temp.includes(search.toLowerCase())) return 1;
@@ -75,7 +76,7 @@ const ComboboxDemo: React.FC<ComboboxDemoProps> = ({ options, handleNameChange }
                 }}
               >
                 <div className="flex flex-col">
-                <div className="">{option.OwnerName}</div>
+                <div className="">{option.OwnerName} <div className="inline text-xs  font-light">({option.Batch})</div></div>
                 <div className="text-xs text-primary_red" >{option.OwnerID}</div>
                 </div>
                 <CheckIcon

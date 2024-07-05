@@ -187,6 +187,7 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
           },
           data: {
             Status: "C",
+            CollectedAt: new Date()
           },
           include: { vendor: true, ParcelReceiver: true },
         });

@@ -17,7 +17,7 @@ model ParcelReciever {
   Batch       Batch
   PhoneNumber String   @unique @db.VarChar(14)
   Email       String   @unique
-  RoomNumber  String?  @db.VarChar(4)
+  RoomNumber  String?  @db.VarChar(50)
   Parcels     Parcel[]
 }
 
@@ -28,7 +28,7 @@ model Vendor {
 }
 
 model Parcel {
-  vendor_id      Int?
+  vendor_id      Int
   Comment        String?
   OwnerID        String?
   OwnerName      String          @db.VarChar(50)
