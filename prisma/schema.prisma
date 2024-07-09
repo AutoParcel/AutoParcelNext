@@ -5,8 +5,8 @@ generator client {
 
 // prisma/schema.prisma
 datasource db {
-  provider  = "postgresql"
-  url  	    = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
   // uncomment next line if you use Prisma <5.10
   // directUrl = env("DATABASE_URL_UNPOOLED")
 }
@@ -21,14 +21,7 @@ model ParcelReciever {
   Parcels     Parcel[]
 }
 
-model Vendor {
-  vendor_id     Int      @id @default(autoincrement())
-  ParcelCompany String   @db.VarChar(30)
-  Parcels       Parcel[]
-}
-
 model Parcel {
-  vendor_id      Int
   Comment        String?
   OwnerID        String?
   OwnerName      String          @db.VarChar(50)
@@ -41,7 +34,8 @@ model Parcel {
   spare          String?
   otp            String          @db.Char(6)
   ParcelReceiver ParcelReciever? @relation(fields: [OwnerID], references: [OwnerID])
-  vendor         Vendor?         @relation(fields: [vendor_id], references: [vendor_id])
+  ParcelCompany  String
+  Reminders      String[]        @default([])
 }
 
 enum Role {
