@@ -1,7 +1,7 @@
 import { Bar, Pie } from 'react-chartjs-2';
 import { Chart, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, LegendItem, Colors } from 'chart.js';
 import { Chart as ChartJS, ArcElement} from 'chart.js';
-import  {getChartData_company, getChartData_day, getStatus, getStaffBatch} from '@/app/statistics/getData';
+import  {getChartData_company, getChartData_day, getStatus, getStaffBatch} from '@/utils/getStatistics';
 
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 ChartJS.register(ArcElement, Tooltip, Legend);

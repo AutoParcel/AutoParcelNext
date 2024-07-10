@@ -64,7 +64,7 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
   });
   const fillform = async (data: any) => {
     form.setValue("OwnerName", data.OwnerName);
-    form.setValue("ParcelCompany", data.vendor?.ParcelCompany);
+    form.setValue("ParcelCompany", data.ParcelCompany);
     form.setValue("ParcelNumber", data.ParcelNumber);
     form.setValue("PhoneNumber", data.ParcelReceiver?.PhoneNumber);
     form.setValue("RoomNumber", parseInt(data.ParcelReceiver?.RoomNumber));
@@ -124,7 +124,7 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
   const RequestDetails = async () => {
     const ParcelDetails = await getParcels("findMany", {
       where: { ParcelID: params.id },
-      include: { vendor: true, ParcelReceiver: true },
+      include: {ParcelReceiver: true },
     });
     console.log(ParcelDetails[0]);
     fillform(ParcelDetails[0]);
@@ -196,7 +196,7 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
             Status: "C",
             CollectedAt: new Date()
           },
-          include: { vendor: true, ParcelReceiver: true },
+          include: {ParcelReceiver: true },
         });
         if (otp_user.Status == "C") {
           toast({

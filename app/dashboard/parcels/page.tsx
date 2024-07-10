@@ -17,6 +17,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { getParcels, filter_sort_query } from "@/utils";
+
+
 interface ParcelInterface {
   OwnerName: string;
   ParcelID: string;
@@ -25,13 +27,13 @@ interface ParcelInterface {
   Comment: string;
   Status: string;
   OwnerID: string;
-  vendor_id: string;
   ParcelReceiver: any;
-  vendor: any;
+  ParcelCompany: string;
+  Reminders: string[];
 }
 
 const Parcel = () => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [parcelsData, setParcelsData] = useState([]);
   const [filteredParcelsData, setFilteredParcelsData] = useState([]);
   const [searchWord, setSearchWord] = useState("");
@@ -43,6 +45,7 @@ const Parcel = () => {
   });
 
   useEffect(() => {
+    
     setLoading(true);
     (async () => {
       const query = filter_sort_query(
@@ -50,7 +53,6 @@ const Parcel = () => {
         filterOptions.sort,
         filterOptions.status
       );
-
       // console.log(query);
       const parcels = await getParcels("findMany", query);
       console.log("parcels: ", parcels);
@@ -59,13 +61,12 @@ const Parcel = () => {
     })();
     setLoading(false);
     console.log("getting parcels!");
-    // return console.log("getting parcels!");
   }, [filterOptions,]);
 
   useEffect(() => {
     setLoading(true);
-    if (searchParam == "Batch" || searchParam == "OwnerID") {
-      const filteredData = parcelsData.filter((parcel: ParcelInterface) => {
+    if (searchParam == "Batch" || searchParam == "OwnerID" || searchParam == "ParcelCompany") {
+      const filteredData = parcelsData?.filter((parcel: ParcelInterface) => {
         console.log(parcel);
         if (parcel.ParcelReceiver != null) {
           return parcel.ParcelReceiver[searchParam as keyof ParcelInterface]
@@ -74,18 +75,8 @@ const Parcel = () => {
         }
       });
       setFilteredParcelsData(filteredData);
-    } else if (searchParam == "ParcelCompany") {
-      const filteredData = parcelsData.filter((parcel: ParcelInterface) => {
-        if (parcel.vendor != null) {
-          return parcel.vendor[searchParam as keyof ParcelInterface]
-            .toLowerCase()
-            .includes(searchWord.toLowerCase());
-        }
-      });
-
-      setFilteredParcelsData(filteredData);
     } else if (searchParam !== "") {
-      const filteredData = parcelsData.filter((parcel: ParcelInterface) => {
+      const filteredData = parcelsData?.filter((parcel: ParcelInterface) => {
         return parcel[searchParam as keyof ParcelInterface]
           .toLowerCase()
           .includes(searchWord.toLowerCase());
@@ -102,42 +93,42 @@ const Parcel = () => {
       {
         column: "OwnerName",
         type: String,
-        value: (student: any) => student.OwnerName,
+        value: (user: any) => user.OwnerName,
       },
       {
         column: "OwnerID",
         type: String,
-        value: (student: any) => student.OwnerID,
+        value: (user: any) => user.OwnerID,
       },
       {
         column: "ParcelID",
         type: String,
-        value: (student: any) => student.ParcelID,
+        value: (user: any) => user.ParcelID,
       },
       {
         column: "Shelf",
         type: String,
-        value: (student: any) => student.Shelf,
+        value: (user: any) => user.Shelf,
       },
       {
         column: "ReceivedAt",
         type: String,
-        value: (student: any) => student.ReceivedAt,
+        value: (user: any) => user.ReceivedAt,
       },
       {
         column: "Comment",
         type: String,
-        value: (student: any) => student.Comment,
+        value: (user: any) => user.Comment,
       },
       {
         column: "Status",
         type: String,
-        value: (student: any) => student.Status,
+        value: (user: any) => user.Status,
       },
       {
-        column: "vendor_id",
+        column: "Parcel Company",
         type: Number,
-        value: (student: any) => student.vendor_id,
+        value: (user: any) => user.ParcelCompany,
       },
     ];
     await writeXlsxFile(filteredParcelsData, {
@@ -257,11 +248,11 @@ const Parcel = () => {
           strokeWidth={6}
           strokeWidthSecondary={3}
         />
-      ) : parcelsData.length === 0 ? (
+      ) : parcelsData?.length === 0 ? (
         "No Parcels"
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-10 w-full">
-          {filteredParcelsData.map((parcel: ParcelInterface) => (
+          {filteredParcelsData?.map((parcel: ParcelInterface) => (
             <ParcelCard
               name={parcel.OwnerName}
               ownerid={parcel.OwnerID}

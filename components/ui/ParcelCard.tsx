@@ -62,7 +62,7 @@ const ParcelCard = ({
             Status: "C",
             CollectedAt : new Date(),
           },
-          include: { vendor: true, ParcelReceiver: true },
+          include: {ParcelReceiver: true },
         });
         console.log("with include: ", otp_user);
         if (otp_user.Status == "C") {

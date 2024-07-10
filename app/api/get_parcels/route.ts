@@ -27,7 +27,7 @@ export const POST = async (req: Request) => {
       }
     } else if (func=='findMany'){
       if(parcels!=null && parcels.length>0){
-        parcels.forEach((parcel: any) => {
+        parcels?.forEach((parcel: any) => {
           delete parcel.otp;
         });
       }

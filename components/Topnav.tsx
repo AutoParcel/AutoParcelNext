@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { UserButton } from "@clerk/nextjs";
+import SideNav from "@/components/ui/SideNav";
 const TopNav = () => {
   return (
     <div className="bg-primary_red p-5 gap-6 flex text-white items-center justify-between h-[60px]">
@@ -18,13 +18,13 @@ const TopNav = () => {
       </div>
       <div className="flex gap-5">
         <div className="flex gap-5 text-sm items-center">
-          <Link href="/">Home</Link>
-          <Link href="/parceladder">Add Parcel</Link>
-          <Link href="/parcels">Parcels</Link>
-          <Link href="/statistics">Statistics</Link>
-          <Link href="/about">About Us</Link>
+          <Link href="/dashboard">Home</Link>
+          <Link href="/dashboard/parceladder">Add Parcel</Link>
+          <Link href="/dashboard/parcels">Parcels</Link>
+          <Link href="/dashboard/statistics">Statistics</Link>
+          <Link href="/dashboard/about">About Us</Link>
+          <SideNav />
         </div>
-        <UserButton afterSignOutUrl="/" />
       </div>
     </div>
   );

@@ -7,7 +7,7 @@ import {
   PieChartStatus,
   PieChartBatch,
 } from "@/components/ui/graph";
-import { getStatus, avgTime } from "@/app/statistics/getData";
+import { getStatus, avgTime } from "@/utils/getStatistics";
 import { Oval } from "react-loader-spinner";
 const Page = () => {
   const [avg, setAvg] = useState(0);

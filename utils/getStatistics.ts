@@ -8,13 +8,8 @@ interface ParcelReceiver {
     Email: string;
   }
   
-  interface Vendor {
-    vendor_id: number;
-    ParcelCompany: string;
-  }
   
   interface Parcel {
-    vendor_id: number;
     Comment: string | null;
     OwnerID: string;
     OwnerName: string;
@@ -26,12 +21,13 @@ interface ParcelReceiver {
     Shelf: string;
     Status: string;
     spare: any | null;
-    vendor: Vendor;
+    ParcelCompany: string;
+    Reminders: string[]
   }
   
   const getChartData_company = (parcels: Parcel[]) => {
     const countPerCompany = parcels.reduce((acc: Record<string, number>, parcel: Parcel) => {
-      const companyName = parcel.vendor?.ParcelCompany;
+      const companyName = parcel.ParcelCompany;
       if (!acc[companyName]) {
         acc[companyName] = 0;
       }
@@ -61,7 +57,7 @@ const getChartData_day = (parcels: Parcel[]) => {
   // Initialize an object to count parcels received on each day of the week
   const dayCounts: { [key in DayOfWeek]: number } = { Sunday: 0, Monday: 0, Tuesday: 0, Wednesday: 0, Thursday: 0, Friday: 0, Saturday: 0 };
 
-  parcels.forEach(parcel => {
+  parcels?.forEach(parcel => {
     const date = new Date(parcel.ReceivedAt); // Convert ReceivedAt to a Date object
     const dayOfWeekNumber = date.getUTCDay(); // Get the day of week as a number
     const dayOfWeekName = daysOfWeek[dayOfWeekNumber]; // Get the name of the day
@@ -86,7 +82,7 @@ const getChartData_day = (parcels: Parcel[]) => {
 const getStatus = (parcels: Parcel[]) => {
     var collected_count = 0
     var uncollected_count = 0
-    parcels.forEach(parcel => {
+    parcels?.forEach(parcel => {
         const status = parcel.Status;
 
         if (status == 'NC')
@@ -103,7 +99,7 @@ const getStatus = (parcels: Parcel[]) => {
 const getStaffBatch = (parcels: Parcel[]) => {
     var staff_count = 0
     var bacth_count = 0
-    parcels.forEach(parcel => {
+    parcels?.forEach(parcel => {
         const batch = parcel.ParcelReceiver.Batch;
         if (batch == "STAFF")
             staff_count += 1
@@ -116,7 +112,7 @@ const getStaffBatch = (parcels: Parcel[]) => {
 const avgTime = (parcels: Parcel[]) => {
     let totalDifferenceinDays = 0;
     let collectedParcelsCount = 0;
-    parcels.forEach(parcel => {
+    parcels?.forEach(parcel => {
         if (parcel.Status == "C" && parcel.CollectedAt != null) {
             const receivedAt = new Date(parcel.ReceivedAt); // Convert ReceivedAt to a Date object
             const collectedAt = new Date(parcel.CollectedAt); // Convert CollectedAt to a Date object

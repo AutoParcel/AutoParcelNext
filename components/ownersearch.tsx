@@ -64,7 +64,7 @@ const ComboboxDemo: React.FC<ComboboxDemoProps> = ({ options, handleNameChange }
           <CommandList>
             <CommandEmpty>add person btn here</CommandEmpty>
             <CommandGroup>
-              {list.map((option) => (
+              {list?.map((option) => (
                 <CommandItem
                 key={option.OwnerID}
                 value={`${option.OwnerID}_${option.OwnerName}`.toLowerCase()}

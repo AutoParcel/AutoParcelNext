@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import TopNav from "../components/Topnav";
 const inter = Inter({ subsets: ["latin"] });
-import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
 import { Analytics } from "@vercel/analytics/react"
@@ -26,8 +25,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
-      
+
       <html lang="en">
         <body className={cn(inter.className, "text-primary_black")}>
           <TopNav />
@@ -36,6 +34,5 @@ export default function RootLayout({
         <Analytics/>
         </body>
       </html>
-    </ClerkProvider>
   );
 }

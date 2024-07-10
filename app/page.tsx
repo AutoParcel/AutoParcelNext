@@ -1,29 +1,14 @@
-"use client";
-import Link from "next/link";
-import { LuPackagePlus, LuPackageSearch } from "react-icons/lu";
-export default function Home() {
-  return (
-    <div className="flex items-center justify-center text-2xl font-bold text-primary_black min-h-[calc(100vh-60px)]">
-      <Link
-        href="/parceladder"
-        className="text-center hover:bg-primary_white min-h-[calc(100vh-60px)] w-full h-full justify-center items-center flex flex-col group"
-      >
-        <LuPackagePlus
-          size={200}
-          className="stroke-primary_yellow stroke-1 group-hover:stroke-primary_red"
-        />
-        Add Parcel
-      </Link>
-      <Link
-        href="/parcels"
-        className="text-center hover:bg-primary_white min-h-[calc(100vh-60px)] justify-center items-center flex flex-col w-full group"
-      >
-        <LuPackageSearch
-          size={200}
-          className="stroke-primary_yellow stroke-1 group-hover:stroke-primary_red"
-        />
-        Parcel List
-      </Link>
-    </div>
-  );
-}
+"use client"
+import { useRouter } from "next/navigation";
+const Page = () => {
+    // Your code here
+    const router = useRouter();
+    router.push("/dashboard");
+    return (
+        <div>
+            Bye bye 
+        </div>
+    );
+};
+
+export default Page;

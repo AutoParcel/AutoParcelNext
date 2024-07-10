@@ -50,15 +50,6 @@ const addParcel = async (parcel: any) => {
   return res.data.parcel;
 };
 
-const addVendor = async (vendor: any) => {
-  const res = await axios.post("/api/add_vendor", { data: vendor });
-  return res.data.vendor;
-};
-
-const getVendors = async (query: any) => {
-  const receivers = await axios.post("/api/get_vendors", { query: query });
-  return receivers.data.vendors;
-};
 
 const getReceivers = async (query: any) => {
   const receivers = await axios.post("/api/get_parcel_recievers", {
@@ -66,6 +57,14 @@ const getReceivers = async (query: any) => {
   });
   return receivers.data.parcelRecievers;
 };
+
+const getUsers = async (query: any) => {
+  const users = await axios.post("/api/get_users", {
+    query: query,
+  });
+  return users.data;
+};
+
 
 const getParcelOTP = (len: number = 6) => {
   let char_set = "0123456789";
@@ -131,7 +130,7 @@ const filter_sort_query = (
       },
     },
     orderBy: sort_param_dict[sort_param],
-    include: { vendor: true, ParcelReceiver: true },
+    include: { ParcelReceiver: true },
   };
   //
 
@@ -139,9 +138,6 @@ const filter_sort_query = (
 };
 
 const sendMessage = async () => {
-  // console.log(query);
-  console.log("in sendMessage at utils")
-  // const res = axios.post("/api/twilio");
   const res = await fetch('/api/sendMessage', {
     method: 'POST',
     headers: {
@@ -150,7 +146,6 @@ const sendMessage = async () => {
     body: JSON.stringify({}),
   });
   const apiResponse = await res.json();
-  // return res.data.parcels;
 };
 
 // const sendMessage = (parcel_obj:Object, otp: string,type:string) =>
@@ -208,14 +203,12 @@ const sendMessage = async () => {
 
 export {
   getParcels,
-  getVendors,
+  getUsers,
   getReceivers,
   addParcel,
-  addVendor,
   generatePID,
   connectToDb,
   getParcelOTP,
   filter_sort_query,
   sendMessage,
-  // sendMessage
 };

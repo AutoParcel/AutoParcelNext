@@ -31,8 +31,6 @@ import sendMessage from "@/hooks/sendTwilio";
 import Fuse from "fuse.js";
 import {
   getReceivers,
-  getVendors,
-  addVendor,
   generatePID,
   addParcel,
   getParcelOTP,
@@ -41,7 +39,7 @@ import {
 import OwnerSearch from "@/components/ownersearch"
 
 var receiver = null;
-var vendor = null;
+// var vendor = null;
 
 
 function performDBMatch(
@@ -51,7 +49,7 @@ function performDBMatch(
   threshold: number = 0.5
 ) {
   // @ts-ignore
-  const lowercaseNames = list.map((user) => ({
+  const lowercaseNames = list?.map((user) => ({
     ...user,
     // update the value of the key to lowercase
     [key]: user[key].toLowerCase(),
@@ -152,95 +150,90 @@ const Page = () => {
     confidence: number;
   }
 
-  const Callapi = async (img: any) => {
-    const receivers = await getReceivers({});
-    const vendors = await getVendors({});
+  // const Callapi = async (img: any) => {
+  //   const receivers = await getReceivers({});
+  //   // const vendors = await getVendors({});
 
-    //solve this
-    const predictionstr = await usePrediction(img);
-    const emptydata: { [key: string]: [string | number, number] } = {
-      OwnerName: ["", 0.0],
-      ParcelCompany: ["", 0.0],
-      ParcelNumber: ["", 0.0],
-      RoomNumber: [0, 0.0],
-      OwnerID: ["", 0.0],
-    };
-    const data: any = {
-      OwnerName: "",
-      ParcelCompany: "",
-      ParcelNumber: "",
-      RoomNumber: 0,
-      OwnerID: "",
-    };
-    console.log(predictionstr);
-    if (predictionstr != undefined) {
-      const predictions = JSON.parse(predictionstr);
-      console.log("THIS WORKS ", predictions);
-      predictions.forEach((prediction: Iprediction) => {
-        if (
-          prediction.confidence > 0.0 &&
-          emptydata[prediction.label][1] < prediction.confidence
-        ) {
-          emptydata[prediction.label] = [
-            prediction.value,
-            prediction.confidence,
-          ];
-          data[prediction.label] = prediction.value;
-        }
-      });
+  //   //solve this
+  //   const predictionstr = await usePrediction(img);
+  //   const emptydata: { [key: string]: [string | number, number] } = {
+  //     OwnerName: ["", 0.0],
+  //     ParcelCompany: ["", 0.0],
+  //     ParcelNumber: ["", 0.0],
+  //     RoomNumber: [0, 0.0],
+  //     OwnerID: ["", 0.0],
+  //   };
+  //   const data: any = {
+  //     OwnerName: "",
+  //     ParcelCompany: "",
+  //     ParcelNumber: "",
+  //     RoomNumber: 0,
+  //     OwnerID: "",
+  //   };
+  //   console.log(predictionstr);
+  //   if (predictionstr != undefined) {
+  //     const predictions = JSON.parse(predictionstr);
+  //     console.log("THIS WORKS ", predictions);
+  //     predictions.forEach((prediction: Iprediction) => {
+  //       if (
+  //         prediction.confidence > 0.0 &&
+  //         emptydata[prediction.label][1] < prediction.confidence
+  //       ) {
+  //         emptydata[prediction.label] = [
+  //           prediction.value,
+  //           prediction.confidence,
+  //         ];
+  //         data[prediction.label] = prediction.value;
+  //       }
+  //     });
 
-      const receiver_result = performDBMatch(
-        receivers,
-        data.OwnerName,
-        "OwnerName"
-      );
-      const vendor_result = performDBMatch(
-        vendors,
-        data.ParcelCompany,
-        "ParcelCompany"
-      );
-      console.log(receiver_result);
-      console.log(vendor_result);
-      if (receiver_result.length > 0) {
-        const ref_index = receiver_result[0].refIndex;
-        receiver = receivers[ref_index];
-        data.OwnerID = receiver.OwnerID;
-        data.OwnerName = receiver.OwnerName;
-        data.PhoneNumber = receiver.PhoneNumber;
-        // what if the room number parameter is missing?
-        data.RoomNumber = receiver.RoomNumber;
-      }
-      if (vendor_result.length > 0) {
-        const ref_index = vendor_result[0].refIndex;
-        vendor = vendors[ref_index];
-        data.ParcelCompany = vendor?.ParcelCompany;
-      }
-      // else {
-        //   // create a new vendor if there is some textual data from the form
-        //   if (data.ParcelCompany.length > 0) {
-          //     vendor = await addVendor({ ParcelCompany: data.ParcelCompany });
-          //     // data.ParcelCompany = vendor.ParcelCompany;
-          //   } else {
-            //     vendor = { VendorID: null };
-            //   }
-            // }
+  //     const receiver_result = performDBMatch(
+  //       receivers,
+  //       data.OwnerName,
+  //       "OwnerName"
+  //     );
+
+  //     console.log(receiver_result);
+  //     if (receiver_result.length > 0) {
+  //       const ref_index = receiver_result[0].refIndex;
+  //       receiver = receivers[ref_index];
+  //       data.OwnerID = receiver.OwnerID;
+  //       data.OwnerName = receiver.OwnerName;
+  //       data.PhoneNumber = receiver.PhoneNumber;
+  //       // what if the room number parameter is missing?
+  //       data.RoomNumber = receiver.RoomNumber;
+  //     }
+  //     if (vendor_result.length > 0) {
+  //       const ref_index = vendor_result[0].refIndex;
+  //       vendor = vendors[ref_index];
+  //       data.ParcelCompany = vendor?.ParcelCompany;
+  //     }
+  //     // else {
+  //       //   // create a new vendor if there is some textual data from the form
+  //       //   if (data.ParcelCompany.length > 0) {
+  //         //     vendor = await addVendor({ ParcelCompany: data.ParcelCompany });
+  //         //     // data.ParcelCompany = vendor.ParcelCompany;
+  //         //   } else {
+  //           //     vendor = { VendorID: null };
+  //           //   }
+  //           // }
             
-            fillform({
-              // @ts-ignore
-              OwnerName: "", // @ts-ignore
-              ParcelCompany: "", // @ts-ignore
-              ParcelNumber: "",
-              PhoneNumber: "", // @ts-ignore
-              RoomNumber: "", // @ts-ignore
-              OwnerID: "",
-              Comment: "",
-        ...data,
-      });
-    } else {
-      console.log("no predictions");
-    }
-    setLoading(false);
-  };
+  //           fillform({
+  //             // @ts-ignore
+  //             OwnerName: "", // @ts-ignore
+  //             ParcelCompany: "", // @ts-ignore
+  //             ParcelNumber: "",
+  //             PhoneNumber: "", // @ts-ignore
+  //             RoomNumber: "", // @ts-ignore
+  //             OwnerID: "",
+  //             Comment: "",
+  //       ...data,
+  //     });
+  //   } else {
+  //     console.log("no predictions");
+  //   }
+  //   setLoading(false);
+  // };
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -261,7 +254,6 @@ const Page = () => {
     setLoading(true);
     // if there's a receiver, then update the parcel without the spare (room number, ph number)
     // if there's no receiver, then update the parcel with the spare.
-    // we also need vendor id
     let spare = "";
     // const uid = //generate uid
     delete values.Date;
@@ -272,11 +264,11 @@ const Page = () => {
 
     ///////////////////////////////////////////////////////
     // const receivers = await getReceivers({});
-    const vendors = await getVendors({});
-    let vendor = vendors.find((elem)=> elem.ParcelCompany.toLowerCase() == values.ParcelCompany.toLowerCase())
-    if(!vendor){
-      vendor = vendors.find((elem)=> "others" == values.ParcelCompany.toLowerCase())
-    }
+    // const vendors = await getVendors({});
+    // let vendor = vendors.find((elem)=> elem.ParcelCompany.toLowerCase() == values.ParcelCompany.toLowerCase())
+    // if(!vendor){
+    //   vendor = vendors.find((elem)=> "others" == values.ParcelCompany.toLowerCase())
+    // }
     // perform db match only if the name has changed
     // @ts-ignore
     // if the values are not the same, then we need to update the receiver. If not, we just have to make sure that the original receiver's id is taken
@@ -368,14 +360,13 @@ const Page = () => {
     delete values.PhoneNumber;
     delete values.RoomNumber;
     delete values.Email;
-    delete values.ParcelCompany;
     
     
     // // @ts-ignore
     values = {
       ...values,
       spare: spare,
-      vendor_id: vendor.vendor_id,
+      // vendor_id: vendor.vendor_id,
       ParcelID: await generatePID(),
       otp: getParcelOTP(),
     };
@@ -388,7 +379,7 @@ const Page = () => {
         where: {
           ParcelID: new_parcel.ParcelID,
         },
-        include: { vendor: true, ParcelReceiver: true },
+        include: {ParcelReceiver: true },
       });
       console.log("sending to smtp");
       console.log("new_parcel:", new_parcel);
@@ -406,14 +397,14 @@ const Page = () => {
     setCamOpen(true);
   };
 
-  const capture = React.useCallback(() => {
-    const imageSrc = webcamRef.current.getScreenshot();
-    setLoading(true);
-    Callapi(imageSrc);
-    setImage(imageSrc);
-    setCamOpen(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [webcamRef]);
+  // const capture = React.useCallback(() => {
+  //   const imageSrc = webcamRef.current.getScreenshot();
+  //   setLoading(true);
+  //   // Callapi(imageSrc);
+  //   setImage(imageSrc);
+  //   setCamOpen(false);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [webcamRef]);
 
   let videoConstraints: MediaTrackConstraints = {
     facingMode: FACING_MODE_ENVIRONMENT,
@@ -595,9 +586,9 @@ const Page = () => {
                   videoConstraints={videoConstraints}
                   screenshotQuality={1}
                 />
-                <Button className="bg-primary_black" onClick={capture}>
+                {/* <Button className="bg-primary_black" onClick={capture}>
                   Take Picture
-                </Button>
+                </Button> */}
               </>
             ) : loading ? (
               <Oval
