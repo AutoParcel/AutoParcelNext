@@ -30,7 +30,7 @@ export default function LoginForm() {
               className="mb-3 mt-5 block text-xs font-medium text-gray-900"
               htmlFor="username"
             >
-              Username
+              Username 
             </label>
             <div className="relative">
               <input
@@ -73,10 +73,10 @@ export default function LoginForm() {
           aria-live="polite"
           aria-atomic="true"
         >
-          {false && (
+          {state.message && (
             <>
               <ExclamationCircleIcon className="h-5 w-5 text-red-500" />
-              <p className="text-sm text-red-500">asd</p>
+              <p className="text-sm text-red-500">{state.message}</p>
             </>
           )}
         </div>

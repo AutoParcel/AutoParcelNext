@@ -385,7 +385,7 @@ const Page = () => {
       console.log("new_parcel:", new_parcel);
       sendMessage(new_parcel, otp, "c");
       console.log("sent to smtp");
-      router.push("/parcels/" + new_parcel.ParcelID);
+      router.push("/dashboard/parcels/" + new_parcel.ParcelID);
     }
     setLoading(false);
     // @ts-ignore

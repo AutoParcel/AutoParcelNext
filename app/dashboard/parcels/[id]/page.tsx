@@ -32,12 +32,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import axios from "axios";
 import React, { useState, useRef, useEffect } from "react";
 import { Input } from "@/components/ui/input";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { getParcels } from "@/utils";
+import { BellAlertIcon } from "@heroicons/react/24/outline";
+import { Hand } from "lucide-react";
+import { Parcel } from "@prisma/client";
 
 export default function ParcelPage({ params }: { params: { id: string } }) {
   const [userotp, setUserotp] = useState("");
@@ -47,6 +48,11 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
     console.log("submitted", data);
     setEditStatus((prev) => !prev);
   };
+  const sendReminder = (parcelobj:Parcel) =>{
+    console.log("Sending Reminder with OTP: ", userotp)
+    console.log(parcelobj)
+    // sendMessage(parcelobj, userotp, "c");
+  }
   const formSchema = z.object({
     OwnerName: z.string().min(2, {
       message: "Name must be at least 3 characters.",
@@ -97,8 +103,10 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
     Comment: "",
     Status: "",
     ReceivedAt: "",
+    CollectedAt: "",
+    Reminders: [],
   });
-  
+
   function getOrdinalNum(n: number) {
     return (
       n +
@@ -124,7 +132,7 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
   const RequestDetails = async () => {
     const ParcelDetails = await getParcels("findMany", {
       where: { ParcelID: params.id },
-      include: {ParcelReceiver: true },
+      include: { ParcelReceiver: true },
     });
     console.log(ParcelDetails[0]);
     fillform(ParcelDetails[0]);
@@ -155,7 +163,7 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
         },
         data: {
           Status: "C",
-          CollectedAt: new Date()
+          CollectedAt: new Date(),
         },
       });
       if (otp_user.Status == "C") {
@@ -165,7 +173,7 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
           duration: 3000,
         });
         sendMessage(otp_user, "0", "h");
-        router.push("/parcels/" + params.id);
+        router.push("/dashboard/parcels/" + params.id);
         router.refresh();
       } else {
         toast({
@@ -194,9 +202,9 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
           },
           data: {
             Status: "C",
-            CollectedAt: new Date()
+            CollectedAt: new Date(),
           },
-          include: {ParcelReceiver: true },
+          include: { ParcelReceiver: true },
         });
         if (otp_user.Status == "C") {
           toast({
@@ -205,10 +213,9 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
             duration: 3000,
           });
           sendMessage(otp_user, "0", "h");
-          console.log("this is running!!")
-          router.push("/parcels/" + params.id);
+          console.log("this is running!!");
+          router.push("/dashboard/parcels/" + params.id);
           window.location.reload();
-
         } else {
           toast({
             title: "Parcel Handover",
@@ -228,7 +235,6 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
     } else if (name == "epic") {
       console.log("epicc");
     } else {
-      
       console.log("clicked");
     }
     console.log("Reached here!");
@@ -252,21 +258,30 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
         </div>
       ) : (
         <>
-          <div className="flex flex-row justify-between items-center">
-            <h1 className="text-6xl font-bold mt-10 flex gap-5">
+          <div className="flex flex-row justify-between items-center mt-10">
+            <h1 className="text-6xl font-bold flex gap-5">
               Parcel
               <div className="text-primary_red">{params.id}</div>
             </h1>
-            <div className="self-end">
+            <div className="w-full flex flex-row-reverse">
               {parcel.Status == "C" ? (
-                <div className="bg-primary_yellow text-white p-4 rounded-md">
-                  Collected ✅
+                <div className="bg-primary_yellow text-white p-4 rounded-md font-semibold">
+                  Collected
                 </div>
               ) : (
+                <div className="flex flex-row ">
+                <button className="gap-2 flex p-4 bg-primary_black text-white border-r-primary_yellow border-r-8 rounded-l-md hover:bg-primary_red font-semibold" onClick={(e) => sendReminder(parcel,"","c")}>
+                  <div className="inline">Send Reminder</div>
+                  <BellAlertIcon className="w-6 h-6 stroke-2 inline"/>
+                </button>
                 <Dialog>
-                    <DialogTrigger className="p-4 bg-primary_black text-white rounded-md w-full" onClick={(e) => CardClicked(e, "epic")}>
-                      Handover Parcel
-                    </DialogTrigger>
+                  <DialogTrigger
+                    className="gap-2 flex p-4 bg-primary_black text-white rounded-r-md hover:bg-primary_yellow font-semibold"
+                    onClick={(e) => CardClicked(e, "epic")}
+                  >
+                    <div className="inline">Handover</div>
+                    <Hand className="w-6 h-6 stroke-2 inline"/>
+                  </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
                       <DialogTitle>
@@ -291,7 +306,14 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
                                 value={userotp}
                                 onChange={(e) => setUserotp(e.target.value)}
                               />
-                              <Button className="w-full" onClick={(e) => sendMessage(parcel, userotp , "resend")}>Resend OTP</Button>
+                              <Button
+                                className="w-full"
+                                onClick={(e) =>
+                                  sendMessage(parcel, userotp, "resend")
+                                }
+                              >
+                                Resend OTP
+                              </Button>
                             </div>
                             <Button onClick={(e) => CardClicked(e, "handover")}>
                               Handover Parcel
@@ -302,6 +324,7 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
                     </DialogHeader>
                   </DialogContent>
                 </Dialog>
+                </div>
               )}
             </div>
           </div>
@@ -313,12 +336,30 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
                   className="space-y-8"
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex gap-2">
-                      Received At:
-                      <div className=" font-bold">
-                        {getDate(parcel.ReceivedAt)}
+                    <div className="flex gap-2 flex-col">
+                      <div>
+                        Received At:
+                        <div className="font-bold inline">
+                          {" "}
+                          {getDate(parcel.ReceivedAt)}
+                        </div>
                       </div>
+                      {parcel.Reminders && <div>
+                        Reminders sent: 
+                        <div className="font-bold inline">
+                          {" "}
+                          {parcel.Reminders.length}
+                        </div>
+                      </div> }
+                      {parcel.CollectedAt && <div>
+                        Collected At:
+                        <div className="font-bold inline">
+                          {" "}
+                          {getDate(parcel.CollectedAt)}
+                        </div>
+                      </div> }
                     </div>
+
                     <div className="flex gap-10">
                       <div className="p-3 bg-primary_white text-sm font-bold rounded-xl opacity-75">
                         Parcel Unique ID- {params.id}
@@ -330,7 +371,7 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
                       ) : (
                         <Button
                           onClick={() => setEditStatus((prev) => !prev)}
-                          className="flex gap-3 bg-primary_black"
+                          className="flex gap-3 bg-primary_black hover:bg-opacity-50"
                           type="button"
                         >
                           Edit Parcel

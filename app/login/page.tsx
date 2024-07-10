@@ -14,8 +14,7 @@ export default function LoginPage() {
             height={100}
             className=""
           />
-          <div className='text-4xl font-bold'>
-          AutoParcel</div>
+          <div className='text-4xl font-bold'>AutoParcel</div>
           </div>
         </div>
         <LoginForm />

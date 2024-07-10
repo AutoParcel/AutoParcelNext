@@ -72,7 +72,7 @@ const ParcelCard = ({
             duration: 3000,
           });
           await sendMessage(otp_user, "0", "h");
-          router.push("/parcels/" + id);
+          router.push("/dashboard/parcels/" + id);
         } else {
           toast({
             title: "Parcel Handover",
@@ -92,7 +92,7 @@ const ParcelCard = ({
       // we'll send a query to find a unique parcel with the id and then update it's status to collected
     } else if (name == "epic") {
     } else {
-      router.push("/parcels/" + id);
+      router.push("/dashboard/parcels/" + id);
     }
     console.log(event, name);
   };

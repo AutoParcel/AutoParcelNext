@@ -4,32 +4,40 @@ import { authConfig } from './auth.config';
 import { z } from 'zod';
 import { connectToDb } from "@/utils";
 import prisma from "@/prisma";
+
+
 export const { auth, signIn, signOut } = NextAuth({
+  
   ...authConfig,
   providers: [
     Credentials({
       async authorize(credentials) {
-        await connectToDb();
-        const parsedCredentials = z
-        .object({ username: z.string(), password: z.string().min(6) })
-        .safeParse(credentials);
-        if (parsedCredentials.success) {
-          const { username, password } = parsedCredentials.data;
-            const user = await prisma.users.findUnique({
-              where:{
-                Username: username,
-                Password: password
+        try{
+          await connectToDb();
+          const parsedCredentials = z
+          .object({ username: z.string(), password: z.string().min(6) })
+          .safeParse(credentials);
+          if (parsedCredentials.success) {
+            const { username, password } = parsedCredentials.data;
+              const user = await prisma.users.findUnique({
+                where:{
+                  Username: username,
+                  Password: password
+                }
+              });
+              if (user) {
+                return credentials;
               }
-            });
-            if (user) {
-              return credentials;
+              else{
+                console.log('Invalid credentials');
+                return null;
+              }
             }
-            else{
-              return null;
-            }
-          }
-          
+        }
+        catch{
         console.log('Invalid credentials');
+        return null;
+        }
         return null;
       },
     }),

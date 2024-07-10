@@ -4,7 +4,7 @@ export default function Home() {
   return (
     <div className="flex items-center justify-center text-2xl font-bold text-primary_black min-h-[calc(100vh-60px)]">
       <Link
-        href="dashboard/parceladder"
+        href="/dashboard/parceladder"
         className="text-center hover:bg-primary_white min-h-[calc(100vh-60px)] w-full h-full justify-center items-center flex flex-col group"
       >
         <LuPackagePlus
@@ -14,7 +14,7 @@ export default function Home() {
         Add Parcel
       </Link>
       <Link
-        href="dashboard/parcels"
+        href="/dashboard/parcels"
         className="text-center hover:bg-primary_white min-h-[calc(100vh-60px)] justify-center items-center flex flex-col w-full group"
       >
         <LuPackageSearch

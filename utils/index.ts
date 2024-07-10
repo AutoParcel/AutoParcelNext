@@ -30,7 +30,7 @@ const generatePID = async (len: number = 4) => {
   var yy = String(today.getFullYear() % 100);
   var date = yy + mm + dd;
   let pid =
-    "AP" +
+    "PLU" +
     date +
     Array.from({ length: len }, () =>
       char_set.charAt(Math.floor(Math.random() * char_set.length))

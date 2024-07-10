@@ -1,7 +1,6 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import TopNav from "../components/Topnav";
 const inter = Inter({ subsets: ["latin"] });
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
@@ -28,7 +27,6 @@ export default function RootLayout({
 
       <html lang="en">
         <body className={cn(inter.className, "text-primary_black")}>
-          <TopNav />
           {children}
           <Toaster />
         <Analytics/>

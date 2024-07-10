@@ -5,9 +5,8 @@ const Page = () => {
     const router = useRouter();
     router.push("/dashboard");
     return (
-        <div>
-            Bye bye 
-        </div>
+        <>
+        </>
     );
 };
 
