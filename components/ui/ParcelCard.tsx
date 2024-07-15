@@ -21,6 +21,7 @@ const ParcelCard = ({
   date,
   id,
   status,
+  no_of_reminders,
 }: {
   name: string;
   ownerid: string;
@@ -28,6 +29,7 @@ const ParcelCard = ({
   id: string;
   date: string;
   status: string;
+  no_of_reminders: number;
 }) => {
   const [userotp, setUserotp] = useState("");
   const router = useRouter();
@@ -103,12 +105,13 @@ const ParcelCard = ({
           status == "C" ? "opacity-50" : "hover:bg-primary_beige"
         } p-4 rounded-md shadow-md text-center bg-primary_white cursor-pointer flex flex-col justify-between`}
         onClick={(e) => CardClicked(e)}
-      >
-        <div className="h-full flex flex-col ">
+        >
+        <div className="h-full flex flex-col relative">
+        {status == "NC" && no_of_reminders > 0 ? <div className="text-white font-bold absolute bg-primary_red rounded-full w-10 h-10 text-sm justify-center items-center flex -right-6 -top-6">!</div>:""}
           <div className="flex justify-center">
             <div className="text-xl font-semibold mb-2">{id}</div>
           </div>
-          <div className="text-left mb-2">{name}</div>
+          <div className="text-left mb-2">{name} </div>
           <div className="text-left -mt-3 mb-1 text-xs text-primary_yellow font-bold">
             {ownerid}
           </div>
@@ -130,14 +133,14 @@ const ParcelCard = ({
               Collected
             </button>
           ) : (
-            <button
-              className="bg-primary_black text-primary_white rounded-md w-full"
-              onClick={(e) => CardClicked(e, "epic")}
-            >
-              <DialogTrigger className="p-4 w-full">
+            // <button
+            //   className="bg-primary_black text-primary_white rounded-md w-full"
+            //   onClick={(e) => CardClicked(e, "epic")}
+            // >
+              <DialogTrigger className="p-4 bg-primary_black text-primary_white rounded-md w-full" onClick={(e) => CardClicked(e, "epic")}>
                 Handover Parcel
               </DialogTrigger>
-            </button>
+            // </button>
           )}
         </div>
       </div>
@@ -146,7 +149,9 @@ const ParcelCard = ({
         <DialogHeader>
           <DialogTitle>Please enter OTP to handover parcel</DialogTitle>
           <DialogDescription>
-            <div className="flex flex-col gap-5 mt-5">
+          </DialogDescription>
+        </DialogHeader>
+            <div className="flex flex-col gap-5">
               <div className="flex gap-4">
                 <Input
                   type="number"
@@ -160,8 +165,6 @@ const ParcelCard = ({
                 Handover Parcel
               </Button>
             </div>
-          </DialogDescription>
-        </DialogHeader>
       </DialogContent>
     </Dialog>
   );

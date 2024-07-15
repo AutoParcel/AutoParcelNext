@@ -105,6 +105,7 @@ const filter_sort_query = (
     C: ["C"],
     A: ["NC", "C"],
   };
+  // add desc and asc for sorting
   let sort_param_dict: sort_param_dictIn = {
     N: { OwnerName: "asc" },
     D: { ReceivedAt: "asc" },

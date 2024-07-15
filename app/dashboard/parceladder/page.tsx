@@ -368,10 +368,10 @@ const Page = () => {
       spare: spare,
       // vendor_id: vendor.vendor_id,
       ParcelID: await generatePID(),
+      // otp should be generated in the backend! // TODO
       otp: getParcelOTP(),
     };
     // values= {...values, include: { vendor: true, ParcelReceiver: true }}
-    console.log("values:\n", values);
     let new_parcel = await addParcel(values);
     if (new_parcel != null) {
       const otp = new_parcel.otp;
@@ -382,9 +382,8 @@ const Page = () => {
         include: {ParcelReceiver: true },
       });
       console.log("sending to smtp");
-      console.log("new_parcel:", new_parcel);
       sendMessage(new_parcel, otp, "c");
-      console.log("sent to smtp");
+      console.log("otp sent!");
       router.push("/dashboard/parcels/" + new_parcel.ParcelID);
     }
     setLoading(false);
@@ -392,10 +391,10 @@ const Page = () => {
   }
 
 
-  const opencamera = () => {
-    console.log("camera opened");
-    setCamOpen(true);
-  };
+  // const opencamera = () => {
+  //   console.log("camera opened");
+  //   setCamOpen(true);
+  // };
 
   // const capture = React.useCallback(() => {
   //   const imageSrc = webcamRef.current.getScreenshot();
@@ -406,11 +405,11 @@ const Page = () => {
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [webcamRef]);
 
-  let videoConstraints: MediaTrackConstraints = {
-    facingMode: FACING_MODE_ENVIRONMENT,
-    width: 1000,
-    height: 640,
-  };
+  // let videoConstraints: MediaTrackConstraints = {
+  //   facingMode: FACING_MODE_ENVIRONMENT,
+  //   width: 1000,
+  //   height: 640,
+  // };
 
   const handleNameChange = (data)=>{
     fillform(data)
@@ -483,7 +482,7 @@ const Page = () => {
                   <FormItem>
                     <FormLabel>Phone Number</FormLabel>
                     <FormControl>
-                      <Input placeholder="" {...field} type="number" disabled />
+                      <Input placeholder="12365489" {...field} type="number" disabled />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -610,7 +609,7 @@ const Page = () => {
                   className="m-4 bg-primary_black"
                   type="button"
                   disabled
-                  onClick={opencamera}
+                  // onClick={opencamera}
                 >
                   {image ? "Retake" : "Scan Label"}
                 </Button>

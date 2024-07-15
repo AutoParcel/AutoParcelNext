@@ -1,7 +1,6 @@
 "use client";
 import ParcelCard from "@/components/ui/ParcelCard";
-import axios from "axios";
-import { useEffect, useState } from "react";
+import {useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import writeXlsxFile from "write-excel-file";
 import { Label } from "@/components/ui/label";
@@ -17,7 +16,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { getParcels, filter_sort_query } from "@/utils";
-
 
 interface ParcelInterface {
   OwnerName: string;
@@ -45,7 +43,6 @@ const Parcel = () => {
   });
 
   useEffect(() => {
-    
     setLoading(true);
     (async () => {
       const query = filter_sort_query(
@@ -59,15 +56,15 @@ const Parcel = () => {
       setParcelsData(parcels);
       setFilteredParcelsData(parcels);
     })();
-    setLoading(false);
     console.log("getting parcels!");
-  }, [filterOptions,]);
+    setLoading(false);
+    
+  }, [filterOptions]);
 
   useEffect(() => {
     setLoading(true);
-    if (searchParam == "Batch" || searchParam == "OwnerID" || searchParam == "ParcelCompany") {
+    if (searchParam == "Batch" || searchParam == "OwnerID") {
       const filteredData = parcelsData?.filter((parcel: ParcelInterface) => {
-        console.log(parcel);
         if (parcel.ParcelReceiver != null) {
           return parcel.ParcelReceiver[searchParam as keyof ParcelInterface]
             .toLowerCase()
@@ -76,14 +73,12 @@ const Parcel = () => {
       });
       setFilteredParcelsData(filteredData);
     } else if (searchParam !== "") {
-      const filteredData = parcelsData?.filter((parcel: ParcelInterface) => {
+      const filteredData = parcelsData.filter((parcel: ParcelInterface) => {
         return parcel[searchParam as keyof ParcelInterface]
           .toLowerCase()
           .includes(searchWord.toLowerCase());
       });
       setFilteredParcelsData(filteredData);
-    } else {
-      setFilteredParcelsData(parcelsData);
     }
     setLoading(false);
   }, [searchWord, searchParam]);
@@ -154,7 +149,11 @@ const Parcel = () => {
           <div className="">
             <Select
               defaultValue={searchParam}
-              onValueChange={(val) => setSearchParam(val)}
+              onValueChange={(val) => {
+                setLoading(true);
+                setSearchParam(val);
+                setLoading(false);
+              }}
             >
               <SelectTrigger className="w-[160px]">
                 <SelectValue placeholder="Filter" />
@@ -171,11 +170,13 @@ const Parcel = () => {
         </div>
         <Select
           defaultValue={filterOptions.timefilt}
-          onValueChange={(val) =>
+          onValueChange={(val) => {
+            setLoading(true);
             setFilterOptions((prev) => {
               return { ...prev, timefilt: val };
-            })
-          }
+            });
+            setLoading(false);
+          }}
         >
           <SelectTrigger className="w-[160px]">
             <SelectValue placeholder="Filter" />
@@ -191,11 +192,13 @@ const Parcel = () => {
           <div className="">Sort By: </div>
           <Select
             defaultValue={filterOptions.sort}
-            onValueChange={(val) =>
+            onValueChange={(val) => {
+              setLoading(true);
               setFilterOptions((prev) => {
                 return { ...prev, sort: val };
-              })
-            }
+              });
+              setLoading(false);
+            }}
           >
             <SelectTrigger className="w-[140px]">
               <SelectValue placeholder="Choose" />
@@ -212,11 +215,13 @@ const Parcel = () => {
         </div>
         <RadioGroup
           defaultValue={filterOptions.status}
-          onValueChange={(val) =>
+          onValueChange={(val) => {
+            setLoading(true);
             setFilterOptions((prev) => {
               return { ...prev, status: val };
-            })
-          }
+            });
+            setLoading(false);
+          }}
         >
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="A" id="A" />
@@ -252,17 +257,20 @@ const Parcel = () => {
         "No Parcels"
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-10 w-full">
-          {filteredParcelsData?.map((parcel: ParcelInterface) => (
-            <ParcelCard
-              name={parcel.OwnerName}
-              ownerid={parcel.OwnerID}
-              shelf={parcel.Shelf}
-              id={parcel.ParcelID}
-              date={parcel.ReceivedAt}
-              key={parcel.ParcelID}
-              status={parcel.Status}
-            />
-          ))}
+            {filteredParcelsData?.length != 0
+              ? filteredParcelsData.map((parcel: ParcelInterface) => (
+                  <ParcelCard
+                    name={parcel.OwnerName}
+                    ownerid={parcel.OwnerID}
+                    shelf={parcel.Shelf}
+                    id={parcel.ParcelID}
+                    date={parcel.ReceivedAt}
+                    key={parcel.ParcelID}
+                    status={parcel.Status}
+                    no_of_reminders={parcel.Reminders.length}
+                  />
+                ))
+              : "No Parcels"}
         </div>
       )}
     </div>
