@@ -49,7 +49,6 @@ export default async function sendMessage(
       body = `Dear ${parcel_obj.OwnerName},\nYour parcel ${parcel_obj.ParcelID} has been collected from Gate 1 at ${parcel_obj.CollectedAt}.\n\nThank you for using AutoParcel.`;
       subject = `Your Parcel ${parcel_obj.ParcelID} Handed-Over!`;
     } else if (type == "reminder") {
-      body = `Kindly use ${otp} as your AutoParcel One Time Password (OTP) to collect your parcel.`;
       body = `Dear ${parcel_obj.OwnerName},\nYour parcel ${parcel_obj.ParcelID} has been waiting at Gate 1. \nKindly use ${otp} as your AutoParcel One Time Password (OTP) to collect your parcel as soon as possible.\n\nThank you for using AutoParcel.`;
       subject = "Reminder: Collect Your Parcel!";
     } else {
