@@ -1,6 +1,7 @@
 import prisma from "@/prisma";
 import { NextResponse } from "next/server";
 import axios from "axios";
+import { parse, differenceInHours } from "date-fns";
 
 function getOrdinalNum(n: number) {
       return (
@@ -12,16 +13,15 @@ function getOrdinalNum(n: number) {
     }
 
 const getDate = (olddate: string) => {
-      let date = new Date(olddate);
-      let currentDayOrdinal = getOrdinalNum(date.getDate());
-      let currentMonth = date.toLocaleString("default", { month: "long" });
-  
-      let currentYear = date.getFullYear();
-      // let currentTime = date.getUTCHours() + ":" + date.getUTCMinutes();
-      let currentTime = date.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
+      let date = new Date(olddate); //in UTC
+      
+      const istOffset = 5 * 60 * 60 * 1000 + 30 * 60 * 1000; // 5 hours 30 minutes in milliseconds
+      const istDate = new Date(date.getTime() + istOffset); //in IST
+      
+      let currentDayOrdinal = getOrdinalNum(istDate.getDate());
+      let currentMonth = istDate.toLocaleString("default", { month: "long" });
+      let currentYear = istDate.getFullYear();
+      let currentTime = istDate.getUTCHours() + ":" + istDate.getUTCMinutes();
       let currentDate = `${currentDayOrdinal} ${currentMonth} ${currentYear} at ${currentTime}`;
       return currentDate;
     };
@@ -51,7 +51,7 @@ const getDate = (olddate: string) => {
           .catch((error) => {
             console.error("Failed to send a message", error);
           });
-          const newdate = getDate(new Date().toDateString())
+          const newdate = getDate(new Date().toUTCString())
           console.log("result", result)
           await connectToDb();
           await prisma.parcel.update({
@@ -85,11 +85,21 @@ export async function GET(request: Request) {
               ParcelReceiver: true,
             }
           });
-      for (const parcel of parcels) {
+      const filteredParcels = parcels.filter(parcel => {
+        if (parcel.Reminders && parcel.Reminders.length > 0) {
+          const lastReminder = parcel.Reminders[parcel.Reminders.length - 1];
+          const lastReminderDate = parse(lastReminder, 'do MMMM yyyy at HH:mm', new Date());
+
+          const hoursDiff = differenceInHours(new Date(), lastReminderDate);
+          return hoursDiff >= 48;
+        }
+        return false;
+      });
+      for (const parcel of filteredParcels) {
           sendReminder(parcel);
           }
       try {
-            return NextResponse.json({ parcels }, { status: 200 });
+            return NextResponse.json({ filteredParcels }, { status: 200 });
           } catch (error) {
             console.log(error);
             //@ts-ignore
