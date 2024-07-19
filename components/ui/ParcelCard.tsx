@@ -98,6 +98,22 @@ const ParcelCard = ({
     }
     console.log(event, name);
   };
+  const exclamationClicked = async(e: any) => {
+    e.stopPropagation();
+    let last_date = await getParcels("findUnique", {
+      where: {
+        ParcelID: id,
+      },
+      select: {
+        Reminders: true
+      }
+    })
+    toast({
+      title: "Last Reminder Sent on",
+      description: last_date.Reminders[last_date.Reminders.length - 1],
+      duration: 2500,
+    })
+  }
   return (
     <Dialog>
       <div
@@ -107,7 +123,10 @@ const ParcelCard = ({
         onClick={(e) => CardClicked(e)}
         >
         <div className="h-full flex flex-col relative">
-        {status == "NC" && no_of_reminders > 0 ? <div className="text-white font-bold absolute bg-primary_red rounded-full w-10 h-10 text-sm justify-center items-center flex -right-6 -top-6">!</div>:""}
+        {status == "NC" && no_of_reminders > 0 ? 
+        <div className="text-white font-bold absolute bg-primary_red rounded-full w-10 h-10 text-sm justify-center items-center flex -right-6 -top-6"
+        onClick={(e) => exclamationClicked(e)}>
+        !</div>:""}
           <div className="flex justify-center">
             <div className="text-xl font-semibold mb-2">{id}</div>
           </div>
