@@ -91,7 +91,8 @@ const startOfDayDate = (date: Date) => {
 const filter_sort_query = (
   time_filt: string,
   sort_param: string,
-  status_filt: string
+  status_filt: string,
+  sort_direction: string = 'asc'
 ) => {
   // let time_filt_dict = {"T":startOfDayDate, "W":startOfWeekDate, "M":startOfMonthDate, "A":}
   let time_filt_dict: time_filt_dictIn = {
@@ -107,11 +108,11 @@ const filter_sort_query = (
   };
   // add desc and asc for sorting
   let sort_param_dict: sort_param_dictIn = {
-    N: { OwnerName: "asc" },
-    D: { ReceivedAt: "asc" },
-    S: { Status: "asc" },
-    Sh: { Shelf: "asc" },
-    P: { ParcelID: "asc" },
+    N: { OwnerName: sort_direction },
+    D: { ReceivedAt: sort_direction },
+    S: { Status: sort_direction },
+    Sh: { Shelf: sort_direction },
+    P: { ParcelID: sort_direction },
   };
 
   interface time_filt_dictIn {

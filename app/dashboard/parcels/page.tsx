@@ -40,6 +40,7 @@ const Parcel = () => {
     timefilt: "A",
     sort: "D",
     status: "A",
+    sortDirection: 'asc'
   });
 
   useEffect(() => {
@@ -48,7 +49,8 @@ const Parcel = () => {
       const query = filter_sort_query(
         filterOptions.timefilt,
         filterOptions.sort,
-        filterOptions.status
+        filterOptions.status,
+        filterOptions.sortDirection
       );
       // console.log(query);
       const parcels = await getParcels("findMany", query);
@@ -212,6 +214,21 @@ const Parcel = () => {
               <SelectItem value="S">Status</SelectItem>
             </SelectContent>
           </Select>
+          <button   style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+          onClick={() => setFilterOptions(
+            prev => ({...prev, sortDirection: prev.sortDirection === 'asc' ? 'desc' : 'asc'}))}>
+            {filterOptions.sortDirection === 'asc' ? (
+              <>
+                <span>▲</span>
+                <span className="text-xs">Asc</span>
+              </>
+            ) : (
+              <>
+                <span>▼</span>
+                <span className="text-xs">Desc</span>
+              </>
+            )}
+          </button>
         </div>
         <RadioGroup
           defaultValue={filterOptions.status}
