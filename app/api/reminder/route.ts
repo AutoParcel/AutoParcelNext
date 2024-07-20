@@ -67,9 +67,7 @@ export async function GET(request: Request) {
     if (parcel.Reminders && parcel.Reminders.length > 0) {
       const lastReminder = parcel.Reminders[parcel.Reminders.length - 1];
       // TODO
-      console.log(lastReminder)
-      const lastReminderDate = Date.parse(lastReminder)
-      console.log(lastReminderDate,new Date())
+      const lastReminderDate = new Date(lastReminder)
       const hoursDiff = differenceInHours(new Date(), lastReminderDate);
       return hoursDiff >= 48;
     }
