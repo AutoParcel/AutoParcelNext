@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
 import { Oval } from "react-loader-spinner";
 import sendMessage from "@/hooks/sendTwilio";
+import { getDate } from "@/utils";
 import {
   Dialog,
   DialogContent,
@@ -32,7 +33,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect,useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { getParcels } from "@/utils";
@@ -50,20 +51,23 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
   const sendReminder = async () => {
     console.log("sending reminder to " + parcel.OwnerName);
     sendMessage(parcel, "", "reminder");
-    const newdate = getDate(new Date().toDateString())
+    const stringdate = new Date().toUTCString();
     await getParcels("update", {
       where: {
         ParcelID: params.id,
       },
       data: {
         Reminders: {
-          set: [...parcel.Reminders, newdate],
+          set: [...parcel.Reminders, stringdate],
         },
       },
     });
-    console.log(parcel)
-    setParcel((prev) => ({...prev, Reminders: [...prev.Reminders, newdate]}));
-    console.log("reminders updated!")
+    console.log(parcel);
+    setParcel((prev) => ({
+      ...prev,
+      Reminders: [...prev.Reminders, stringdate],
+    }));
+    console.log("reminders updated!");
   };
   const formSchema = z.object({
     OwnerName: z.string().min(2, {
@@ -80,16 +84,7 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
     Shelf: z.string(),
     Comment: z.string(),
   });
-  const fillform = async (data: any) => {
-    form.setValue("OwnerName", data.OwnerName);
-    form.setValue("ParcelCompany", data.ParcelCompany);
-    form.setValue("ParcelNumber", data.ParcelNumber);
-    form.setValue("PhoneNumber", data.ParcelReceiver?.PhoneNumber);
-    form.setValue("RoomNumber", parseInt(data.ParcelReceiver?.RoomNumber));
-    form.setValue("OwnerID", data.OwnerID == null ? "" : data.OwnerID);
-    form.setValue("Shelf", data.Shelf);
-    form.setValue("Comment", data.Comment);
-  };
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -149,42 +144,32 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
     Reminders: [],
   });
 
-  function getOrdinalNum(n: number) {
-    return (
-      n +
-      (n > 0
-        ? ["th", "st", "nd", "rd"][(n > 3 && n < 21) || n % 10 > 3 ? 0 : n % 10]
-        : "")
-    );
-  }
-  const getDate = (olddate: string) => {
-    let date = new Date(olddate);
-    let currentDayOrdinal = getOrdinalNum(date.getDate());
-    let currentMonth = date.toLocaleString("default", { month: "long" });
 
-    let currentYear = date.getFullYear();
-    // let currentTime = date.getUTCHours() + ":" + date.getUTCMinutes();
-    let currentTime = date.toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-    let currentDate = `${currentDayOrdinal} ${currentMonth} ${currentYear} at ${currentTime}`;
-    return currentDate;
-  };
-  const RequestDetails = async () => {
-    const ParcelDetails = await getParcels("findUnique", {
-      where: { ParcelID: params.id },
-      include: { ParcelReceiver: true },
-    });
-    console.log(ParcelDetails);
-    fillform(ParcelDetails);
-    setParcel(() => ParcelDetails);
-    setLoading(false);
-  };
 
   useEffect(() => {
+    const fillform = async (data: any) => {
+      form.setValue("OwnerName", data.OwnerName);
+      form.setValue("ParcelCompany", data.ParcelCompany);
+      form.setValue("ParcelNumber", data.ParcelNumber);
+      form.setValue("PhoneNumber", data.ParcelReceiver?.PhoneNumber);
+      form.setValue("RoomNumber", parseInt(data.ParcelReceiver?.RoomNumber));
+      form.setValue("OwnerID", data.OwnerID == null ? "" : data.OwnerID);
+      form.setValue("Shelf", data.Shelf);
+      form.setValue("Comment", data.Comment);
+    };
+    const RequestDetails = async () => {
+      const ParcelDetails = await getParcels("findUnique", {
+        where: { ParcelID: params.id },
+        include: { ParcelReceiver: true },
+      });
+      console.log(ParcelDetails);
+      fillform(ParcelDetails);
+      setParcel(() => ParcelDetails);
+      setLoading(false);
+    };
+
     RequestDetails();
-  }, []);
+  }, [params.id,form]);
 
   const router = useRouter();
   const { toast } = useToast();
@@ -393,7 +378,7 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
                           Reminders sent:
                           <div className="font-bold inline">
                             {" "}
-                            {parcel.Reminders.length}
+                            {parcel.Reminders.length -1}
                           </div>
                         </div>
                       )}

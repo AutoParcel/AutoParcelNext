@@ -1,7 +1,5 @@
 import prisma from "@/prisma";
 import axios from "axios";
-import { NextApiRequest, NextApiResponse } from 'next';
-import twilio from 'twilio';
 // import {Twilio} from "twilio";
 // import twilio from "twilio";
 const connectToDb = async () => {
@@ -202,6 +200,29 @@ const sendMessage = async () => {
 //       });
 //     });
 // }
+const getDate = (olddate: string= "") => {
+  let date = new Date();
+  if (olddate != "") {
+    date = new Date(olddate); //in UTC
+  }
+  const istOffset = 5 * 60 * 60 * 1000 + 30 * 60 * 1000; // 5 hours 30 minutes in milliseconds
+  const istDate = new Date(date.getTime() + istOffset); //in IST
+
+  let currentDayOrdinal = getOrdinalNum(istDate.getDate());
+  let currentMonth = istDate.toLocaleString("default", { month: "long" });
+  let currentYear = istDate.getFullYear();
+  let currentTime = istDate.getUTCHours() + ":" + istDate.getUTCMinutes();
+  let currentDate = `${currentDayOrdinal} ${currentMonth} ${currentYear} at ${currentTime}`;
+  return currentDate;
+};
+function getOrdinalNum(n: number) {
+  return (
+    n +
+    (n > 0
+      ? ["th", "st", "nd", "rd"][(n > 3 && n < 21) || n % 10 > 3 ? 0 : n % 10]
+      : "")
+  );
+}
 
 export {
   getParcels,
@@ -213,4 +234,5 @@ export {
   getParcelOTP,
   filter_sort_query,
   sendMessage,
+  getDate,
 };

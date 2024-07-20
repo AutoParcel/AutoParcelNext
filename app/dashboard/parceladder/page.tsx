@@ -1,4 +1,3 @@
-//@ts-nocheck
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -8,6 +7,7 @@ import { Oval } from "react-loader-spinner";
 import { FaCamera } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { Textarea } from "@/components/ui/textarea";
+import {getDate} from "@/utils";
 import {
   Select,
   SelectContent,
@@ -71,28 +71,8 @@ function performDBMatch(
   return fuse.search(query.toLowerCase());
 }
 
-function getOrdinalNum(n: number) {
-  return (
-    n +
-    (n > 0
-      ? ["th", "st", "nd", "rd"][(n > 3 && n < 21) || n % 10 > 3 ? 0 : n % 10]
-      : "")
-  );
-}
 
-const getDate = () => {
-  let date = new Date();
-  let currentDayOrdinal = getOrdinalNum(date.getDate());
-  let currentMonth = date.toLocaleString("default", { month: "long" });
 
-  let currentYear = date.getFullYear();
-  let currentTime = date.toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-  let currentDate = `${currentTime} ${currentDayOrdinal} ${currentMonth} ${currentYear}`;
-  return currentDate;
-};
 const formSchema = z.object({
   OwnerName: z.string().min(2, {
     message: "Name must be at least 3 characters.",
@@ -107,6 +87,7 @@ const formSchema = z.object({
   OwnerID: z.string(),
   Shelf: z.string(),
   Comment: z.string(),
+  Email: z.string(),
 });
 const FACING_MODE_ENVIRONMENT = "environment";
 
@@ -133,7 +114,7 @@ const Page = () => {
 
   const fillform = (data: any) => {
     data.OwnerName ? form.setValue("OwnerName", data.OwnerName): ""
-    data.ParcelCompany ? form.setValue("ParcelCompany", data.ParcelCompany): ""
+    data.ParcelCompany ? form.setValue("ParcelCompany", data.ParcelCompany.toLowerCase()): ""
     data.PhoneNumber ? form.setValue("PhoneNumber", data.PhoneNumber): ""
     data.RoomNumber ? form.setValue("RoomNumber", data.RoomNumber): ""
     data.OwnerID ? form.setValue("OwnerID", data.OwnerID): ""
@@ -366,10 +347,10 @@ const Page = () => {
     values = {
       ...values,
       spare: spare,
-      // vendor_id: vendor.vendor_id,
       ParcelID: await generatePID(),
       // otp should be generated in the backend! // TODO
       otp: getParcelOTP(),
+      Reminders: [new Date()],
     };
     // values= {...values, include: { vendor: true, ParcelReceiver: true }}
     let new_parcel = await addParcel(values);
@@ -411,7 +392,7 @@ const Page = () => {
   //   height: 640,
   // };
 
-  const handleNameChange = (data)=>{
+  const handleNameChange = (data:any)=>{
     fillform(data)
     setBatch(data.Batch)
   }
@@ -577,7 +558,7 @@ const Page = () => {
           <div className=" flex items-center justify-center flex-col mt-24">
             {camOpen ? (
               <>
-                <Webcam
+                {/*<Webcam
                   className="webcam"
                   audio={false}
                   ref={webcamRef}
@@ -585,7 +566,7 @@ const Page = () => {
                   videoConstraints={videoConstraints}
                   screenshotQuality={1}
                 />
-                {/* <Button className="bg-primary_black" onClick={capture}>
+                 <Button className="bg-primary_black" onClick={capture}>
                   Take Picture
                 </Button> */}
               </>

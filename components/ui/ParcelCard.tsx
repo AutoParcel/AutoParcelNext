@@ -14,6 +14,7 @@ import { Input } from "./input";
 import { getParcels } from "@/utils";
 import { useState } from "react";
 import sendMessage from "@/hooks/sendTwilio";
+import {getDate} from "@/utils";
 const ParcelCard = ({
   name,
   ownerid,
@@ -31,6 +32,7 @@ const ParcelCard = ({
   status: string;
   no_of_reminders: number;
 }) => {
+  
   const [userotp, setUserotp] = useState("");
   const router = useRouter();
   const { toast } = useToast();
@@ -110,8 +112,8 @@ const ParcelCard = ({
     })
     toast({
       title: "Last Reminder Sent on",
-      description: last_date.Reminders[last_date.Reminders.length - 1],
-      duration: 2500,
+      description: getDate(last_date.Reminders[last_date.Reminders.length - 1]),
+      duration: 3000,
     })
   }
   return (
@@ -123,7 +125,7 @@ const ParcelCard = ({
         onClick={(e) => CardClicked(e)}
         >
         <div className="h-full flex flex-col relative">
-        {status == "NC" && no_of_reminders > 0 ? 
+        {status == "NC" && no_of_reminders > 1 ? 
         <div className="text-white font-bold absolute bg-primary_red rounded-full w-10 h-10 text-sm justify-center items-center flex -right-6 -top-6"
         onClick={(e) => exclamationClicked(e)}>
         !</div>:""}
