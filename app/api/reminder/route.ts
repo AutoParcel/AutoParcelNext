@@ -53,6 +53,8 @@ const connectToDb = async () => {
 export async function GET(request: Request) {
   const authHeader = request.headers.get("Authorization");
   console.log("AUTH HEADER: ", authHeader);
+  console.log("API USER: ", process.env.API_USERSECRET);
+  console.log("API PASS: ", process.env.API_PASSSECRET);
   if (!authHeader) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   const encodedCredentials = authHeader.split(" ")[1];
   const decodedCredentials = atob(encodedCredentials);
