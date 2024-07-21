@@ -52,7 +52,7 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
     console.log("sending reminder to " + parcel.OwnerName);
     sendMessage(parcel, "", "reminder");
     const stringdate = new Date().toUTCString();
-    await getParcels("update", {
+    const updatedparcel = await getParcels("update", {
       where: {
         ParcelID: params.id,
       },
@@ -62,7 +62,7 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
         },
       },
     });
-    console.log(parcel);
+    console.log("updatedParcel:", updatedparcel);
     setParcel((prev) => ({
       ...prev,
       Reminders: [...prev.Reminders, stringdate],
@@ -198,7 +198,7 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
           description: "Parcel Handover Successful!",
           duration: 3000,
         });
-        sendMessage(otp_user, "0", "h");
+        sendMessage(otp_user, "", "h");
         router.push("/dashboard/parcels/" + params.id);
         router.refresh();
       } else {

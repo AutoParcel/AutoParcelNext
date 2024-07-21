@@ -1,3 +1,4 @@
+"use server"
 import { connectToDb } from "@/utils";
 import prisma from "@/prisma";
 import { NextResponse } from "next/server";
@@ -16,7 +17,7 @@ export const POST = async (req: Request) => {
     // @ts-ignore
     let parcels = await funcs[func](query);
 
-    if(func=='findUnique'){
+    if(func=='findUnique' || func=='findFirst' || func=='update'){
       if(parcels!=null){
         delete parcels.otp;
       }

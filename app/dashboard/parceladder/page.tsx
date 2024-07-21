@@ -7,7 +7,7 @@ import { Oval } from "react-loader-spinner";
 import { FaCamera } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { Textarea } from "@/components/ui/textarea";
-import {getDate} from "@/utils";
+import { getDate } from "@/utils";
 import {
   Select,
   SelectContent,
@@ -36,42 +36,8 @@ import {
   getParcelOTP,
   getParcels,
 } from "@/utils";
-import OwnerSearch from "@/components/ownersearch"
-
-var receiver = null;
-// var vendor = null;
-
-
-function performDBMatch(
-  list: any,
-  query: string,
-  key: string,
-  threshold: number = 0.5
-) {
-  // @ts-ignore
-  const lowercaseNames = list?.map((user) => ({
-    ...user,
-    // update the value of the key to lowercase
-    [key]: user[key].toLowerCase(),
-  }));
-
-  const options = {
-    includeScore: true,
-    threshold: threshold,
-    algorithms: ["levenshtein", "jaro-winkler"],
-    keys: [
-      // key.toLowerCase()
-      key,
-      // {
-      //   name: key,
-      // },
-    ],
-  };
-  const fuse = new Fuse(lowercaseNames, options);
-  return fuse.search(query.toLowerCase());
-}
-
-
+import OwnerSearch from "@/components/ownersearch";
+import { useToast } from "@/components/ui/use-toast";
 
 const formSchema = z.object({
   OwnerName: z.string().min(2, {
@@ -93,8 +59,6 @@ const FACING_MODE_ENVIRONMENT = "environment";
 
 // const FACING_MODE_USER = "user";
 const Page = () => {
-
-
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState("");
   const [camOpen, setCamOpen] = useState(false);
@@ -102,26 +66,28 @@ const Page = () => {
   const [receivers, setReceivers] = useState([]);
   const webcamRef: any = React.useRef(null);
   const router = useRouter();
-
+  const { toast } = useToast();
   React.useEffect(() => {
     async function fetchData() {
       const receivers = await getReceivers({});
-      console.log(receivers)
-      setReceivers(()=>receivers)
+      console.log(receivers);
+      setReceivers(() => receivers);
     }
-    fetchData()
-  },[]);
+    fetchData();
+  }, []);
 
   const fillform = (data: any) => {
-    data.OwnerName ? form.setValue("OwnerName", data.OwnerName): ""
-    data.ParcelCompany ? form.setValue("ParcelCompany", data.ParcelCompany.toLowerCase()): ""
-    data.PhoneNumber ? form.setValue("PhoneNumber", data.PhoneNumber): ""
-    data.RoomNumber ? form.setValue("RoomNumber", data.RoomNumber): ""
-    data.OwnerID ? form.setValue("OwnerID", data.OwnerID): ""
-    data.ParcelNumber ? form.setValue("ParcelNumber", data.ParcelNumber): ""
-    data.Shelf ? form.setValue("Shelf", data.Shelf): ""
-    data.Comment ? form.setValue("Comment", data.Comment): ""
-    data.Email ? form.setValue("Email", data.Email): ""
+    data.OwnerName ? form.setValue("OwnerName", data.OwnerName) : "";
+    data.ParcelCompany
+      ? form.setValue("ParcelCompany", data.ParcelCompany.toLowerCase())
+      : "";
+    data.PhoneNumber ? form.setValue("PhoneNumber", data.PhoneNumber) : "";
+    data.RoomNumber ? form.setValue("RoomNumber", data.RoomNumber) : "";
+    data.OwnerID ? form.setValue("OwnerID", data.OwnerID) : "";
+    data.ParcelNumber ? form.setValue("ParcelNumber", data.ParcelNumber) : "";
+    data.Shelf ? form.setValue("Shelf", data.Shelf) : "";
+    data.Comment ? form.setValue("Comment", data.Comment) : "";
+    data.Email ? form.setValue("Email", data.Email) : "";
   };
 
   interface Iprediction {
@@ -198,7 +164,7 @@ const Page = () => {
   //           //     vendor = { VendorID: null };
   //           //   }
   //           // }
-            
+
   //           fillform({
   //             // @ts-ignore
   //             OwnerName: "", // @ts-ignore
@@ -215,7 +181,7 @@ const Page = () => {
   //   }
   //   setLoading(false);
   // };
-  
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -232,145 +198,149 @@ const Page = () => {
     },
   });
   async function onSubmit(values: any) {
-    setLoading(true);
-    // if there's a receiver, then update the parcel without the spare (room number, ph number)
-    // if there's no receiver, then update the parcel with the spare.
-    let spare = "";
-    // const uid = //generate uid
-    delete values.Date;
-    // @ts-ignore
+    try {
+      setLoading(true);
+      // if there's a receiver, then update the parcel without the spare (room number, ph number)
+      // if there's no receiver, then update the parcel with the spare.
+      let spare = "";
+      // const uid = //generate uid
+      delete values.Date;
+      // @ts-ignore
 
-    // here we again conduct fuzzy search and update the receiver
-    // if there's a parcel vendor then create the parcel vendor.
+      // here we again conduct fuzzy search and update the receiver
+      // if there's a parcel vendor then create the parcel vendor.
 
-    ///////////////////////////////////////////////////////
-    // const receivers = await getReceivers({});
-    // const vendors = await getVendors({});
-    // let vendor = vendors.find((elem)=> elem.ParcelCompany.toLowerCase() == values.ParcelCompany.toLowerCase())
-    // if(!vendor){
-    //   vendor = vendors.find((elem)=> "others" == values.ParcelCompany.toLowerCase())
-    // }
-    // perform db match only if the name has changed
-    // @ts-ignore
-    // if the values are not the same, then we need to update the receiver. If not, we just have to make sure that the original receiver's id is taken
-    // if(receiver != null && (receiver.OwnerName.toLowerCase() != values.OwnerName.toLowerCase())){
-    // if (
-    //   (receiver != null &&
-    //     receiver.OwnerName.toLowerCase() !=
-    //       values.OwnerName.toLowerCase().trim()) ||
-    //   receiver == null
-    // ) {
-    //   console.log("in here");
-    //   const receiver_result = performDBMatch(
-    //     receivers,
-    //     values.OwnerName.trim(),
-    //     "OwnerName"
-    //   );
-    //   console.log("here are the matches: ", receiver_result);
-    //   if (receiver_result.length > 0) {
-    //     const ref_index = receiver_result[0].refIndex;
-    //     receiver = receivers[ref_index];
-    //     values.OwnerID = receiver.OwnerID;
-    //     values.OwnerName = receiver.OwnerName;
-    //     values.PhoneNumber = receiver.PhoneNumber;
-    //     values.RoomNumber = receiver.RoomNumber;
-    //   }
-    //   // if there's no match, then we don't update all this shit but update spare
-    //   else {
-    //     //trim?
-    //     spare = `(${values.PhoneNumber}),(${values.RoomNumber}),(${values.OwnerID})`;
-    //     values.OwnerID = null;
-    //   }
-    //   // here check, if the above is false, then there are two cases: It's null, so update the spare. Or the two are equal, so make sure Id is not changed
-    //   // @ts-ignore
-    // }
-    // // @ts-ignore
-    // else if (
-    //   receiver.OwnerName.toLowerCase() == values.OwnerName.toLowerCase().trim()
-    // ) {
-    //   // @ts-ignore
-    //   values.OwnerID = receiver.OwnerID;
-    // }
+      ///////////////////////////////////////////////////////
+      // const receivers = await getReceivers({});
+      // const vendors = await getVendors({});
+      // let vendor = vendors.find((elem)=> elem.ParcelCompany.toLowerCase() == values.ParcelCompany.toLowerCase())
+      // if(!vendor){
+      //   vendor = vendors.find((elem)=> "others" == values.ParcelCompany.toLowerCase())
+      // }
+      // perform db match only if the name has changed
+      // @ts-ignore
+      // if the values are not the same, then we need to update the receiver. If not, we just have to make sure that the original receiver's id is taken
+      // if(receiver != null && (receiver.OwnerName.toLowerCase() != values.OwnerName.toLowerCase())){
+      // if (
+      //   (receiver != null &&
+      //     receiver.OwnerName.toLowerCase() !=
+      //       values.OwnerName.toLowerCase().trim()) ||
+      //   receiver == null
+      // ) {
+      //   console.log("in here");
+      //   const receiver_result = performDBMatch(
+      //     receivers,
+      //     values.OwnerName.trim(),
+      //     "OwnerName"
+      //   );
+      //   console.log("here are the matches: ", receiver_result);
+      //   if (receiver_result.length > 0) {
+      //     const ref_index = receiver_result[0].refIndex;
+      //     receiver = receivers[ref_index];
+      //     values.OwnerID = receiver.OwnerID;
+      //     values.OwnerName = receiver.OwnerName;
+      //     values.PhoneNumber = receiver.PhoneNumber;
+      //     values.RoomNumber = receiver.RoomNumber;
+      //   }
+      //   // if there's no match, then we don't update all this shit but update spare
+      //   else {
+      //     //trim?
+      //     spare = `(${values.PhoneNumber}),(${values.RoomNumber}),(${values.OwnerID})`;
+      //     values.OwnerID = null;
+      //   }
+      //   // here check, if the above is false, then there are two cases: It's null, so update the spare. Or the two are equal, so make sure Id is not changed
+      //   // @ts-ignore
+      // }
+      // // @ts-ignore
+      // else if (
+      //   receiver.OwnerName.toLowerCase() == values.OwnerName.toLowerCase().trim()
+      // ) {
+      //   // @ts-ignore
+      //   values.OwnerID = receiver.OwnerID;
+      // }
 
-    // values.OwnerID = receiver.OwnerID;
-    // check if vendor name has changed. If vendor name has changed, then perform search. If nothing exists, then create.
-    // @ts-ignore
-    // SAME LOGIC AS VENDOR, BUT JUST HAVE TO MAKE SURE IF THE INPUT FIELD IS NULL OR NOT
-    // console.log("outside if: ",values.ParcelCompany)
-    // if (values.ParcelCompany == null || values.ParcelCompany.trim() == "") {
-    //   vendor = null;
-    //   values.ParcelCompany = "";
-    // } else {
+      // values.OwnerID = receiver.OwnerID;
+      // check if vendor name has changed. If vendor name has changed, then perform search. If nothing exists, then create.
+      // @ts-ignore
+      // SAME LOGIC AS VENDOR, BUT JUST HAVE TO MAKE SURE IF THE INPUT FIELD IS NULL OR NOT
+      // console.log("outside if: ",values.ParcelCompany)
+      // if (values.ParcelCompany == null || values.ParcelCompany.trim() == "") {
+      //   vendor = null;
+      //   values.ParcelCompany = "";
+      // } else {
 
-    //   if (
-    //     (vendor != null &&
-    //       vendor.ParcelCompany.toLowerCase() !=
-    //         values.ParcelCompany.toLowerCase().trim()) ||
-    //     vendor == null
-    //   ) {
-    //     //@ts-ignore
-    //     const vendor_result = performDBMatch(
-    //       vendors,
-    //       values.ParcelCompany.trim(),
-    //       "ParcelCompany",
-    //       0.0
-    //     );
-    //     console.log("here are the matches: ", vendor_result);
-    //     if (vendor_result.length > 0) {
-    //       const ref_index = vendor_result[0].refIndex;
-    //       vendor = vendors[ref_index];
-    //       console.log("vendor_var", vendor);
-    //       values.ParcelCompany = vendor.ParcelCompany;
-    //       values = { ...values, vendor_id: vendor.vendor_id };
-    //     } else {
-    //       // create a new vendor if there is some textual data from the form
-    //       // so we know that the parcel company length is not zero, so we can create a new vendor
-    //       vendor = await addVendor({
-    //         ParcelCompany: values.ParcelCompany.trim(),
-    //       });
-    //       values.ParcelCompany = vendor.ParcelCompany;
-    //       values = { ...values, vendor_id: vendor.vendor_id };
-    //     }
-    //   } else {
-    //     // here put the code
-    //     //@ts-ignore
-    //     values = { ...values, vendor_id: vendor.vendor_id };
-    //   }
-    // }
-    // @ts-ignore
-    delete values.PhoneNumber;
-    delete values.RoomNumber;
-    delete values.Email;
-    
-    
-    // // @ts-ignore
-    values = {
-      ...values,
-      spare: spare,
-      ParcelID: await generatePID(),
-      // otp should be generated in the backend! // TODO
-      otp: getParcelOTP(),
-      Reminders: [new Date()],
-    };
-    // values= {...values, include: { vendor: true, ParcelReceiver: true }}
-    let new_parcel = await addParcel(values);
-    if (new_parcel != null) {
-      const otp = new_parcel.otp;
-      new_parcel = await getParcels("findUnique", {
-        where: {
-          ParcelID: new_parcel.ParcelID,
-        },
-        include: {ParcelReceiver: true },
-      });
-      console.log("sending to smtp");
-      sendMessage(new_parcel, otp, "c");
-      console.log("otp sent!");
+      //   if (
+      //     (vendor != null &&
+      //       vendor.ParcelCompany.toLowerCase() !=
+      //         values.ParcelCompany.toLowerCase().trim()) ||
+      //     vendor == null
+      //   ) {
+      //     //@ts-ignore
+      //     const vendor_result = performDBMatch(
+      //       vendors,
+      //       values.ParcelCompany.trim(),
+      //       "ParcelCompany",
+      //       0.0
+      //     );
+      //     console.log("here are the matches: ", vendor_result);
+      //     if (vendor_result.length > 0) {
+      //       const ref_index = vendor_result[0].refIndex;
+      //       vendor = vendors[ref_index];
+      //       console.log("vendor_var", vendor);
+      //       values.ParcelCompany = vendor.ParcelCompany;
+      //       values = { ...values, vendor_id: vendor.vendor_id };
+      //     } else {
+      //       // create a new vendor if there is some textual data from the form
+      //       // so we know that the parcel company length is not zero, so we can create a new vendor
+      //       vendor = await addVendor({
+      //         ParcelCompany: values.ParcelCompany.trim(),
+      //       });
+      //       values.ParcelCompany = vendor.ParcelCompany;
+      //       values = { ...values, vendor_id: vendor.vendor_id };
+      //     }
+      //   } else {
+      //     // here put the code
+      //     //@ts-ignore
+      //     values = { ...values, vendor_id: vendor.vendor_id };
+      //   }
+      // }
+      // @ts-ignore
+      delete values.PhoneNumber;
+      delete values.RoomNumber;
+      delete values.Email;
+
+      // // @ts-ignore
+      values = {
+        ...values,
+        spare: spare,
+        ParcelID: await generatePID(),
+
+        Reminders: [new Date()],
+      };
+
+      let new_parcel = await addParcel(values);
+      // add toast maybe here
+      console.log("new parcel: ", new_parcel);
       router.push("/dashboard/parcels/" + new_parcel.ParcelID);
+    } catch (e) {
+      if (typeof e === "string") {
+        toast({
+          title: "Something went wrong!",
+          description: e,
+          variant: "destructive",
+          duration: 3000,
+        });
+      } else if (e instanceof Error) {
+        toast({
+          title: "Something went wrong!",
+          description: e.message,
+          variant: "destructive",
+          duration: 3000,
+        });
+      }
     }
     setLoading(false);
-    // @ts-ignore
   }
-
 
   // const opencamera = () => {
   //   console.log("camera opened");
@@ -392,10 +362,10 @@ const Page = () => {
   //   height: 640,
   // };
 
-  const handleNameChange = (data:any)=>{
-    fillform(data)
-    setBatch(data.Batch)
-  }
+  const handleNameChange = (data: any) => {
+    fillform(data);
+    setBatch(data.Batch);
+  };
 
   return (
     <>
@@ -419,8 +389,17 @@ const Page = () => {
                     <FormLabel>Parcel Owner</FormLabel>
                     <FormControl>
                       <div className="flex flex-row justify-start gap-3 items-center">
-                      <OwnerSearch options={receivers} handleNameChange={handleNameChange}/>
-                    <div className={`p-2 bg-primary_red rounded-lg font-semibold text-sm text-white ${Batch ? "" : "hidden"}`}>{Batch}</div>
+                        <OwnerSearch
+                          options={receivers}
+                          handleNameChange={handleNameChange}
+                        />
+                        <div
+                          className={`p-2 bg-primary_red rounded-lg font-semibold text-sm text-white ${
+                            Batch ? "" : "hidden"
+                          }`}
+                        >
+                          {Batch}
+                        </div>
                       </div>
                     </FormControl>
                     <FormMessage />
@@ -463,7 +442,12 @@ const Page = () => {
                   <FormItem>
                     <FormLabel>Phone Number</FormLabel>
                     <FormControl>
-                      <Input placeholder="12365489" {...field} type="number" disabled />
+                      <Input
+                        placeholder="12365489"
+                        {...field}
+                        type="number"
+                        disabled
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -476,7 +460,12 @@ const Page = () => {
                   <FormItem>
                     <FormLabel>E-mail Address</FormLabel>
                     <FormControl>
-                      <Input placeholder="example@plaksha.edu.in" {...field} type="string" disabled />
+                      <Input
+                        placeholder="example@plaksha.edu.in"
+                        {...field}
+                        type="string"
+                        disabled
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -487,9 +476,16 @@ const Page = () => {
                 name="RoomNumber"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{Batch == "STAFF" ? "Cabin/Desk Number" : "Room Number"}</FormLabel>
+                    <FormLabel>
+                      {Batch == "STAFF" ? "Cabin/Desk Number" : "Room Number"}
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder="000" type="number" {...field} disabled />
+                      <Input
+                        placeholder="000"
+                        type="number"
+                        {...field}
+                        disabled
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -502,7 +498,7 @@ const Page = () => {
                   <FormItem>
                     <FormLabel>Owner ID</FormLabel>
                     <FormControl>
-                      <Input placeholder="U20XX0XXX" {...field} disabled/>
+                      <Input placeholder="U20XX0XXX" {...field} disabled />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

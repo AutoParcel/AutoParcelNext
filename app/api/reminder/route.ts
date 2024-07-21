@@ -1,11 +1,8 @@
 import prisma from "@/prisma";
 import { NextResponse } from "next/server";
 import axios from "axios";
-import { parse, differenceInHours } from "date-fns";
-
-
+import { differenceInHours } from "date-fns";
 const sendReminder = async (parcel: any) => {
-  console.log("Someone called me! cron job is running");
   console.log("sending reminder to " + parcel.OwnerName);
 
   const body = `Dear ${parcel.OwnerName},\nYour parcel ${parcel.ParcelID} has been waiting at Gate 1. \nKindly use ${parcel.otp} as your AutoParcel One Time Password (OTP) to collect your parcel as soon as possible.\n\nThank you for using AutoParcel.`;
@@ -54,6 +51,16 @@ const connectToDb = async () => {
 };
 
 export async function GET(request: Request) {
+  const authHeader = request.headers.get("Authorization");
+  if (!authHeader) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  const encodedCredentials = authHeader.split(" ")[1];
+  const decodedCredentials = atob(encodedCredentials);
+  const [username, password] = decodedCredentials.split(":");
+  if (username === process.env.API_USERSECRET && password === process.env.API_PASSSECRET) {
+  } else {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+  if (!authHeader) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   await connectToDb();
   const parcels = await prisma.parcel.findMany({
     where: {

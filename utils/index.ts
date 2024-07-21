@@ -44,7 +44,7 @@ const generatePID = async (len: number = 4) => {
 };
 
 const addParcel = async (parcel: any) => {
-  const res = await axios.post("/api/add_parcel", { data: parcel });
+  const res = await axios.post("/api/add_parcel", { data: parcel }); // add parcel to db
   return res.data.parcel;
 };
 
@@ -137,16 +137,7 @@ const filter_sort_query = (
   return obj;
 };
 
-const sendMessage = async () => {
-  const res = await fetch('/api/sendMessage', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({}),
-  });
-  const apiResponse = await res.json();
-};
+
 
 // const sendMessage = (parcel_obj:Object, otp: string,type:string) =>
 // {  const accountSid = 'ACabcdafb0cabe490bac017324e60bd268';
@@ -233,6 +224,5 @@ export {
   connectToDb,
   getParcelOTP,
   filter_sort_query,
-  sendMessage,
   getDate,
 };

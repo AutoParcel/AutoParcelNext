@@ -35,6 +35,7 @@ export default async function sendMessage(
     let body = "";
     let subject = "";
     if (type == "resend" || type == "reminder") {
+      console.log("otp is being fetched from db");  
       const new_parcel = await prisma.parcel.findUnique({
         where: {
           ParcelID: parcel_obj.ParcelID,
