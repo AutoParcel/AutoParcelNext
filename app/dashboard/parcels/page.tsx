@@ -83,7 +83,7 @@ const Parcel = () => {
       setFilteredParcelsData(filteredData);
     }
     setLoading(false);
-  }, [searchWord, searchParam]);
+  }, [searchWord, searchParam,parcelsData]);
 
   const downloadExcel = async () => {
     const schema = [
@@ -135,7 +135,7 @@ const Parcel = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-between p-5 mx-4 md:mx-8 lg:mx-14 gap-5 my-5 md:my-8 lg:my-10">
+    <div className=" flex flex-col items-center justify-between p-5 mx-4 md:mx-8 lg:mx-14 gap-5 my-5 md:my-8 lg:my-10">
       <div className="mb-4 text-3xl md:text-4xl lg:text-6xl font-bold self-start">
         Parcel Details
       </div>
@@ -273,7 +273,7 @@ const Parcel = () => {
       ) : parcelsData?.length === 0 ? (
         "No Parcels"
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-10 w-full">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-10 w-full ">
             {filteredParcelsData?.length != 0
               ? filteredParcelsData.map((parcel: ParcelInterface) => (
                   <ParcelCard
