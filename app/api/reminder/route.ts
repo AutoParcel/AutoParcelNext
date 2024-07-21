@@ -52,6 +52,7 @@ const connectToDb = async () => {
 
 export async function GET(request: Request) {
   const authHeader = request.headers.get("Authorization");
+  console.log("request: ",request)
   console.log("AUTH HEADER: ", authHeader);
   console.log("API USER: ", process.env.API_USERSECRET);
   console.log("API PASS: ", process.env.API_PASSSECRET);
