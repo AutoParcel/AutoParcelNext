@@ -83,12 +83,12 @@ const PieChartStatus: React.FC<{ parcels: any[] }> = ({ parcels }) => {
 } 
 
 const PieChartBatch: React.FC<{ parcels: any[] }> = ({ parcels }) => {
-  const { staff_count, bacth_count } = getStaffBatch(parcels);
+  const { staff_count, batch_count } = getStaffBatch(parcels);
   const data = {
-      labels: [`Staff: ${staff_count}`, `Students: ${bacth_count}`],
+      labels: [`Staff: ${staff_count}`, `Students: ${batch_count}`],
       datasets: [
           {
-              data: [staff_count, bacth_count],
+              data: [staff_count, batch_count],
               backgroundColor: [
                   '#e4b363ff',
                   '#ef6461ff',

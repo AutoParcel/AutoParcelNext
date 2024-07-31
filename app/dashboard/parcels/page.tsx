@@ -124,7 +124,7 @@ const Parcel = () => {
       },
       {
         column: "Parcel Company",
-        type: Number,
+        type: String,
         value: (user: any) => user.ParcelCompany,
       },
     ];

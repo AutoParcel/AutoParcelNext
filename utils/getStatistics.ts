@@ -98,15 +98,15 @@ const getStatus = (parcels: Parcel[]) => {
 
 const getStaffBatch = (parcels: Parcel[]) => {
     var staff_count = 0
-    var bacth_count = 0
+    var batch_count = 0
     parcels?.forEach(parcel => {
         const batch = parcel.ParcelReceiver.Batch;
-        if (batch == "STAFF")
-            staff_count += 1
-        else 
-            bacth_count += 1
+        if (batch.startsWith("UG") || batch.startsWith("TLP"))
+          batch_count += 1
+          else 
+          staff_count += 1
     })
-    return {staff_count, bacth_count}
+    return {staff_count, batch_count}
 }
 
 const avgTime = (parcels: Parcel[]) => {

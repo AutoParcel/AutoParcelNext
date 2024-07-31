@@ -394,6 +394,9 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
                     </div>
 
                     <div className="flex gap-10">
+                      <div className="p-3 bg-primary_red text-white text-sm font-bold rounded-xl opacity-75">
+                        {parcel.ParcelReceiver.Batch}
+                      </div>
                       <div className="p-3 bg-primary_white text-sm font-bold rounded-xl opacity-75">
                         Parcel Unique ID- {params.id}
                       </div>

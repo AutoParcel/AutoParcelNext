@@ -50,10 +50,10 @@ const addParcel = async (parcel: any) => {
 
 
 const getReceivers = async (query: any) => {
-  const receivers = await axios.post("/api/get_parcel_recievers", {
+  const receivers = await axios.post("/api/get_parcel_receivers", {
     query: query,
   });
-  return receivers.data.parcelRecievers;
+  return receivers.data.parcelReceivers;
 };
 
 const getUsers = async (query: any) => {

@@ -443,7 +443,7 @@ const Page = () => {
                     <FormLabel>Phone Number</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="12365489"
+                        placeholder="XXXXXXXXXX"
                         {...field}
                         type="number"
                         disabled
@@ -477,7 +477,7 @@ const Page = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      {Batch == "STAFF" ? "Cabin/Desk Number" : "Room Number"}
+                      {Batch.startsWith("UG") || Batch.startsWith("TLP") ? "Room Number" : "Cabin/Desk Number"}
                     </FormLabel>
                     <FormControl>
                       <Input

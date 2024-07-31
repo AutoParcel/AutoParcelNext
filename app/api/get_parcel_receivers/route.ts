@@ -8,8 +8,8 @@ export const POST = async (req: Request) => {
     console.log(data);
 
     await connectToDb();
-    const parcelRecievers = await prisma.parcelReciever.findMany(data.query);
-    return NextResponse.json({ parcelRecievers }, { status: 200 });
+    const parcelReceivers = await prisma.parcelReceiver.findMany(data.query);
+    return NextResponse.json({ parcelReceivers }, { status: 200 });
   } catch (error) {
     console.log(error);
     //@ts-ignore

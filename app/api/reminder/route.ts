@@ -19,7 +19,7 @@ const sendReminder = async (parcel: any) => {
   };
 
   const result = await axios
-    .post("https://pythonserver-ftnw.onrender.com/smtp", Data, { headers })
+    .post("http://localhost:8000/smtp", Data, { headers })
     .then((res) => {
       console.log("Message response: ", res.data);
     })
