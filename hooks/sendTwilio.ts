@@ -1,7 +1,7 @@
 "use server";
 import axios from "axios";
 import prisma from "@/prisma";
-
+import { getDate } from "@/utils";
 interface Parcel {
   ParcelID: string;
   OwnerName: string;
@@ -32,6 +32,8 @@ export default async function sendMessage(
 ) {
   try {
     console.log("sending message via smtp");
+    console.log(parcel_obj);
+
     let body = "";
     let subject = "";
     if (type == "resend" || type == "reminder") {
@@ -44,10 +46,10 @@ export default async function sendMessage(
       otp = new_parcel?.otp;
     }
     if (type == "c") {
-      body = `Dear ${parcel_obj.OwnerName},\nYour parcel ${parcel_obj.ParcelID} has arrived at Gate 1 at ${parcel_obj.ReceivedAt}.\nKindly use ${otp} as your AutoParcel One Time Password (OTP) to collect your parcel.\n\nThank you for using AutoParcel.`;
+      body = `Dear ${parcel_obj.OwnerName},\nYour parcel ${parcel_obj.ParcelID} has arrived at Gate 1 on date:  ${getDate(parcel_obj.ReceivedAt)}.\nKindly use ${otp} as your AutoParcel One Time Password (OTP) to collect your parcel.\n\nThank you for using AutoParcel.`;
       subject = `Your Parcel ${parcel_obj.ParcelID} Arrived!`;
     } else if (type == "h") {
-      body = `Dear ${parcel_obj.OwnerName},\nYour parcel ${parcel_obj.ParcelID} has been collected from Gate 1 at ${parcel_obj.CollectedAt}.\n\nThank you for using AutoParcel.`;
+      body = `Dear ${parcel_obj.OwnerName},\nYour parcel ${parcel_obj.ParcelID} has been collected from Gate 1 on date:  ${getDate(parcel_obj.CollectedAt)}.\n\nThank you for using AutoParcel.`;
       subject = `Your Parcel ${parcel_obj.ParcelID} Handed-Over!`;
     } else if (type == "reminder") {
       body = `Dear ${parcel_obj.OwnerName},\nYour parcel ${parcel_obj.ParcelID} has been waiting at Gate 1. \nKindly use ${otp} as your AutoParcel One Time Password (OTP) to collect your parcel as soon as possible.\n\nThank you for using AutoParcel.`;

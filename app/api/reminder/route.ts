@@ -22,24 +22,25 @@ const sendReminder = async (parcel: any) => {
     .post("http://localhost:8000/smtp", Data, { headers })
     .then((res) => {
       console.log("Message response: ", res.data);
+      
     })
     .catch((error) => {
       console.error("Failed to send a message", error);
     });
-  const stringdate = new Date().toUTCString()
-  console.log("result", result);
-  await connectToDb();
-  await prisma.parcel.update({
-    where: {
-      ParcelID: parcel.ParcelID, // Assuming ParcelID is the unique identifier for each parcel
-    },
-    data: {
-      Reminders: {
-        set: [...parcel.Reminders, stringdate], // Make sure parcel.Reminders initially exists and is iterable
+    const stringdate = new Date().toUTCString()
+    console.log("result", result);
+    await connectToDb();
+    await prisma.parcel.update({
+      where: {
+        ParcelID: parcel.ParcelID, // Assuming ParcelID is the unique identifier for each parcel
       },
-    },
-  });
-  await prisma.$disconnect();
+      data: {
+        Reminders: {
+          set: [...parcel.Reminders, stringdate], // Make sure parcel.Reminders initially exists and is iterable
+        },
+      },
+    });
+    await prisma.$disconnect();
 };
 
 const connectToDb = async () => {
@@ -86,6 +87,7 @@ export async function GET(request: Request) {
   });
   for (const parcel of filteredParcels) {
     sendReminder(parcel);
+    
   }
   try {
     return NextResponse.json({ filteredParcels }, { status: 200 });

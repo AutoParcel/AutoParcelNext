@@ -51,7 +51,7 @@ const formSchema = z.object({
   PhoneNumber: z.string(),
   RoomNumber: z.string(),
   OwnerID: z.string(),
-  Shelf: z.string(),
+  Shelf: z.enum(["A", "B", "C"]),
   Comment: z.string(),
   Email: z.string(),
 });
@@ -77,6 +77,7 @@ const Page = () => {
   }, []);
 
   const fillform = (data: any) => {
+    console.log("fillform data:", data)
     data.OwnerName ? form.setValue("OwnerName", data.OwnerName) : "";
     data.ParcelCompany
       ? form.setValue("ParcelCompany", data.ParcelCompany.toLowerCase())
@@ -317,9 +318,9 @@ const Page = () => {
 
         Reminders: [new Date()],
       };
-
       let new_parcel = await addParcel(values);
-      // add toast maybe here
+      // add toast maybe here TODO
+      console.log("OKAY THIS IS WORKIGN")
       console.log("new parcel: ", new_parcel);
       router.push("/dashboard/parcels/" + new_parcel.ParcelID);
     } catch (e) {
@@ -511,7 +512,9 @@ const Page = () => {
                   <FormItem>
                     <FormLabel>Shelf</FormLabel>
                     <FormControl>
-                      <Select defaultValue={field.value}>
+                      <Select defaultValue={field.value} name="Shelf" onValueChange={(event)=>{
+                        form.setValue("Shelf",event) // TODO 
+                      }}>
                         <SelectTrigger className="w-[180px]">
                           <SelectValue placeholder="" />
                         </SelectTrigger>
