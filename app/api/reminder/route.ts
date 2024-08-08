@@ -4,8 +4,21 @@ import axios from "axios";
 import { differenceInHours } from "date-fns";
 const sendReminder = async (parcel: any) => {
   console.log("sending reminder to " + parcel.OwnerName);
+  let body = `Dear ${parcel.OwnerName},
+  
+I hope this message finds you well. This is to inform you that a courier package Via ${parcel.ParcelCompany} ${parcel.ParcelNumber} addressed to you was attempted for delivery today, but unfortunately, you were not available at the time the guard attempted to hand it over.
 
-  const body = `Dear ${parcel.OwnerName},\nYour parcel ${parcel.ParcelID} has been waiting at Gate 1. \nKindly use ${parcel.otp} as your AutoParcel One Time Password (OTP) to collect your parcel as soon as possible.\n\nThank you for using AutoParcel.`;
+To ensure you receive your package promptly, please visit the mailroom to collect it at your earliest convenience using ${parcel.otp} as your One Time Password (OTP). The mailroom ( Gate-1, Security Post) is open from 09:00 AM to 07:00 PM. Kindly present your identification to the guard, and they will assist you in retrieving your parcel.\nIf you have any questions or concerns regarding this matter, please feel free to reach out to security at 98759-90803.\nThank you for your attention to this matter.
+
+If you have any questions or concerns regarding this matter, please feel free to reach out to security at 98759-90803.
+
+Thank you for your attention to this matter.
+
+`
+  if(parcel.ParcelReceiver.Batch.startsWith("UG") || parcel.ParcelReceiver.Batch.startsWith("TLP")){
+  body = `Dear ${parcel.OwnerName},\nYour parcel ${parcel.ParcelID} has been waiting at Gate 1. \nKindly use ${parcel.otp} as your AutoParcel One Time Password (OTP) to collect your parcel as soon as possible.\n\nThank you for using AutoParcel.`;
+  }
+  
   const subject = "Automated Reminder: Collect Your Parcel!";
 
   const Data = {

@@ -82,8 +82,8 @@ const Page = () => {
     data.ParcelCompany
       ? form.setValue("ParcelCompany", data.ParcelCompany.toLowerCase())
       : "";
-    data.PhoneNumber ? form.setValue("PhoneNumber", data.PhoneNumber) : "";
-    data.RoomNumber ? form.setValue("RoomNumber", data.RoomNumber) : "";
+    data.PhoneNumber ? form.setValue("PhoneNumber", data.PhoneNumber) : form.setValue("PhoneNumber", "");
+    data.RoomNumber ? form.setValue("RoomNumber", data.RoomNumber) : form.setValue("RoomNumber", "");
     data.OwnerID ? form.setValue("OwnerID", data.OwnerID) : "";
     data.ParcelNumber ? form.setValue("ParcelNumber", data.ParcelNumber) : "";
     data.Shelf ? form.setValue("Shelf", data.Shelf) : "";

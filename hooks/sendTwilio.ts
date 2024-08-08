@@ -46,13 +46,43 @@ export default async function sendMessage(
       otp = new_parcel?.otp;
     }
     if (type == "c") {
+      body = `Dear ${parcel_obj.OwnerName},
+      
+We hope this message finds you well. This is to inform you that we will attempt to deliver your courier today. Kindly ensure that you share the ${otp} as your One Time Password (OTP) with the guard upon delivery. This will help facilitate a smooth and efficient delivery process.
+      
+Thanks,
+Mailroom
+      `
+      if(parcel_obj.ParcelReceiver.Batch.startsWith("UG") || parcel_obj.ParcelReceiver.Batch.startsWith("TLP")){
       body = `Dear ${parcel_obj.OwnerName},\nYour parcel ${parcel_obj.ParcelID} has arrived at Gate 1 on date:  ${getDate(parcel_obj.ReceivedAt)}.\nKindly use ${otp} as your AutoParcel One Time Password (OTP) to collect your parcel.\n\nThank you for using AutoParcel.`;
-      subject = `Your Parcel ${parcel_obj.ParcelID} Arrived!`;
+    }
+    subject = `Your Parcel ${parcel_obj.ParcelID} Arrived!`;
     } else if (type == "h") {
+      body = `Dear ${parcel_obj.OwnerName},
+
+We hope this message finds you well. This is to inform you that your parcel ${parcel_obj.ParcelID} has been collected.
+      
+Thanks,
+Mailroom
+      `
+      if(parcel_obj.ParcelReceiver.Batch.startsWith("UG") || parcel_obj.ParcelReceiver.Batch.startsWith("TLP")){
       body = `Dear ${parcel_obj.OwnerName},\nYour parcel ${parcel_obj.ParcelID} has been collected from Gate 1 on date:  ${getDate(parcel_obj.CollectedAt)}.\n\nThank you for using AutoParcel.`;
+      }
       subject = `Your Parcel ${parcel_obj.ParcelID} Handed-Over!`;
     } else if (type == "reminder") {
+      body = `Dear ${parcel_obj.OwnerName},
+      
+I hope this message finds you well. This is to inform you that a courier package Via ${parcel_obj.ParcelCompany} ${parcel_obj.ParcelNumber} addressed to you was attempted for delivery today, but unfortunately, you were not available at the time the guard attempted to hand it over.
+
+To ensure you receive your package promptly, please visit the mailroom to collect it at your earliest convenience using ${parcel_obj.otp} as your One Time Password (OTP). The mailroom ( Gate-1, Security Post) is open from 09:00 AM to 07:00 PM. Kindly present your identification to the guard, and they will assist you in retrieving your parcel.
+
+If you have any questions or concerns regarding this matter, please feel free to reach out to security at 98759-90803.
+
+Thank you for your attention to this matter.
+`
+    if(parcel_obj.ParcelReceiver.Batch.startsWith("UG") || parcel_obj.ParcelReceiver.Batch.startsWith("TLP")){
       body = `Dear ${parcel_obj.OwnerName},\nYour parcel ${parcel_obj.ParcelID} has been waiting at Gate 1. \nKindly use ${otp} as your AutoParcel One Time Password (OTP) to collect your parcel as soon as possible.\n\nThank you for using AutoParcel.`;
+    }
       subject = "Reminder: Collect Your Parcel!";
     } else {
       body = `Kindly use ${otp} as your AutoParcel One Time Password (OTP) to collect your parcel.\n\nThank you for using AutoParcel.`;

@@ -79,7 +79,7 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
     ParcelCompany: z.string(),
     ParcelNumber: z.string(),
     PhoneNumber: z.string(),
-    RoomNumber: z.number(),
+    RoomNumber: z.string(),
     OwnerID: z.string(),
     Shelf: z.string(),
     Comment: z.string(),
@@ -93,7 +93,7 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
       ParcelCompany: "",
       ParcelNumber: "", //
       PhoneNumber: "",
-      RoomNumber: 0,
+      RoomNumber: "",
       OwnerID: "", //
       Shelf: "A", //
       Comment: "",
@@ -152,7 +152,7 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
       form.setValue("ParcelCompany", data.ParcelCompany);
       form.setValue("ParcelNumber", data.ParcelNumber);
       form.setValue("PhoneNumber", data.ParcelReceiver?.PhoneNumber);
-      form.setValue("RoomNumber", parseInt(data.ParcelReceiver?.RoomNumber));
+      form.setValue("RoomNumber", data.ParcelReceiver?.RoomNumber);
       form.setValue("OwnerID", data.OwnerID == null ? "" : data.OwnerID);
       form.setValue("Shelf", data.Shelf);
       form.setValue("Comment", data.Comment);
@@ -478,7 +478,7 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
                       <FormItem>
                         <FormLabel>Phone Number</FormLabel>
                         <FormControl>
-                          <Input placeholder="" {...field} disabled={true} />
+                          <Input placeholder="XXXXXXXXXX" {...field} disabled={true} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

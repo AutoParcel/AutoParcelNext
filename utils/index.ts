@@ -193,17 +193,25 @@ const filter_sort_query = (
 // }
 const getDate = (olddate: string= "") => {
   let date = new Date();
+  console.log(date)
+  console.log(date.toLocaleString(undefined, {timeZone: 'Asia/Kolkata'}))
   if (olddate != "") {
     date = new Date(olddate); //in UTC
   }
-  const istOffset = 5 * 60 * 60 * 1000 + 30 * 60 * 1000; // 5 hours 30 minutes in milliseconds
-  const istDate = new Date(date.getTime() + istOffset); //in IST
-
+  const istDate = date
   let currentDayOrdinal = getOrdinalNum(istDate.getDate());
   let currentMonth = istDate.toLocaleString("default", { month: "long" });
   let currentYear = istDate.getFullYear();
-  let currentTime = istDate.getUTCHours() + ":" + istDate.getUTCMinutes();
-  let currentDate = `${currentDayOrdinal} ${currentMonth} ${currentYear} at ${currentTime}`;
+  let hours = istDate.getHours()
+  let ampm = hours >= 12 ? 'PM' : 'AM'
+  hours = hours % 12;
+  hours = hours ? hours : 12;
+  let minutes = istDate.getMinutes().toString()
+  if(minutes.length == 1){
+    minutes = '0' + minutes
+  }
+  let currentTime = hours + ":" + minutes;
+  let currentDate = ` ${currentTime} ${ampm} ${currentDayOrdinal} ${currentMonth} ${currentYear}`;
   return currentDate;
 };
 function getOrdinalNum(n: number) {
