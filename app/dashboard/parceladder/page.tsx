@@ -371,7 +371,7 @@ const Page = () => {
   return (
     <>
       <div className="flex justify-between items-center">
-        <h1 className="text-6xl font-bold mt-2">Add a Parcel</h1>
+        <h1 className="sm:text-4xl md:text-5xl lg:text-6xl font-bold mt-2">Add a Parcel</h1>
         <div className="flex justify-end place-self-end">
           <div className="font-bold bg-primary_white rounded-md p-3 ">
             {getDate()}
