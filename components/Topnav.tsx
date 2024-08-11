@@ -17,7 +17,9 @@ const TopNav = () => {
         </Link>
       </div>
       <div className="flex gap-5">
-        <div className="flex gap-5 text-sm items-center">
+      <div className="flex gap-5 text-sm items-center">
+        {/* the other nav bar look on phone*/}
+        {/* <div className="flex flex-col lg:flex-row gap-5 text-sm items-center"> */}
           <Link href="/dashboard">Home</Link>
           <Link href="/dashboard/parceladder">Add Parcel</Link>
           <Link href="/dashboard/parcels">Parcels</Link>
