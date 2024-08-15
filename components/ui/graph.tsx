@@ -61,12 +61,12 @@ const PieChartStatus: React.FC<{ parcels: any[] }> = ({ parcels }) => {
             {
                 data: [collected_count, uncollected_count],
                 backgroundColor: [
-                    '#e4b363ff',
-                    '#ef6461ff',
+                    '#007878',
+                    '#00a0b4',
                 ],
                 borderColor: [
-                    '#e4b363ff',
-                    '#ef6461ff',
+                    '#007878',
+                    '#00a0b4',
                 ],
                 borderWidth: 1,
             },
@@ -90,12 +90,12 @@ const PieChartBatch: React.FC<{ parcels: any[] }> = ({ parcels }) => {
           {
               data: [staff_count, batch_count],
               backgroundColor: [
-                  '#e4b363ff',
-                  '#ef6461ff',
+                  '#007878',
+                  '#00a0b4',
               ],
               borderColor: [
-                  '#e4b363ff',
-                  '#ef6461ff',
+                  '#007878',
+                  '#00a0b4',
               ],
               borderWidth: 1,
           },
