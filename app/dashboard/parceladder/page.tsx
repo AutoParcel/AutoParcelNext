@@ -51,7 +51,7 @@ const formSchema = z.object({
   PhoneNumber: z.string(),
   RoomNumber: z.string(),
   OwnerID: z.string(),
-  Shelf: z.enum(["A", "B", "C"]),
+  Shelf: z.string(),
   Comment: z.string(),
   Email: z.string(),
 });

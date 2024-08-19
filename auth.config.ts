@@ -1,5 +1,4 @@
 import type { NextAuthConfig } from 'next-auth';
-import { useToast } from "@/components/ui/use-toast";
 
 export const authConfig = {
   

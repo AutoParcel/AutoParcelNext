@@ -34,8 +34,8 @@ export const { auth, signIn, signOut } = NextAuth({
               }
             }
         }
-        catch{
-        console.log('Invalid credentials');
+        catch(e){
+        console.log(e);
         return null;
         }
         return null;

@@ -32,7 +32,7 @@ Thank you for your attention to this matter.
   };
 
   const result = await axios
-    .post("http://localhost:8000/smtp", Data, { headers })
+    .post("http://autoparcel-backend-1:8000/smtp", Data, { headers })
     .then((res) => {
       console.log("Message response: ", res.data);
       

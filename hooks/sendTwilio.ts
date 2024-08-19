@@ -65,7 +65,7 @@ We hope this message finds you well. This is to inform you that your parcel ${pa
 Thanks,
 Mailroom
       `
-      if(parcel_obj.ParcelReceiver.Batch.startsWith("UG") || parcel_obj.ParcelReceiver.Batch.startsWith("TLP")){
+      if((parcel_obj.ParcelReceiver.Batch.startsWith("UG") || parcel_obj.ParcelReceiver.Batch.startsWith("TLP")) && parcel_obj.CollectedAt){
       body = `Dear ${parcel_obj.OwnerName},\nYour parcel ${parcel_obj.ParcelID} has been collected from Gate 1 on date:  ${getDate(parcel_obj.CollectedAt)}.\n\nThank you for using AutoParcel.`;
       }
       subject = `Your Parcel ${parcel_obj.ParcelID} Handed-Over!`;
@@ -74,7 +74,7 @@ Mailroom
       
 I hope this message finds you well. This is to inform you that a courier package Via ${parcel_obj.ParcelCompany} ${parcel_obj.ParcelNumber} addressed to you was attempted for delivery today, but unfortunately, you were not available at the time the guard attempted to hand it over.
 
-To ensure you receive your package promptly, please visit the mailroom to collect it at your earliest convenience using ${parcel_obj.otp} as your One Time Password (OTP). The mailroom ( Gate-1, Security Post) is open from 09:00 AM to 07:00 PM. Kindly present your identification to the guard, and they will assist you in retrieving your parcel.
+To ensure you receive your package promptly, please visit the mailroom to collect it at your earliest convenience using ${otp} as your One Time Password (OTP). The mailroom ( Gate-1, Security Post) is open from 09:00 AM to 07:00 PM. Kindly present your identification to the guard, and they will assist you in retrieving your parcel.
 
 If you have any questions or concerns regarding this matter, please feel free to reach out to security at 98759-90803.
 
@@ -98,7 +98,7 @@ Thank you for your attention to this matter.
     };
     console.log("Data: ", Data);
     const result = await axios
-      .post("http://localhost:8000/smtp", Data, { headers })
+      .post("http://autoparcel-backend-1:8000/smtp", Data, { headers })
       .then((res) => {
         console.log("Message response: ", res.data);
       })
