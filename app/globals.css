@@ -42,11 +42,11 @@
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
-    --primary_red: #ef6461ff;
-    --primary_yellow: #e4b363ff;
-    --primary_white: #e8e9ebff;
-    --primary_beige: #e0dfd5ff;
-    --primary_black: #313638ff;
+    --primary_red: #007878;
+    --primary_yellow: #00a0b4;
+    --primary_white: #ffffff;
+    --primary_beige: #acacac;
+    --primary_black: #000;
 
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;

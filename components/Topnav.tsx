@@ -3,23 +3,35 @@ import Image from "next/image";
 import SideNav from "@/components/ui/SideNav";
 const TopNav = () => {
   return (
-    <div className="bg-primary_red p-4 sm:p-5 gap-4 sm:gap-6 flex flex-col sm:flex-row text-white items-center justify-between min-h-[60px]">
-      <div className="flex gap-4 sm:gap-6">
-        <Link href="/" className="text-xl flex justify-center items-center">
+    <div className="flex flex-col min-h-[60px]">
+      {/* Dark Blue Section */}
+      <div className="bg-[#007878] p-5 flex items-center justify-between h-[60px]">
+        <div className="flex items-center w-full">
           <Image
-            src="/AutoParcelIcon.png"
-            alt="epic"
-            width={60}
-            height={10}
-            className="-my-10"
+            src="/PU_White_Primary.png"
+            alt="Plaksha University"
+            width={130}
+            height={95}
           />
-          AutoParcel
-        </Link>
+
+          <div className="flex-grow flex justify-center">
+            <Image
+              src="/AutoParcelIcon.png"
+              width={33}
+              height={10}
+              alt="Picture of the author"
+            />
+            <span className="ml-4 text-xl text-white">AutoParcel</span>
+          </div>
+        </div>
+        <div className="text-sm text-white">
+          Hi,User
+        </div>
       </div>
-      <div className="flex gap-5">
-      <div className="flex gap-5 text-sm items-center">
-        {/* the other nav bar look on phone*/}
-        {/* <div className="flex flex-col lg:flex-row gap-5 text-sm items-center"> */}
+
+      {/* Light Blue Section */}
+      <div className="bg-[#00a0b4] p-4 flex justify-end h-[40px]">
+        <div className="flex gap-5 text-sm items-center">
           <Link href="/dashboard">Home</Link>
           <Link href="/dashboard/parceladder">Add Parcel</Link>
           <Link href="/dashboard/parcels">Parcels</Link>
