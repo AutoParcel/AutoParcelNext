@@ -3,8 +3,8 @@ import Image from "next/image";
 import SideNav from "@/components/ui/SideNav";
 const TopNav = () => {
   return (
-    <div className="bg-primary_red p-5 gap-6 flex text-white items-center justify-between h-[60px]">
-      <div className="flex gap-10">
+    <div className="bg-primary_red p-4 sm:p-5 gap-4 sm:gap-6 flex flex-col sm:flex-row text-white items-center justify-between min-h-[60px]">
+      <div className="flex gap-4 sm:gap-6">
         <Link href="/" className="text-xl flex justify-center items-center">
           <Image
             src="/AutoParcelIcon.png"
@@ -17,7 +17,9 @@ const TopNav = () => {
         </Link>
       </div>
       <div className="flex gap-5">
-        <div className="flex gap-5 text-sm items-center">
+      <div className="flex gap-5 text-sm items-center">
+        {/* the other nav bar look on phone*/}
+        {/* <div className="flex flex-col lg:flex-row gap-5 text-sm items-center"> */}
           <Link href="/dashboard">Home</Link>
           <Link href="/dashboard/parceladder">Add Parcel</Link>
           <Link href="/dashboard/parcels">Parcels</Link>

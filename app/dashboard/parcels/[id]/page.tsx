@@ -283,9 +283,8 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
         </div>
       ) : (
         <>
-          <div className="flex flex-row justify-between items-center mt-10">
-            <h1 className="text-6xl font-bold flex gap-5">
-              Parcel
+          <div className="flex flex-col lg:flex-row justify-between items-center mt-10">
+          <h1 className="font-bold flex gap-5 text-l sm:text-l md:text-xl lg:text-6xl"> Parcel
               <div className="text-primary_red">{params.id}</div>
             </h1>
             <div className="w-full flex flex-row-reverse">
@@ -294,7 +293,7 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
                   Collected
                 </div>
               ) : (
-                <div className="flex flex-row ">
+                <div className="flex flex-row">
                   <button
                     className="gap-2 flex p-4 bg-primary_black text-white border-r-primary_yellow border-r-8 rounded-l-md hover:bg-primary_red font-semibold"
                     onClick={(e) => sendReminder()}
@@ -364,7 +363,7 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
             <div className="w-full p-6">
               <Form {...form}>
                 <form className="space-y-8">
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col lg:flex-row items-center justify-between">
                     <div className="flex gap-2 flex-col">
                       <div>
                         Received At:
@@ -393,7 +392,7 @@ export default function ParcelPage({ params }: { params: { id: string } }) {
                       )}
                     </div>
 
-                    <div className="flex gap-10">
+                    <div className="flex flex-col lg:flex-row gap-10">
                       <div className="p-3 bg-primary_red text-white text-sm font-bold rounded-xl opacity-75">
                         {parcel.ParcelReceiver.Batch}
                       </div>

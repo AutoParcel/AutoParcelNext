@@ -85,6 +85,23 @@ const Parcel = () => {
     setLoading(false);
   }, [searchWord, searchParam,parcelsData]);
 
+  const dateTime = (date: string) => {
+    const isoString = date;
+    if (isoString === null) {
+      return ["", ""];
+    }
+    const utcDate = new Date(isoString);
+    const utcTimeInMs = utcDate.getTime();
+    const istOffsetInMs = 5.5 * 60 * 60 * 1000;
+    const istTimeInMs = utcTimeInMs + istOffsetInMs;
+    const istDate = new Date(istTimeInMs);
+    const istDateString = istDate.toISOString().split('T')[0];
+    const istTimeString = istDate.toISOString().split('T')[1].replace('Z', '');
+    const [hours, minutes] = istTimeString.split(':');
+    const formattedTime = `${hours}:${minutes}`;
+    return([istDateString, formattedTime]);
+  }
+
   const downloadExcel = async () => {
     const schema = [
       {
@@ -108,9 +125,14 @@ const Parcel = () => {
         value: (user: any) => user.Shelf,
       },
       {
-        column: "ReceivedAt",
+        column: "Received At Date",
         type: String,
-        value: (user: any) => user.ReceivedAt,
+        value: (user: any) => dateTime(user.ReceivedAt)[0],
+      },
+      {
+        column: "Received At Time",
+        type: String,
+        value: (user: any) => dateTime(user.ReceivedAt)[1],
       },
       {
         column: "Comment",
@@ -123,10 +145,20 @@ const Parcel = () => {
         value: (user: any) => user.Status,
       },
       {
+        column: "Collected At Date",
+        type: String,
+        value: (user: any) => dateTime(user.CollectedAt)[0],
+      },
+      {
+        column: "Collected At Time",
+        type: String,
+        value: (user: any) => dateTime(user.CollectedAt)[1],
+      },
+      {
         column: "Parcel Company",
         type: String,
         value: (user: any) => user.ParcelCompany,
-      },
+      }
     ];
     await writeXlsxFile(filteredParcelsData, {
       schema,
