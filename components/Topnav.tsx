@@ -14,29 +14,29 @@ const TopNav = () => {
             height={95}
           />
 
-          <div className="flex-grow flex justify-center">
+          <div className="flex-grow flex md:justify-center justify-end">
             <Image
               src="/AutoParcelIcon.png"
               width={33}
               height={10}
               alt="Picture of the author"
             />
-            <span className="ml-4 text-xl text-white">AutoParcel</span>
+            <span className="md:ml-0 ml-4 text-xl text-white">AutoParcel</span>
           </div>
         </div>
-        <div className="text-sm text-white">
+        <div className="hidden md:block text-sm text-white">
           Hi,User
         </div>
       </div>
 
       {/* Light Blue Section */}
       <div className="bg-[#00a0b4] p-4 flex justify-end h-[40px]">
-        <div className="flex gap-5 text-sm items-center">
-          <Link href="/dashboard">Home</Link>
-          <Link href="/dashboard/parceladder">Add Parcel</Link>
-          <Link href="/dashboard/parcels">Parcels</Link>
-          <Link href="/dashboard/statistics">Statistics</Link>
-          <Link href="/dashboard/about">About Us</Link>
+        <div className="w-full md:w-auto flex gap-2 md:gap-5 text-xs md:text-sm justify-between items-center text-white">
+          <Link href="/dashboard" className="hover:underline">Home</Link>
+          <Link href="/dashboard/parceladder" className="hover:underline">Add Parcel</Link>
+          <Link href="/dashboard/parcels" className="hover:underline">Parcels</Link>
+          <Link href="/dashboard/statistics" className="hover:underline">Statistics</Link>
+          <Link href="/dashboard/about" className="hover:underline">About Us</Link>
           <SideNav />
         </div>
       </div>

@@ -8,7 +8,7 @@ export default function SideNav() {
             await signOut();
           }}
         >
-          <button className=" bg-gray-300 px-2 py-1 rounded-md font-semibold hover:bg-black hover:text-white">
+          <button className=" bg-gray-300 px-2 py-1 rounded-md font-semibold hover:bg-primary hover:text-white text-black">
           Sign Out
           </button>
         </form>

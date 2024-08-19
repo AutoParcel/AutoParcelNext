@@ -121,7 +121,7 @@ const ParcelCard = ({
       <div
         className={`${
           status == "C" ? "opacity-50" : "hover:bg-primary_beige"
-        } p-4 rounded-md shadow-md text-center bg-primary_white cursor-pointer flex flex-col justify-between`}
+        } border-2 border-gray-200 border-solid p-4 rounded-md shadow-md text-center bg-primary_white cursor-pointer flex flex-col justify-between`}
         onClick={(e) => CardClicked(e)}
         >
         <div className="h-full flex flex-col relative">
