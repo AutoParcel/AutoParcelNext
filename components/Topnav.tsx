@@ -30,8 +30,8 @@ const TopNav = () => {
       </div>
 
       {/* Light Blue Section */}
-      <div className="bg-[#00a0b4] p-4 flex justify-end h-[40px]">
-        <div className="w-full md:w-auto flex gap-2 md:gap-5 text-xs md:text-sm justify-between items-center text-white">
+      <div className="bg-[#00a0b4] p-1 md:p-4 flex justify-end h-[40px]">
+        <div className="w-full md:w-auto flex gap-2 md:gap-5 text-[10px] md:text-sm justify-between items-center text-white">
           <Link href="/dashboard" className="hover:underline">Home</Link>
           <Link href="/dashboard/parceladder" className="hover:underline">Add Parcel</Link>
           <Link href="/dashboard/parcels" className="hover:underline">Parcels</Link>
